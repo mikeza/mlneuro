@@ -63,12 +63,11 @@ ybin_edges, ybin_counts = bin_edges_from_data(stimulus_data, STIMULUS_BINS)
 signal_pipeline = make_pipeline(
                           MinMaxScaler(),
                           BivariateKernelDensity(n_neighbors=30, bandwidth_X=0.13, bandwidth_y=12, ybins=ybin_edges, 
-                               tree_backend='auto' if GPU else 'ball', n_jobs=-1))
+                               tree_backend='auto' if GPU else 'ball', n_jobs=4))
 
 # Convert the pipeline to support multiple signals
 # Filter to combine the signals
-estimator = MultisignalEstimator(signal_pipeline,
-                    filt=KernelSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=-1))
+estimator = MultisignalEstimator(signal_pipeline)
 
 # Create a cross-validator object that
 #   Limits the training set to a subset of the full data
@@ -76,7 +75,7 @@ estimator = MultisignalEstimator(signal_pipeline,
 cv = generate_crossvalidator(estimator, Xs, ys, training_mask=y_train_masks, n_splits=N_FOLDS)
 
 # Create a search
-grid = [{'base_estimator__bivariatekerneldensity__bandwidth_X': np.linspace(0.1, 0.5, 10)}]
+grid = [{'base_estimator__bivariatekerneldensity__bandwidth_X': np.linspace(0.1, 0.5, 3)}]
 scoring = {'mse': MultisignalScorer(neg_mean_absolute_error_scorer, aggr_method=np.median), 
           'exp_var': MultisignalScorer(explained_variance_scorer, aggr_method=np.median)}
 search = GridSearchCVMultisignal(estimator, scoring=scoring, cv=cv, param_grid=grid,
@@ -84,12 +83,12 @@ search = GridSearchCVMultisignal(estimator, scoring=scoring, cv=cv, param_grid=g
 
 # Run the search on cross-validated folds
 search.fit(Xs, ys)
-
+results = search.cv_results_
 
 # Output
 
 if DISPLAY_PLOTS:
-    plt.figure(figsize=(13, 13))
+    fig = plt.figure(figsize=(13, 13))
     plt.title("GridSearchCV evaluating BivariateKernelDensity bandwidth with multiple signals and scorers",
               fontsize=16)
 
@@ -97,12 +96,16 @@ if DISPLAY_PLOTS:
     plt.ylabel("Score")
     plt.grid()
 
+    # Build axes for each scorer
     ax = plt.axes()
+    axes = [ax]
+    for _ in range(len(scoring) - 1):
+        axes.append(ax.twinx())
 
     # Get the regular numpy array from the MaskedArray
-    X_axis = np.array(results['param_min_samples_split'].data, dtype=float)
+    X_axis = np.array(results['param_base_estimator__bivariatekerneldensity__bandwidth_X'].data, dtype=float)
 
-    for scorer, color in zip(sorted(scoring), ['g', 'k']):
+    for scorer, color, ax in zip(sorted(scoring), ['b', 'g'], axes):
         for sample, style in (('train', '--'), ('test', '-')):
             sample_score_mean = results['mean_%s_%s' % (sample, scorer)]
             sample_score_std = results['std_%s_%s' % (sample, scorer)]
@@ -117,13 +120,14 @@ if DISPLAY_PLOTS:
         best_score = results['mean_test_%s' % scorer][best_index]
 
         # Plot a dotted vertical line at the best score for that scorer marked by x
-        ax.plot([X_axis[best_index], ] * 2, [0, best_score],
+        ax.plot([X_axis[best_index], ], [best_score],
                 linestyle='-.', color=color, marker='x', markeredgewidth=3, ms=8)
 
         # Annotate the best score for that scorer
         ax.annotate("%0.2f" % best_score,
-                    (X_axis[best_index], best_score + 0.005))
+                    (X_axis[best_index], best_score))
 
-    plt.legend(loc="best")
+    
+    fig.legend(loc='best')
     plt.grid('off')
     plt.show()
