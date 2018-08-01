@@ -25,6 +25,7 @@ def generate_crossvalidator(estimator, X, y=None, n_splits=3, base=None, trainin
         is_multisignal = True
         y_dtype = y[0].dtype if y is not None else None
     else:
+        is_multisignal = False
         y_dtype = y.dtype if y is not None else None
 
     if base is None:
