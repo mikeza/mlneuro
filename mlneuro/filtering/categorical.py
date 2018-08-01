@@ -1,0 +1,1 @@
+"""Placeholder for filtering categorical predictions that should not be smoothed"""
