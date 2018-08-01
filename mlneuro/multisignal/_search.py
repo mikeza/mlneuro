@@ -376,7 +376,7 @@ class BaseSearchCVMultisignal(six.with_metaclass(ABCMeta, BaseEstimator,
 
         out = Parallel(
             n_jobs=self.n_jobs, verbose=self.verbose,
-            pre_dispatch=pre_dispatch, backend=parallel_backend
+            pre_dispatch=pre_dispatch, backend=self.parallel_backend
         )(delayed(_fit_and_score_multisignal)(clone(base_estimator), X, y, scorers, train,
                                   test, self.verbose, parameters,
                                   fit_params=fit_params,
