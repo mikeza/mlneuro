@@ -32,7 +32,8 @@ from sklearn.utils import indexable, check_random_state, safe_indexing
 from sklearn.utils.deprecation import DeprecationDict
 from sklearn.utils.validation import _is_arraylike, _num_samples
 from sklearn.utils.metaestimators import _safe_split
-from sklearn.externals.joblib import Parallel, delayed, logger
+from sklearn.externals.joblib import Parallel, delayed
+from sklearn.externals.joblib.logger import short_format_time
 from sklearn.externals.six.moves import zip
 from sklearn.metrics.scorer import check_scoring, _check_multimetric_scoring
 from sklearn.exceptions import FitFailedWarning
@@ -41,6 +42,9 @@ from sklearn.model_selection._validation import _check_is_permutation, _score
 from sklearn.model_selection import train_test_split
 
 from .base import MultisignalMixin, make_multisignal_fn
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 train_test_split_multisignal = make_multisignal_fn(train_test_split, reshape_default=True)
@@ -359,7 +363,7 @@ def _fit_and_score_multisignal(estimator, X, y, scorer, train, test, verbose,
             msg += ", score=%s" % test_scores
     if verbose > 1:
         total_time = score_time + fit_time
-        end_msg = "%s, total=%s" % (msg, logger.short_format_time(total_time))
+        end_msg = "%s, total=%s" % (msg, short_format_time(total_time))
         logger.info("[CV] %s %s" % ((64 - len(end_msg)) * '.', end_msg))
 
     ret = [train_scores, test_scores] if return_train_score else [test_scores]
