@@ -107,6 +107,9 @@ class DenseNNRegressor(BaseEstimator, RegressorMixin):
         The Keras activation type for the dense layers
     verbose: binary, optional, default=0
         Whether to show progress of the fit after each epoch
+
+    Modified from the KordingLab
+    https://github.com/KordingLab/Neural_Decoding/blob/master/decoders.py
     """
 
     def __init__(self, units=[100, 200, 100, 50], dropout=0, num_epochs=20, optimizer='adam', activation='relu', verbose=0):
