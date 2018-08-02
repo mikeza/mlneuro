@@ -17,9 +17,15 @@ but may return as a singleton list
 import numpy as np
 import sklearn.model_selection
 
+from sklearn.preprocessing import MinMaxScaler
+
 from ..common.bins import bin_centers_from_edges, paired_bin_edges, idxs_in_bins, bin_edges_from_data_bysize
 from ..multisignal.base import make_multisignal_fn, _enforce_multisignal_iterable
+from ..multisignal.meta import MultisignalEstimator
 from .stimulus import stimulus_at_times
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 def limit_time_range(signal_times, *signal_arrs, time_start=0, time_end=np.inf):
@@ -141,6 +147,23 @@ def multi_to_single_unit_signal_cellids(signal_times, signal_cellids, copy=True)
     np.take(all_cellids, sort_idxs, out=all_cellids)
 
     return all_times, all_cellids
+
+
+def separate_signal_features(signal_data, separation=100, scaler=MinMaxScaler):
+    """Applies a data scalar to signal data and then separates the features per signal by a specified amount
+    that should far exceed the range of the data allowing single signal processing of multisignal data
+    """
+    if scaler is None:
+        logger.warning('Without scaling data, signal separation may have no effect')
+    else:
+        if not isinstance(scaler, MultisignalEstimator):
+            scaler = MultisignalEstimator(scaler)
+        signal_data = scaler.fit_transform(signal_data)
+
+    for i, data in enumerate(signal_data):
+        data += separation * i
+
+    return signal_data
 
 
 def firing_rates(spike_times, spike_cellids, temporal_bin_edges, normalize=True, center=False):
