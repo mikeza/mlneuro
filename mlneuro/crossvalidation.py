@@ -147,3 +147,132 @@ class TrainOnSubsetCV(object):
                 return self._make_cv().get_n_splits(X, y, groups)
         else:
             return self.base_cv.get_n_splits(X, y, groups)
+
+
+
+### Converted SKLearn Functions
+
+
+from sklearn.base import clone, BaseEstimator, MetaEstimatorMixin, is_classifier
+from sklearn.utils.metaestimators import _safe_split
+from sklearn.model_selection._split import BaseCrossValidator, check_cv
+from sklearn.utils import indexable, check_random_state, safe_indexing
+from sklearn.utils.deprecation import DeprecationDict
+from sklearn.utils.validation import _is_arraylike, _num_samples
+from sklearn.utils.metaestimators import _safe_split
+from sklearn.externals.joblib import Parallel, delayed
+from sklearn.externals.joblib.logger import short_format_time
+from sklearn.externals.six.moves import zip
+from sklearn.metrics.scorer import check_scoring, _check_multimetric_scoring
+from sklearn.exceptions import FitFailedWarning
+from sklearn.model_selection._split import check_cv
+from sklearn.model_selection._validation import _check_is_permutation, _score
+from sklearn.model_selection import train_test_split
+import scipy.sparse as sp
+
+def cross_val_predict(estimator, X, y=None, groups=None, cv=None, n_jobs=1,
+                      verbose=0, fit_params=None, pre_dispatch='2*n_jobs',
+                      method='predict'):
+    """Please see sklearn for documenation
+    This has only been modified so binned regressors can return probabilites
+    """
+    X, y, groups = indexable(X, y, groups)
+
+    cv = check_cv(cv, y, classifier=is_classifier(estimator))
+
+    if method in ['decision_function', 'predict_proba', 'predict_log_proba'] and is_classifier(estimator):
+        le = LabelEncoder()
+        y = le.fit_transform(y)
+
+    # We clone the estimator to make sure that all the folds are
+    # independent, and that it is pickle-able.
+    parallel = Parallel(n_jobs=n_jobs, verbose=verbose,
+                        pre_dispatch=pre_dispatch)
+    prediction_blocks = parallel(delayed(_fit_and_predict)(
+        clone(estimator), X, y, train, test, verbose, fit_params, method)
+        for train, test in cv.split(X, y, groups))
+
+    # Concatenate the predictions
+    predictions = [pred_block_i for pred_block_i, _ in prediction_blocks]
+    test_indices = np.concatenate([indices_i
+                                   for _, indices_i in prediction_blocks])
+
+    if not _check_is_permutation(test_indices, _num_samples(X)):
+        raise ValueError('cross_val_predict only works for partitions')
+
+    inv_test_indices = np.empty(len(test_indices), dtype=int)
+    inv_test_indices[test_indices] = np.arange(len(test_indices))
+
+    # Check for sparse predictions
+    if sp.issparse(predictions[0]):
+        predictions = sp.vstack(predictions, format=predictions[0].format)
+    else:
+        predictions = np.concatenate(predictions)
+    return predictions[inv_test_indices]
+
+
+def _fit_and_predict(estimator, X, y, train, test, verbose, fit_params,
+                     method):
+    """Please see sklearn for documenation
+    This has only been modified so binned regressors can return probabilites
+    """
+    # Adjust length of sample weights
+    fit_params = fit_params if fit_params is not None else {}
+    fit_params = dict([(k, _index_param_value(X, v, train))
+                      for k, v in fit_params.items()])
+
+    X_train, y_train = _safe_split(estimator, X, y, train)
+    X_test, _ = _safe_split(estimator, X, y, test, train)
+
+    if y_train is None:
+        estimator.fit(X_train, **fit_params)
+    else:
+        estimator.fit(X_train, y_train, **fit_params)
+    func = getattr(estimator, method)
+    predictions = func(X_test)
+    if method in ['decision_function', 'predict_proba', 'predict_log_proba'] and is_classifier(estimator):
+        n_classes = len(set(y))
+        if n_classes != len(estimator.classes_):
+            recommendation = (
+                'To fix this, use a cross-validation '
+                'technique resulting in properly '
+                'stratified folds')
+            warnings.warn('Number of classes in training fold ({}) does '
+                          'not match total number of classes ({}). '
+                          'Results may not be appropriate for your use case. '
+                          '{}'.format(len(estimator.classes_),
+                                      n_classes, recommendation),
+                          RuntimeWarning)
+            if method == 'decision_function':
+                if (predictions.ndim == 2 and
+                        predictions.shape[1] != len(estimator.classes_)):
+                    # This handles the case when the shape of predictions
+                    # does not match the number of classes used to train
+                    # it with. This case is found when sklearn.svm.SVC is
+                    # set to `decision_function_shape='ovo'`.
+                    raise ValueError('Output shape {} of {} does not match '
+                                     'number of classes ({}) in fold. '
+                                     'Irregular decision_function outputs '
+                                     'are not currently supported by '
+                                     'cross_val_predict'.format(
+                                        predictions.shape, method,
+                                        len(estimator.classes_),
+                                        recommendation))
+                if len(estimator.classes_) <= 2:
+                    # In this special case, `predictions` contains a 1D array.
+                    raise ValueError('Only {} class/es in training fold, this '
+                                     'is not supported for decision_function '
+                                     'with imbalanced folds. {}'.format(
+                                        len(estimator.classes_),
+                                        recommendation))
+
+            float_min = np.finfo(predictions.dtype).min
+            default_values = {'decision_function': float_min,
+                              'predict_log_proba': float_min,
+                              'predict_proba': 0}
+            predictions_for_all_classes = np.full((_num_samples(predictions),
+                                                   n_classes),
+                                                  default_values[method])
+            predictions_for_all_classes[:, estimator.classes_] = predictions
+            predictions = predictions_for_all_classes
+    return predictions, test
