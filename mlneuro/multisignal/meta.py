@@ -282,9 +282,9 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
             ys = [None] * len(Xs)
 
         transform_results = []
-        for X, y in zip(Xs, ys):
+        for i, (X, y) in enumerate(zip(Xs, ys)):
             estimator = self._make_estimator()
-            logger.info('Fitting and transforming on signal {}/{} with data size'.format(i + 1, len(Xs_train), X.shape[0]))
+            logger.info('Fitting and transforming on signal {}/{} with data size'.format(i + 1, len(Xs), X.shape[0]))
             estimator.fit(X, y)
             transform_results.append(estimator.transform(X))
 
@@ -315,8 +315,11 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
         Warning: This method should be used to properly instantiate new
         sub-estimators.
         """
-        estimator = clone(self.base_estimator_)
-        estimator.set_params(**dict((p, getattr(self, p))
+        if isinstance(self.base_estimator_, type):
+            estimator = self.base_estimator_()
+        else:
+            estimator = clone(self.base_estimator_)
+            estimator.set_params(**dict((p, getattr(self, p))
                                     for p in self.estimator_params))
 
         return estimator
