@@ -12,6 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+
 class MultisignalScorer(MultisignalMixin):
     """Meta scorer that takes multisignal estimators and data and returns
     an aggregate score
@@ -24,8 +25,8 @@ class MultisignalScorer(MultisignalMixin):
         sklearn callable scorer
     aggr_method : callable, array-func (optional=np.mean)
         The method to reduce data between signals. If 'raw', the scores will be returned per-signal
-        Otherwise, the function will be called to reduce the signals. np.median should be used if there
-        are outliers in the signals to ignore
+        mean, median and std can also be as strings and are stored in the class.
+        Otherwise, if callable, the function will be called to reduce the signal scores 
     additional arguments :
         both additional arguments and keyword arguments will be collected
         and passed to the base_cv object
@@ -44,10 +45,15 @@ class MultisignalScorer(MultisignalMixin):
         # Iterate over the sub-estimators and score each one
         scores = [self.base_scorer(signal_est, X, y, *self.base_scorer_args, **self.base_scorer_kwargs) for signal_est, X, y in zip(estimator, Xs, ys)]
 
-        if self.aggr_method == 'raw':
-            return scores
+        self.raw = scores
+        self.std = np.std(scores)
+        self.median = np.median(scores)
+        self.mean = np.mean(scores)
+       
+        if isinstance(self.aggr_method, str) and hasattr(self, self.aggr_method):
+            return getattr(self, self.aggr_method)
         elif callable(self.aggr_method):
-            return self.aggr_method(scores)
+           return self.aggr_method(scores)
         else:
             raise TypeError('Parameter aggr_method should be callable')
 
@@ -269,8 +275,11 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
 
         return transform_results
 
-    def fit_transform(self, Xs, ys, Ts=None, discard_estimators=False, **kwargs):
+    def fit_transform(self, Xs, ys=None, Ts=None, discard_estimators=False, **kwargs):
         self._reset()
+
+        if ys is None:
+            ys = [None] * len(Xs)
 
         transform_results = []
         for X, y in zip(Xs, ys):
