@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
-from mlneuro.regression import DenseNN
+from mlneuro.regression import DenseNNRegressor
 from mlneuro.multisignal import multi_to_single_signal
 from mlneuro.preprocessing.signals import process_clustered_signal_data
 from mlneuro.preprocessing.stimulus import stimulus_at_times
@@ -29,7 +29,7 @@ T, X = process_clustered_signal_data(data['signal_times'], data['signal_cellids'
                                     flatten_history=True)
 
 
-pipeline = make_pipeline(StandardScaler(), DenseNN(verbose=1))
+pipeline = make_pipeline(StandardScaler(), DenseNNRegressor(verbose=1))
 
 y = stimulus_at_times(data['full_stimulus_times'], data['full_stimulus'], T)
 
