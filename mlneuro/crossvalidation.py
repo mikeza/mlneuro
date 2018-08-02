@@ -64,9 +64,14 @@ def generate_crossvalidator(estimator, X, y=None, n_splits=3, base=None, trainin
             cv = MultisignalSplit(MaskedTrainingCV, cv, signal_arrays=dict(train_mask=training_mask))
         else:
             cv = MaskedTrainingCV(cv, train_mask=training_mask, **base_kwargs)
+            base_kwargs = {}
 
     if is_multisignal and not isinstance(cv, MultisignalSplit):
         cv = MultisignalSplit(cv)
+
+    # Ensure the CV is initialized
+    if isinstance(cv, type):
+        cv = cv(**base_kwargs)
 
     return cv
 
