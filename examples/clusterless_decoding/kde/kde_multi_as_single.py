@@ -8,7 +8,7 @@ from mlneuro.regression import BivariateKernelDensity
 from mlneuro.multisignal import multi_to_single_signal
 from mlneuro.preprocessing.signals import limit_time_range, remove_unlabeled_spikes, spike_stimulus, separate_signal_features
 from mlneuro.preprocessing.stimulus import smooth_stimulus, stimulus_gradient_mask
-from mlneuro.filtering import filter_at, KernelSmoothedFilter
+from mlneuro.filtering import filter_at, TemporalSmoothedFilter
 from mlneuro.utils.visuals import n_subplot_grid
 from mlneuro.utils.io import load_array_dict
 from mlneuro.crossvalidation import generate_crossvalidator, cross_val_predict
@@ -71,7 +71,7 @@ cv = generate_crossvalidator(estimator, X, y, training_mask=y_train_mask, n_spli
 y_pred = cross_val_predict(estimator, X, y, cv=cv, n_jobs=1, method='predict_proba')
 
 # Filter the data
-filt = KernelSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8)
+filt = TemporalSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8)
 T_pred, (y_pred, y_test) = filter_at(filt, RESOLUTION, T, y_pred, y)
 
 # Normalize to a probability distribution

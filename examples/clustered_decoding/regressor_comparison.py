@@ -24,6 +24,9 @@ from mlneuro.utils.visuals import n_subplot_grid
 from mlneuro.crossvalidation import generate_crossvalidator
 
 DISPLAY_BAR_PLOTS = True            # Plot the predicted value in each dimension
+DISPLAY_DATA_PLOTS = False
+SHOW_DATA_DIM = 0
+
 N_FOLDS = 3
 
 # A set of estimators to test
@@ -32,18 +35,14 @@ ESTIMATORS =   {'SGD': MultiOutputRegressor(SGDRegressor(loss='huber', max_iter=
                 'SVR': MultiOutputRegressor(SVR(C=40, epsilon=5)),
                 'Linear': LinearRegression(),
                 'Extra Trees Ensemble': ExtraTreesRegressor(n_estimators=200, max_features='auto', min_samples_leaf=0.01, min_samples_split=0.02),
-                'Gaussian Process': GaussianProcessRegressor(kernel=(RBF() + WhiteKernel()), alpha=1e-5, n_restarts_optimizer=2, normalize_y=True),
+                # 'Gaussian Process': GaussianProcessRegressor(kernel=(RBF() + WhiteKernel()), alpha=1e-5, n_restarts_optimizer=2, normalize_y=True),
                 'Decision Trees Ensemble': DecisionTreeRegressor(min_samples_leaf=0.005, min_samples_split=0.01, max_features='sqrt'),
                 'Gradient Boosting': MultiOutputRegressor(GradientBoostingRegressor(n_estimators=200, learning_rate=0.1, max_depth=4,
                     random_state=0, loss='ls'))
                 }
 
-SCORERS = ['explained_variance', 'neg_mean_absolute_error']
-
-
-DISPLAY_DATA_PLOTS = True
-SHOW_DATA_DIM = 0
-METRICS = ['explained_variance_score', 'mean_absolute_error']
+SCORERS = ['explained_variance', 'neg_mean_absolute_error']   # For bar plots
+METRICS = ['explained_variance_score', 'mean_absolute_error'] # For data plots
 
 # Load data
 import os
@@ -73,7 +72,7 @@ for name, estimator in ESTIMATORS.items():
     print('[{}] Starting...'.format(name))
     pipeline = make_pipeline(StandardScaler(), estimator)
 
-    cv = generate_crossvalidator(pipeline, X, y, training_mask=y_train_mask, n_splits=N_FOLDS)
+    cv = generate_crossvalidator(pipeline, X, y, training_mask=None, n_splits=N_FOLDS)
 
 
     if not DISPLAY_DATA_PLOTS:

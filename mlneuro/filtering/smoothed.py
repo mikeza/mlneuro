@@ -6,7 +6,7 @@ from sklearn.base import BaseEstimator
 from ..utils.parallel import spawn_threads
 
 
-class KernelSmoothedFilter(BaseEstimator):
+class TemporalSmoothedFilter(BaseEstimator):
 
     def __init__(self, bandwidth_T=0.10, std_deviation=2.5, kernel='gaussian', n_jobs=1):
         """

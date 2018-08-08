@@ -7,7 +7,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import train_test_split
 
 from mlneuro.regression import BivariateKernelDensity
-from mlneuro.filtering import KernelSmoothedFilter, filter_at
+from mlneuro.filtering import TemporalSmoothedFilter, filter_at
 from mlneuro.utils import n_subplot_grid, load_array_dict
 
 import os 
@@ -43,7 +43,7 @@ pipeline.fit(X_train, y_train)
 y_predicted = pipeline.predict(X_test)
 
 if RESOLUTION is not None:
-    filt = KernelSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8)
+    filt = TemporalSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8)
     T_test, (y_predicted, y_test) = filter_at(filt, RESOLUTION, T_test, y_predicted, y_test):)
 
 fig, axes = n_subplot_grid(y_test.shape[1], max_horizontal=1)

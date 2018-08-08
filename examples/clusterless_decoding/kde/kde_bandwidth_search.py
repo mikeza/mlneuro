@@ -11,7 +11,7 @@ from mlneuro.multisignal import MultisignalEstimator, train_test_split_multisign
     MultisignalScorer
 from mlneuro.preprocessing.signals import limit_time_range, remove_unlabeled_spikes, spike_stimulus
 from mlneuro.preprocessing.stimulus import smooth_stimulus, stimulus_gradient_mask
-from mlneuro.filtering import filter_at, KernelSmoothedFilter
+from mlneuro.filtering import filter_at, TemporalSmoothedFilter
 from mlneuro.common.bins import bin_edges_from_data, bin_centers_from_edges, linearized_bin_grid
 from mlneuro.utils.visuals import n_subplot_grid
 from mlneuro.utils.io import load_array_dict
@@ -46,14 +46,13 @@ ys = spike_stimulus(Ts, stimulus_times, stimulus_data)
 Ts, _, (Xs, ys) = remove_unlabeled_spikes(Ts, data['signal_cellids'], Xs, ys)
 
 # Reduce data?
-TIME_START = 1500
-TIME_END = 2000
-Ts, (Xs, ys) = limit_time_range(Ts, Xs, ys, time_start=TIME_START, time_end=TIME_END)
+# TIME_START = 1500
+# TIME_END = 2000
+# Ts, (Xs, ys) = limit_time_range(Ts, Xs, ys, time_start=TIME_START, time_end=TIME_END)
 
 # Create a mask for the training subset when the stimulus is moving quickly (running)
 stimulus_gradient_mask_multisignal = make_multisignal_fn(stimulus_gradient_mask)
-y_train_masks = stimulus_gradient_mask_multisignal(Ts, ys, min_g=15, max_g=500)
-
+y_train_masks = stimulus_gradient_mask_multisignal(Ts, ys, min_g=5)
 
 # Calculate bin edges independent of signal2
 # so they are the same for all estimators
@@ -62,7 +61,7 @@ ybin_edges, ybin_counts = bin_edges_from_data(stimulus_data, STIMULUS_BINS)
 # Construct a basic pipeline for one signal
 signal_pipeline = make_pipeline(
                           MinMaxScaler(),
-                          BivariateKernelDensity(n_neighbors=30, bandwidth_X=0.13, bandwidth_y=12, ybins=ybin_edges, 
+                          BivariateKernelDensity(n_neighbors=-1, bandwidth_X=0.13, bandwidth_y=18, ybins=ybin_edges, 
                                tree_backend='auto' if GPU else 'ball', n_jobs=4))
 
 # Convert the pipeline to support multiple signals
@@ -75,9 +74,9 @@ estimator = MultisignalEstimator(signal_pipeline)
 cv = generate_crossvalidator(estimator, Xs, ys, training_mask=y_train_masks, n_splits=N_FOLDS)
 
 # Create a search
-grid = [{'base_estimator__bivariatekerneldensity__bandwidth_X': np.linspace(0.1, 0.5, 3)}]
-scoring = {'mse': MultisignalScorer(neg_mean_absolute_error_scorer, aggr_method=np.median), 
-          'exp_var': MultisignalScorer(explained_variance_scorer, aggr_method=np.median)}
+grid = [{'base_estimator__bivariatekerneldensity__bandwidth_X': np.linspace(0.01, 0.2, 10)}]
+scoring = {'mse': MultisignalScorer(neg_mean_absolute_error_scorer, aggr_method='mean'), 
+          'exp_var': MultisignalScorer(explained_variance_scorer, aggr_method='mean')}
 search = GridSearchCVMultisignal(estimator, scoring=scoring, cv=cv, param_grid=grid,
                                  return_train_score=True, refit=False)
 

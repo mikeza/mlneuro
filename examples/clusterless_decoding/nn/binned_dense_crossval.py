@@ -8,7 +8,7 @@ from mlneuro.multisignal import MultisignalEstimator, train_test_split_multisign
     cross_val_predict_multisignal, make_multisignal_fn, multi_to_single_signal
 from mlneuro.preprocessing.signals import limit_time_range, remove_unlabeled_spikes, spike_stimulus
 from mlneuro.preprocessing.stimulus import smooth_stimulus, stimulus_gradient_mask
-from mlneuro.filtering import filter_at, KernelSmoothedFilter
+from mlneuro.filtering import filter_at, TemporalSmoothedFilter
 from mlneuro.common.bins import bin_edges_from_data, bin_centers_from_edges, linearized_bin_grid
 from mlneuro.utils.visuals import n_subplot_grid
 from mlneuro.utils.io import load_array_dict
@@ -65,7 +65,7 @@ signal_pipeline = make_pipeline(
 # Convert the pipeline to support multiple signals
 # Filter to combine the signals
 estimator = MultisignalEstimator(signal_pipeline,
-                    filt=KernelSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8),
+                    filt=TemporalSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8),
                     pickle_estimators=False, pickler_kwargs=dict(save_location='/run/media/mz/data/.mlneuro/tmp/'))
 
 # Create a cross-validator object that

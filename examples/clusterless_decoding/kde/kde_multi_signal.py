@@ -7,7 +7,7 @@ from sklearn.pipeline import make_pipeline
 from mlneuro.regression import KDCE
 from mlneuro.meta.multisignal import MultisignalEstimator, train_test_split_multisignal
 from mlneuro.preprocessing.signals import multi_to_single_signal, remove_unlabeled_spikes
-from mlneuro.filtering import filter_at, KernelSmoothedFilter
+from mlneuro.filtering import filter_at, TemporalSmoothedFilter
 from mlneuro.common.bins import bin_edges_from_data
 from mlneuro.utils import n_subplot_grid, load_array_dict
 
@@ -39,7 +39,7 @@ pipeline =  MultisignalEstimator(
                 make_pipeline(MinMaxScaler(),
                               KDCE(bandwidth_X=0.15, bandwidth_y=15, ybins=ybin_edges)
                 ),
-                filt=KernelSmoothedFilter(bandwidth_T=0.75, std_deviation=5),
+                filt=TemporalSmoothedFilter(bandwidth_T=0.75, std_deviation=5),
                 pickle_estimators=True
             )
 

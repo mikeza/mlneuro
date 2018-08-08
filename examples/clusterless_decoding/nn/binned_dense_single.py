@@ -12,7 +12,7 @@ from mlneuro.multisignal import multi_to_single_signal
 from mlneuro.regression import DenseNNBinnedRegressor, DenseNNRegressor
 from mlneuro.preprocessing.signals import limit_time_range, remove_unlabeled_spikes, spike_stimulus
 from mlneuro.preprocessing.stimulus import smooth_stimulus, stimulus_gradient_mask
-from mlneuro.filtering import filter_at, KernelSmoothedFilter
+from mlneuro.filtering import filter_at, TemporalSmoothedFilter
 from mlneuro.common.bins import bin_edges_from_data, bin_centers_from_edges, linearized_bin_grid
 from mlneuro.utils.visuals import n_subplot_grid
 from mlneuro.utils.io import load_array_dict
@@ -67,7 +67,7 @@ y_pred = pipeline.predict(X_test)
 
 # # Filter the results if asked
 # if RESOLUTION is not None:
-#     filt = KernelSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=4)
+#     filt = TemporalSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=4)
 #     T_test, (y_pred, y_test) = filter_at(filt, RESOLUTION, T_test, y_pred, y_test)
 
 # # Normalize to a probability distribution
