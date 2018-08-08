@@ -27,14 +27,13 @@ except ImportError as e:
 
 class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
-    def __init__(self, ybins=32, transition_informed=False, encoding_model='quadratic', fit_retries=5, model_type='auto', n_jobs=-1, use_prior=False):
+    def __init__(self, ybins=32, encoding_model='quadratic', model_type='glm', n_jobs=-1, use_prior=False, nan_unvisited=False):
         self.ybins = ybins
-        self.transition_informed = transition_informed
         self.encoding_model = encoding_model
-        self.fit_retries = fit_retries
         self.n_jobs = n_jobs
         self.model_type = model_type
         self.use_prior = use_prior
+        self.nan_unvisited = nan_unvisited
 
     def _init_ybins_from_param(self, y, bin_param):
         if np.isscalar(bin_param): # bin count
@@ -111,7 +110,7 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         self.tuning_curves = np.array(self.tuning_curves)
 
         # Calculate occupancy
-        self.occ = np.log(occupancy(y, self.ybin_edges).flatten()) if self.use_prior else None
+        self.occ = np.log(occupancy(y, self.ybin_edges, unvisited_mode='nan' if self.nan_unvisited else 'uniform').flatten()) if self.use_prior else None
 
         # Get the standard deviation of the change in y 
         n_samples = y.shape[0]
@@ -134,7 +133,7 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
     def _make_model(self, X, y, n):
         if self.model_type == 'auto':
             per_zero = (X == 0).sum() / X.shape[0] 
-            if per_zero > 0.999:
+            if per_zero > 0.9:
                 model_type = 'zeroinflated'
             else:
                 model_type = 'glm'
@@ -178,8 +177,8 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
             The conditional probability distribution over the y bins given a sample X
         """
         py_x = self.predict_log_proba(X)
-        py_x = np.exp(py_x - np.max(py_x, axis=1)[:, np.newaxis])
-        py_x /= np.sum(py_x, axis=1)[:, np.newaxis]
+        py_x = np.exp(py_x - np.nanmax(py_x, axis=1)[:, np.newaxis])
+        py_x /= np.nansum(py_x, axis=1)[:, np.newaxis]
         return py_x
 
     def predict_log_proba(self, X):
@@ -195,18 +194,10 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         log(p(y|X)) : array of shape = [n_samples, n_bins]
             The log conditional probability distribution over the y bins given a sample X
         """
-
-        if self.transition_informed:
-            # Get probabilities of state transitions
-            dists = bin_distances(self.ybin_grid)
-            log_transition_probability = np.log(norm.pdf(dists, 0, self.dy_std))
-
         y_predicted = np.ones((X.shape[0], self.ybin_grid.shape[0]))
 
         @jit(nogil=True) # Can't use nopython because gammaln is not supported by numba
-        def _compiled_worker(y_predicted, X, tuning_curves, transition_informed, occ, i_start, i_end):
-
-            last_predicted_idx = 0
+        def _compiled_worker(y_predicted, X, tuning_curves, occ, i_start, i_end):
 
             for i in range(i_start, i_end):
                 # A vectorized computation is over all X.shape[1] neurons at once
@@ -223,16 +214,10 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
                 # Update py assuming neurons are independent
                 y_predicted[i, :] += p.sum(axis=0)
                 
-                if transition_informed and i != i_start:
-                    y_predicted[i, :] += log_transition_probability[last_predicted_idx, :]
-            
                 if occ is not None:
                     y_predicted[i, :] += occ
 
-                last_predicted_idx = np.argmax(y_predicted[i, :]) 
-
         spawn_threads(self.n_jobs, X, _compiled_worker,
-                args=(y_predicted, X, self.tuning_curves, self.transition_informed,
-                      self.occ))        
+                args=(y_predicted, X, self.tuning_curves, self.occ))        
 
         return y_predicted 
