@@ -75,25 +75,27 @@ def spawn_threads(n_threads, split_array, target, args, axis=0, sanity_check=Tru
     if n_threads < 0:
         n_threads = available_cpu_count() + n_threads + 1
 
-    if split_array.shape[axis] < n_threads and sanity_check:
+    n_samples = split_array.shape[axis]
+
+    if n_samples < n_threads and sanity_check:
         n_threads = 1
         logger.warning('spawn_threads received a number of threads greater than the number of items in array')
 
     if n_threads == 1:
-        target(*args, 0, split_array.shape[axis])
+        target(*args, 0, n_samples)
         return
 
     if sanity_check and n_threads > available_cpu_count():
         logger.warning('spawn_threads received a number of threads greater than the cpu count of the machine')
 
     # Calculate number of items per thread
-    n_per_thread = np.int(np.ceil(split_array.shape[axis] / n_threads))
+    n_per_thread = np.int(np.ceil(n_samples / n_threads))
 
     # For each thread, calculate the indices to assign to the thread then start it
     threads = []
     for i in range(n_threads):
         start_thread = i * n_per_thread
-        end_thread = min((i + 1) * n_per_thread, split_array.shape[axis])
+        end_thread = min((i + 1) * n_per_thread, n_samples)
 
         threads.append(threading.Thread(target=target,
             args=(*args, start_thread, end_thread)))
