@@ -18,7 +18,7 @@ from mlneuro.filtering import TransitionInformedBayesian, filter_at
 DISPLAY_PLOTS = True            # Plot the predicted value in each dimension
 DISPLAY_TUNING_CURVES = False
 SAVE_TO_FILE = 'example_test'
-STIMULUS_BINS = 64
+STIMULUS_BINS = 16
 RESOLUTION = 0.05
 
 # Load data
@@ -56,7 +56,7 @@ pipeline_linear = PoissonBayesBinnedRegressor(ybins=STIMULUS_BINS, n_jobs=-1, en
 
 y = stimulus_at_times(stimulus_times, stimulus_data, T)
 
-X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, test_size=0.25, train_size=0.25)
+X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, test_size=0.15)
 
 pipeline_quadratic.fit(X_train, y_train)
 pipeline_linear.fit(X_train, y_train)
@@ -88,14 +88,14 @@ y_pred = pipeline.predict_proba(X_test)
 T_test, (y_pred, y_test) = multi_to_single_signal([T_test], [y_pred], [y_test])
 
 # Normalize to a probability distribution
-y_pred /= np.sum(y_pred, axis=1)[:, np.newaxis]
+y_pred /= np.nansum(y_pred, axis=1)[:, np.newaxis]
 
 ybin_grid = pipeline.ybin_grid
 y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 
 
 # Filter?
-filt = TransitionInformedBayesian(transition_obs=np.hstack([stimulus_times.reshape(-1, 1), stimulus_data]), bin_edges=pipeline.ybin_edges, transition_model='directional')
+filt = TransitionInformedBayesian(transition_obs=np.hstack([stimulus_times.reshape(-1, 1), stimulus_data]), bin_edges=pipeline.ybin_edges, transition_model='indiscriminate')
 T_filt, (y_pred_filt) = filter_at(filt, RESOLUTION, T_test, y_pred) 
 y_pred_filt /= np.sum(y_pred_filt, axis=1)[:, np.newaxis]
 y_predicted_filt = ybin_grid[np.argmax(y_pred_filt, axis=1)]
