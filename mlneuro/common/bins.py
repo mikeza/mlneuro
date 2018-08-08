@@ -196,13 +196,13 @@ def _euclidean_dist_to_bin_dist(bin_edges, dist):
     return dist / dist_per_bin
 
 
-def _sanitize_sigma(bin_edges, sigma=None, none_percent=0.05):
+def _sanitize_sigma(bin_edges, sigma=None, default_percent=0.05):
     """Sanitizes sigma for gaussian blurs by extrapolating to the
     proper amount of dimensions or filling with a percent of the range
     """
     bin_ranges = np.array([(bin_edges_dim.max() - bin_edges_dim.min()) for bin_edges_dim in bin_edges])
     if sigma is None:
-        sigma = bin_ranges * none_percent
+        sigma = bin_ranges * default_percent
     else:
         if np.isscalar(sigma):
             sigma = np.repeat(sigma, len(bin_edges))
@@ -309,7 +309,7 @@ def binned_data(data, bin_edges, flat=True):
 
 
 def occupancy(data, bin_edges, smooth=True, spatial_sigma=None, normalize=True,
-              nan_unvisited=False, uniform_unvisited=True, unvisited_threshold=0.00025):
+              unvisited_mode='uniform', unvisited_threshold=0.00025):
     """Calculate the relative amount of time spent in each data value given
     a continuous data and a set of bin edges
 
@@ -321,7 +321,9 @@ def occupancy(data, bin_edges, smooth=True, spatial_sigma=None, normalize=True,
         is used across all dimensions. If None, defaults to 10% of the range of
         the dimension
     normalize: bool, return a normalized occupancy
-    nan_unvisited: bool, set the unvisited bins to nan rather than x < threshold
+    unvisited_mode: string
+        'uniform': set unvisited bins to the mean value of visited bins
+        'nan': set unvisited bins to nan
     unvisited_threshold: numerical, a threshold for what makes a bin unvisited and
         consequently a nan in the occupancy. If given an integer, it is the amount
         of times a bin is occupied. If given a value [0,1) it is the percent time
@@ -330,30 +332,31 @@ def occupancy(data, bin_edges, smooth=True, spatial_sigma=None, normalize=True,
 
     # If the threshold for unvisted is < 1, it is a percentage and we
     #   want a normalized histogram to threshold at
-    H, _ = np.histogramdd(data, bin_edges, normed=(unvisited_threshold is not None))
+    H, _ = np.histogramdd(data, bin_edges, normed=(unvisited_threshold is not None and unvisited_threshold < 1))
 
     # Transpose a 2D histogram since numpy rotates the array, why?
     if H.ndim == 2: H = np.array(H).T
 
     if smooth:
-        spatial_sigma = _sanitize_sigma(bin_edges, spatial_sigma, none_percent=0.15)
+        spatial_sigma = _sanitize_sigma(bin_edges, spatial_sigma, default_percent=0.15)
         spatial_sigma = _euclidean_dist_to_bin_dist(bin_edges, spatial_sigma)
         occ = gaussian_filter(H, spatial_sigma, mode='constant', truncate=3)
     else:
         occ = H
 
-    if unvisited_threshold is not None:
+    if unvisited_threshold is not None and unvisited_mode is not None:
         if unvisited_threshold < 1:
-            unvisited_threshold /= np.prod(H.shape)
+            p_anybin = 1 / np.prod(H.shape)
+            unvisited_threshold *= p_anybin
 
-        if nan_unvisited:
-            occ[H < unvisited_threshold] = np.nan
-
-        if uniform_unvisited:
+        if unvisited_mode == 'uniform':
             occ[H < unvisited_threshold] = np.nan
             occ[H < unvisited_threshold] = np.nanmean(occ) * 2 
             # Multiplying the mean by a factor helps elimainate 'hotspot'
             # issues in occupancy normalized estimates
+        else:
+            occ[H < unvisited_threshold] = np.nan
+
 
     if normalize:
         occ /= np.nansum(occ)
