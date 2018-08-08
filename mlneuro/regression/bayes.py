@@ -1,5 +1,4 @@
 import numpy as np
-import statsmodels.api as sm
 
 from math import factorial, log
 from numba import jit
@@ -13,17 +12,29 @@ from ..utils.arrayfuncs import atleast_2d
 from ..utils.parallel import available_cpu_count, spawn_threads
 from ..utils.logging import LoggingMixin
 from ..common.math import _gaussian_log_pdf, _gaussian_log_pdf_norm, _gaussian_pdf, logdotexp, tiny_epsilon
-from ..common.bins import bin_distances
+from ..common.bins import bin_distances, occupancy
+
+import logging
+logger = logging.getLogger(__name__)
+
+try:
+    import statsmodels.api as sm
+    from statsmodels.discrete.discrete_model import GeneralizedPoisson
+    from statsmodels.discrete.count_model import ZeroInflatedPoisson
+except ImportError as e:
+    logger.warning("Statsmodels is not installed. You will be unable to use the GLM Bayesian estimators {}".format(e))
 
 
 class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
-    def __init__(self, ybins=32, transition_informed=False, encoding_model='quadratic', n_jobs=-1):
+    def __init__(self, ybins=32, transition_informed=False, encoding_model='quadratic', fit_retries=5, model_type='auto', n_jobs=-1, use_prior=False):
         self.ybins = ybins
         self.transition_informed = transition_informed
         self.encoding_model = encoding_model
+        self.fit_retries = fit_retries
         self.n_jobs = n_jobs
-
+        self.model_type = model_type
+        self.use_prior = use_prior
 
     def _init_ybins_from_param(self, y, bin_param):
         if np.isscalar(bin_param): # bin count
@@ -35,38 +46,7 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
             self.ybin_edges = bin_param
             self._init_ybins(y_data=None, ybin_auto=False)
 
-    def _correct_ybin_occupancy(self):
-        # See parameter in class description
-        if self.unoccupied_std_from_mean is not None:
-            # Move to at true probability distribution
-            y_occupancy = np.exp(self.y_log_occupancy - np.max(self.y_log_occupancy))
-            y_occupancy /= np.max(y_occupancy)
-            unoccupied_idxs = y_occupancy < (np.mean(y_occupancy) - self.unoccupied_std_from_mean * np.std(y_occupancy))
-            y_occupancy[unoccupied_idxs] = np.mean(y_occupancy[~unoccupied_idxs]) * self.unoccupied_weight
-            # Return to log-space
-            self.y_log_occupancy = np.log(y_occupancy)
-
-    def _calculate_y_densities(self, y, partial=True):
-        if partial:
-
-            self.y_log_densities = np.empty((self.ybin_grid.shape[0], y.shape[0]))
-
-            @jit(nopython=True, nogil=True)
-            def _inner_worker(ybin_grid, y, y_log_densities, bandwidth_y, i_start, i_end):
-                y_log_densities[:, i_start:i_end] = _gaussian_log_pdf(ybin_grid.reshape(ybin_grid.shape[0], 1, -1), mean=y[i_start:i_end, :],std_deviation=bandwidth_y).sum(axis=-1)
-
-            n_splits = y.shape[0] // 100000 + 1 if self.limit_memory_use else self.n_jobs
-            spawn_threads(n_splits, y, target=_inner_worker, args=(self.ybin_grid, y, self.y_log_densities, self.bandwidth_y), sequential=self.limit_memory_use)
-
-        else:
-            self.y_log_densities = _gaussian_log_pdf(self.ybin_grid[:, np.newaxis, :], mean=y,
-                    std_deviation=self.bandwidth_y).sum(axis=-1)
-
-        self.y_log_densities += _gaussian_log_pdf_norm(n_dims=1, std_deviation=self.bandwidth_y)
-        self.y_log_occupancy = logsumexp(self.y_log_densities, axis=1)
-
-
-    def fit(self, X, y):
+    def fit(self, X, y, **glm_fit_kwargs):
 
         """
         Train Naive Bayes Decoder
@@ -107,6 +87,12 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
             y_quadratic[:, n_dims_quadratic - 1] = np.prod(y, axis=1)
             ybin_grid_quadratic[:, n_dims_quadratic - 1] = np.prod(self.ybin_grid, axis=1)
 
+            # Scale to avoid overflow
+            y_quadratic = np.nan_to_num(y_quadratic)
+            ybin_grid_quadratic = np.nan_to_num(ybin_grid_quadratic)
+            y_quadratic /= np.max(y_quadratic, axis=0)
+            ybin_grid_quadratic /= np.max(ybin_grid_quadratic, axis=0)
+
             y_fit = y_quadratic
             y_sample = ybin_grid_quadratic
 
@@ -120,14 +106,48 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
         # Generate tuning curves for each neuron
         # Prediciting firing rate (X) given stimulus (y) for each neuron
-        self.models = [sm.GLM(X[:, i], sm.add_constant(y_fit), family=sm.families.Poisson()).fit() for i in range(X.shape[1])]
-        self.tuning_curves = [np.squeeze(model.predict(sm.add_constant(y_sample))) for model in self.models]
+        # Scale by the mean of y to reduce chance of overflow in quadratic
+        self.models, self.tuning_curves = zip(*[self._fit_predict_model(X[:,i], y_fit, y_sample, i, **glm_fit_kwargs) for i in range(X.shape[1])])
         self.tuning_curves = np.array(self.tuning_curves)
+
+        # Calculate occupancy
+        self.occ = np.log(occupancy(y, self.ybin_edges).flatten()) if self.use_prior else None
 
         # Get the standard deviation of the change in y 
         n_samples = y.shape[0]
         dy =  np.sqrt(np.sum((y[1:n_samples, :] - y[:n_samples - 1, :]) ** 2, axis=1))
         self.dy_std = np.std(dy)
+
+    def _fit_predict_model(self, X, y_fit, y_predict, n, **fit_kwargs):
+
+        model = self._make_model(X,sm.add_constant(y_fit), n)
+        try:
+            fit_model = model.fit(**fit_kwargs)
+            X_pred = fit_model.predict(sm.add_constant(y_predict))
+        except Exception as e:
+            logger.warning('Poisson model failed for neuron {}. A uniform mean firing rate will be used. Exception: {}'.format(n + 1, e))
+            fit_model = None
+            X_pred = np.mean(X) * np.ones(y_predict.shape[0])
+
+        return fit_model, X_pred
+
+    def _make_model(self, X, y, n):
+        if self.model_type == 'auto':
+            per_zero = (X == 0).sum() / X.shape[0] 
+            if per_zero > 0.999:
+                model_type = 'zeroinflated'
+            else:
+                model_type = 'glm'
+            logger.info('Auto-selected model type {} for neuron {} with {}% zeros'.format(model_type, n, per_zero))
+        else:
+            model_type = self.model_type
+
+        if model_type == 'zeroinflated':
+            return ZeroInflatedPoisson(X, y)
+        elif model_type == 'generalized':
+            return GeneralizedPoisson(X, y)
+        else:
+            return sm.GLM(X, y, family=sm.families.Poisson(), missing='raise')
 
     def predict(self, X):
         """ Predict values of y given X
@@ -183,8 +203,8 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
         y_predicted = np.ones((X.shape[0], self.ybin_grid.shape[0]))
 
-        @jit(nogil=True)
-        def _compiled_worker(y_predicted, X, tuning_curves, transition_informed, i_start, i_end):
+        @jit(nogil=True) # Can't use nopython because gammaln is not supported by numba
+        def _compiled_worker(y_predicted, X, tuning_curves, transition_informed, occ, i_start, i_end):
 
             last_predicted_idx = 0
 
@@ -195,7 +215,7 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
                 # Probability of the given neuron's spike count given tuning curve (assuming poisson distribution)
                 # Note: gammaln is used to approximate the factorial (and thus requires n + 1)
-                p = -spikes_expect + np.log(spikes_expect ** spikes_actual) - gammaln(spikes_actual + 1)
+                p = -spikes_expect + np.log(np.nan_to_num(spikes_expect ** spikes_actual)) - gammaln(spikes_actual + 1)
 
                 # Note: log is used from the python math module to avoid integer overflows in numpy
                 # p = np.log(np.exp(-spikes_expect) * (spikes_expect ** spikes_actual)) - log(factorial(spikes_actual))
@@ -206,11 +226,13 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
                 if transition_informed and i != i_start:
                     y_predicted[i, :] += log_transition_probability[last_predicted_idx, :]
             
-                # A prior would be applied here, but this estimator uses a uniform prior
+                if occ is not None:
+                    y_predicted[i, :] += occ
 
                 last_predicted_idx = np.argmax(y_predicted[i, :]) 
 
         spawn_threads(self.n_jobs, X, _compiled_worker,
-                args=(y_predicted, X, self.tuning_curves, self.transition_informed))        
+                args=(y_predicted, X, self.tuning_curves, self.transition_informed,
+                      self.occ))        
 
         return y_predicted 
