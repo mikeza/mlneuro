@@ -4,7 +4,7 @@ from numba import jit
 from sklearn.base import BaseEstimator
 
 from ..common.math import tiny_epsilon, _gaussian_pdf
-from ..common.bins import bin_centers_from_edges, linearized_bin_grid, binned_data
+from ..common.bins import bin_centers_from_edges, linearized_bin_grid, binned_data, bin_distances
 from ..utils.parallel import spawn_threads
 
 class TransitionInformedBayesian(BaseEstimator):
@@ -66,6 +66,8 @@ class TransitionInformedBayesian(BaseEstimator):
         self.y_proba = y_proba
         self.M = self._init_transition_matrix()
 
+        return self
+
     def predict(self, T_test=None):
 
         if T_test is None:
@@ -99,8 +101,7 @@ class TransitionInformedBayesian(BaseEstimator):
                 else:
                     prevEstimate = (posterior[i - 1, :] * recursive_update_prop +
                         estimates[i - 1, :] * (1 - recursive_update_prop))
-
-                prevEstimate /= np.nansum(prevEstimate)
+                    prevEstimate /= np.nansum(prevEstimate)
 
                 # Apply a transformation
                 posterior[i, :] = curEstimate * np.dot(prevEstimate, M)
@@ -135,24 +136,24 @@ class TransitionInformedBayesian(BaseEstimator):
     def _init_transition_matrix(self):
         bin_edges = self.bin_edges() if callable(self.bin_edges) else self.bin_edges
 
-        T = self.transition_matrix(
+        M = self.transition_matrix(
            self.transition_obs, bin_edges, **self.transition_model_kwargs)
 
         # Normalize before exponentiaion **investigate
         #   appears to cause a bug if you don't where the
         #   transition matrix will fixate on feeders
-        T += tiny_epsilon(T.dtype)
-        T /= np.sum(T, axis=0)
+        M += tiny_epsilon(M.dtype)
+        M /= np.sum(M, axis=0)
 
         if self.propogation_factor is not None and self.propogation_factor != 1:
             # Exponentiate for 'speedup'
-            T = np.linalg.matrix_power(T, self.propogation_factor)
+            M = np.linalg.matrix_power(M, self.propogation_factor)
 
             # Normalize by row
-            T += tiny_epsilon(T.dtype)
-            T /= np.sum(T, axis=0)
+            M += tiny_epsilon(M.dtype)
+            M /= np.sum(M, axis=0)
 
-        return T
+        return M
 
     def _indiscriminate_kernel_transition_matrix(self, observations, bin_edges, std_f=0.75):
         bin_grid = linearized_bin_grid(bin_centers_from_edges(bin_edges))
@@ -162,8 +163,8 @@ class TransitionInformedBayesian(BaseEstimator):
         v = np.mean(v) + std_f * np.std(v)
         self._transition_matrix_velocity = v
 
-        # Get the squared distance from bin -> bin for all bins
-        dists = bin_distances(bin_grid, return_squared=True)
+        # Get the distance from bin -> bin for all bins
+        dists = bin_distances(bin_grid, return_squared=False)
 
         # Apply a gaussian kernel to every distance
         return _gaussian_pdf(dists, std_deviation=v)
@@ -179,7 +180,7 @@ class TransitionInformedBayesian(BaseEstimator):
         def _inner_worker(R):
             for i in range(1, observations.shape[0]):
                 # Transition to current bin from previous bin
-                idx = (binned_obs[i], binned_obs[i - 1])
+                idx = (binned_obs[i - 1], binned_obs[i])
                 R[idx] += 1
 
         _inner_worker(R)
