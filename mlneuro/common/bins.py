@@ -142,12 +142,11 @@ def bin_distances(bin_grid, directional=False, return_squared=False):
 
     # Vectorized function requires a new axis
     dists = (bin_grid[:, :, np.newaxis] - bin_grid.T)
-    dists = dists.reshape((bin_grid.shape[0], bin_grid.shape[0], bin_grid.shape[1]))
 
     if directional:
         return dists if not return_squared else np.sign(dists) * (dists ** 2)
 
-    dists = (dists ** 2).sum(axis=-1)
+    dists = (dists ** 2).sum(axis=1)
     return dists if return_squared else np.sqrt(dists)
 
 
