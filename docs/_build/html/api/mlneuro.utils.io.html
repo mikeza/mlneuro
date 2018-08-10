@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.utils.io &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>mlneuro.utils.io</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/mlneuro.utils.io.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mlneuro.utils.io">
+<span id="mlneuro-utils-io"></span><h1>mlneuro.utils.io<a class="headerlink" href="#module-mlneuro.utils.io" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mlneuro.utils.io.load_array_dict">
+<code class="descclassname">mlneuro.utils.io.</code><code class="descname">load_array_dict</code><span class="sig-paren">(</span><em>filename</em>, <em>read_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/io.html#load_array_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.io.load_array_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a dictionary of arrays from disk in multiple formats inferred from the
+file extension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.utils.io.recursive_subdirectories">
+<code class="descclassname">mlneuro.utils.io.</code><code class="descname">recursive_subdirectories</code><span class="sig-paren">(</span><em>head_dir</em>, <em>leaves_only=False</em>, <em>return_head=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/io.html#recursive_subdirectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.io.recursive_subdirectories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lazily and recursively yields subdirectories</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.utils.io.save_array_dict">
+<code class="descclassname">mlneuro.utils.io.</code><code class="descname">save_array_dict</code><span class="sig-paren">(</span><em>filename</em>, <em>dict_of_arrs</em>, <em>save_type='h5'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/io.html#save_array_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.io.save_array_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a dictionary of arrays to disk in one of many types</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.utils.io.save_dict_hdf5">
+<code class="descclassname">mlneuro.utils.io.</code><code class="descname">save_dict_hdf5</code><span class="sig-paren">(</span><em>file_name</em>, <em>dict</em>, <em>mode='w'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/io.html#save_dict_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.io.save_dict_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a dictionary of arrays in the hdf5 format. Each key specifies
+a dataset name. mode can specify appending or writing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.utils.io.subdirectories">
+<code class="descclassname">mlneuro.utils.io.</code><code class="descname">subdirectories</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/io.html#subdirectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.io.subdirectories" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://stackoverflow.com/questions/800197/how-to-get-all-of-the-immediate-subdirectories-in-python">https://stackoverflow.com/questions/800197/how-to-get-all-of-the-immediate-subdirectories-in-python</a></p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

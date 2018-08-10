@@ -26,8 +26,8 @@ except ImportError:
 class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
     """ Conditional Kernel Density Estimator
     Estimates the conditional probability of y given X by kernel density estimation
-    Uses the k-nearest neighbors for efficiency
-    Bandwidth selection can have large effects on performance
+    using the k-nearest neighbors for efficiency. Please note, bandwidth selection can 
+    have large effects on performance.
 
     Parameters
     ----------
@@ -41,14 +41,15 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         The bandwidth of the kernel in the y space
 
     ybins : array-like, optional (default = 32)
-        If a scalar, the number of bins in each y dimension resulting in ybins ** ndims bins
+        If a scalar, the number of bins in each y dimension resulting in ybins ** ndims bins.
+
         If an array, expected to be a (n_bins + 1, n_dims) description of bin edges
 
     unoccupied_std_from_mean : float, optional (default = 0.25)
-        The number of standard deviations below the mean to declare a y-bin unvisited
+        The number of standard deviations below the mean to declare a y-bin unvisited.
         Unvisited bins are set to the mean occupancy to avoid strong density results
         in areas with nearly-zero occupancy
-        A smaller value will result in more bins being labeled as unvisited
+        A smaller value will result in more bins being labeled as unvisited.
         If None, the occupancy of the unvisited bins will not be changed
 
     unoccupied_weight : float, optional (default = 2)
@@ -88,8 +89,10 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
     y_log_occupancy : array-like, shape = [n_bins]
         The summed occupancy for each bin in y-space
-
-    See BinnedRegressionMixin for information about bin attributes
+    
+    See Also
+    --------
+    mlneuro.regression.base.BinnedRegressionMixin : Information about bin attributes
     """
 
     def __init__(self, n_neighbors=30, bandwidth_X=1, bandwidth_y=1, ybins=32, unoccupied_std_from_mean=0.20,

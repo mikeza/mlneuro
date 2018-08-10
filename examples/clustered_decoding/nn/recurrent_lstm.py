@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
-from mlneuro.regression import LSTMNN
+from mlneuro.regression import LSTMRegressor
 from mlneuro.multisignal import multi_to_single_signal
 from mlneuro.preprocessing.signals import process_clustered_signal_data
 from mlneuro.preprocessing.stimulus import stimulus_at_times
@@ -31,7 +31,7 @@ T, X = process_clustered_signal_data(data['signal_times'], data['signal_cellids'
                                     center_firing=True)
 
 
-nn = LSTMNN(dropout=0.25, num_epochs=50, verbose=1)
+nn = LSTMRegressor(dropout=0.25, num_epochs=50, verbose=1)
 
 y = stimulus_at_times(data['full_stimulus_times'], data['full_stimulus'], T)
 

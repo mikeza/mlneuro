@@ -68,7 +68,7 @@ def stimulus_at_times_binned_proba(stimulus_times, stimulus_data, temporal_bin_c
         if len(bin_idxs) > 0:
             ret_stimulus[i, :] = occupancy(
                 stimulus_data[bin_idxs, :], bin_edges_from_centers(stimulus_bin_centers),
-                unvisited_threshold=None, **kwargs).flatten()
+                unvisited_threshold=kwargs.pop('unvisited_threshold', None), **kwargs).flatten()
 
     return ret_stimulus if not return_bin_centers else ret_stimulus, stimulus_bin_centers
 

@@ -1,3 +1,5 @@
+"""Cross-validation objects allowing automatic generation of stacked cross-validators, noisy data masking, and cross-validation for binned regression
+"""
 import numpy as np
 
 from sklearn.model_selection import KFold, StratifiedKFold

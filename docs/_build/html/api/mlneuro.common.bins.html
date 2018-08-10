@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.common.bins &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>mlneuro.common.bins</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/mlneuro.common.bins.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mlneuro.common.bins">
+<span id="mlneuro-common-bins"></span><h1>mlneuro.common.bins<a class="headerlink" href="#module-mlneuro.common.bins" title="Permalink to this headline">¶</a></h1>
+<p>Functions for binning data and working with binned data</p>
+<dl class="function">
+<dt id="mlneuro.common.bins.bin_centers_from_edges">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">bin_centers_from_edges</code><span class="sig-paren">(</span><em>bin_edges</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#bin_centers_from_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.bin_centers_from_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the edges of bins as a n_dims length list of arrays of shape (n_bins_dim + 1,)
+find their centers as a list of arrays of shape (n_bins_dim,)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.bin_counts">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">bin_counts</code><span class="sig-paren">(</span><em>bin_centers</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#bin_counts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.bin_counts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.bin_distances">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">bin_distances</code><span class="sig-paren">(</span><em>bin_grid</em>, <em>directional=False</em>, <em>return_squared=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#bin_distances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.bin_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the euclidean distance betwen a set of bins given the bin_grid
+(see linearized_bin_grid)</p>
+<p>n_bins = prod(n_bins_dim)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bin_grid</strong> (<em>an array of n dimensional coordinates of bin interesection centers</em>) – shape (n_bins, n_dims)</li>
+<li><strong>(</strong><strong>=False</strong><strong>)</strong> (<em>return_squared</em>) – so direction is preserved. Returns array shape (n_bins, n_bins, n_dims).</li>
+<li><strong>(</strong><strong>=False</strong><strong>)</strong> – return the squared distance with a sign.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>distances</strong> (<em>an array of distances between bins, should be symmetric about the diagonal</em>) – shape (n_bins, n_bins) (<a href="#id1"><span class="problematic" id="id2">*</span></a>note see directional)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.bin_edges_from_centers">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">bin_edges_from_centers</code><span class="sig-paren">(</span><em>bin_centers</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#bin_edges_from_centers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.bin_edges_from_centers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the centers of bins as a n_dims length list of arrays of shape (n_bins_dim,)
+find their edges as a list of arrays of shape (n_bins_dim + 1,)</p>
+<p>Should handle non-uniform bin distances</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.bin_edges_from_data">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">bin_edges_from_data</code><span class="sig-paren">(</span><em>data</em>, <em>bin_count</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#bin_edges_from_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.bin_edges_from_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a dataset, calculate a set of bin edges for each dimension that
+span the range of the data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_dims</em><em>)</em>) – </li>
+<li><strong>bin_count</strong> (<em>array-like</em><em>, </em><em>the number of bins per dimension. If scalar</em><em>,</em>) – repeated for n_dimensions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>bin_edges</strong> (<em>a list of bin edges shape (n_bin_dim + 1,)</em>)</li>
+<li><strong>bin_count</strong> (<em>a list of bins per dimension</em>)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.bin_edges_from_data_bysize">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">bin_edges_from_data_bysize</code><span class="sig-paren">(</span><em>data</em>, <em>bin_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#bin_edges_from_data_bysize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.bin_edges_from_data_bysize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a dataset, calculate a set of bin edges for each dimension that
+span the range of the data. Each bin will have a size of bin_size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_dims</em><em>)</em>) – </li>
+<li><strong>bin_count</strong> (<em>array-like</em><em>, </em><em>the number of bins per dimension. If scalar</em><em>,</em>) – repeated for n_dimensions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>bin_edges</strong> (<em>a list of bin edges shape (n_bin_dim + 1,)</em>)</li>
+<li><strong>bin_count</strong> (<em>a list of bin counts per dimension</em>)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.binned_data">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">binned_data</code><span class="sig-paren">(</span><em>data</em>, <em>bin_edges</em>, <em>flat=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#binned_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.binned_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the observed bin of the data over time, return the observed bins
+in n-dimensions shape of (n_times, n_dims) or the flattened bin index
+of shape (n_times,)</p>
+<p>Note: np.digitize may be useful.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.binned_data_gaussian">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">binned_data_gaussian</code><span class="sig-paren">(</span><em>data</em>, <em>bin_edges</em>, <em>spatial_sigma=None</em>, <em>temporal_sigma=0.0</em>, <em>flat=True</em>, <em>normalize_samples=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#binned_data_gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.binned_data_gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a dataset to bins, creates a one-hot matrix, then blurs
+with a Gaussian</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_dims</em><em>)</em>) – </li>
+<li><strong>bin_edges</strong> (<em>n_dims length list of arrays shape</em><em> (</em><em>n_bins_dim</em><em>,</em><em>)</em>) – </li>
+<li><strong>spatial_sigma</strong> (<em>array-like float</em><em>, </em><em>shape</em><em> (</em><em>n_dims</em><em>,</em><em>) </em><em>value for the Gaussian</em>) – standard deviation in each dimension. If given a scalar, the same
+value is used across all dimensions. If None, defaults to 5% of the
+range of the dimension</li>
+<li><strong>temporal_sigma</strong> (<em>scalar</em><em>, </em><em>value for the Gaussian standard deviation accross</em>) – data samples not recommended. Unit is in n_samples NOT time since a
+temporal aspect is not given. See _euclidean_dist_to_bin_dist to
+convert a temporal distance into a binned distance (assuming
+constant difference temporal sampling)</li>
+<li><strong>normalize_samples</strong> (<em>boolean</em><em>, </em><em>normalize the result by each time</em>) – </li>
+<li><strong>flat</strong> (<em>bool</em><em>, </em><em>return the result as a flattened array</em><em> (</em><em>see reshape_flat</em><em>)</em>) – </li>
+<li><strong>arguments are passed to the scipy gaussian filter function</strong> (<em>Additional</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.binned_data_onehot">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">binned_data_onehot</code><span class="sig-paren">(</span><em>data</em>, <em>bin_edges</em>, <em>flat=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#binned_data_onehot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.binned_data_onehot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given n-dimensional data over time shape (n_times, n_dims), return
+one-hot matrix of the occupied bin for values at each time step.</p>
+<p>Returns arr of shape of shape (n_times, prod(n_bins_dim))</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.binned_indices_to_masks">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">binned_indices_to_masks</code><span class="sig-paren">(</span><em>arr</em>, <em>indices</em>, <em>idx_value=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#binned_indices_to_masks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.binned_indices_to_masks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.idxs_in_bins">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">idxs_in_bins</code><span class="sig-paren">(</span><em>items_arr</em>, <em>paired_bin_edges</em>, <em>reduced=False</em>, <em>as_mask=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#idxs_in_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.idxs_in_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indices of values in an array that are in each bin specified
+by start and end positions. Assumes items_array is sorted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>items_arr</strong> (<em>(</em><em>n_samples</em><em>,</em><em>) </em><em>sorted items to compare to bins</em>) – </li>
+<li><strong>paired_bin_edges</strong> (<em>(</em><em>n_bins</em><em>, </em><em>2</em><em>) </em><em>start and end of each bin</em>) – </li>
+<li><strong>reduced</strong> (<em>bool</em><em>, </em><em>return a concatenated array of indices in any of the bins</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>bin_item_idxs</strong> (<em>list length n_bins of arrays of indices</em>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p># Retreiving decoding values during bins of interest</p>
+<p>n_times = 1000
+decoding_resolution = 48
+decoding_array = np.ones(n_times, decoding_resolution)
+times_array = np.arange(n_times, 1)             # A list of timestamps
+times_of_interest = [(0,5), (10,15), (20,25)]   # Paired times list
+decoding_of_interest = decoding_array [ idxs_in_bins ( times_array, times_of_interest ) ]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.linearized_bin_grid">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">linearized_bin_grid</code><span class="sig-paren">(</span><em>bin_centers</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#linearized_bin_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.linearized_bin_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the centers of bins as a n_dims length list of arrays of shape (n_bins_dim,)
+find their n-d intersections as a grid of shape (prod(n_bins_dim), n_dims)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.occupancy">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">occupancy</code><span class="sig-paren">(</span><em>data</em>, <em>bin_edges</em>, <em>smooth=True</em>, <em>spatial_sigma=None</em>, <em>normalize=True</em>, <em>unvisited_mode='uniform'</em>, <em>unvisited_threshold=0.00025</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#occupancy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.occupancy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the relative amount of time spent in each data value given
+a continuous data and a set of bin edges</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>smooth</strong> (<em>bool</em><em>, </em><em>apply a gaussian filter to the occupancy histogram</em>) – </li>
+<li><strong>spatial_sigma</strong> (<em>array-like float</em><em>, </em><em>shape</em><em> (</em><em>n_dims</em><em>,</em><em>) </em><em>value for the Gaussian</em>) – standard deviation in each dimension. If given a scalar, the same value
+is used across all dimensions. If None, defaults to 10% of the range of
+the dimension</li>
+<li><strong>normalize</strong> (<em>bool</em><em>, </em><em>return a normalized occupancy</em>) – </li>
+<li><strong>unvisited_mode</strong> (<em>string</em>) – ‘uniform’: set unvisited bins to the mean value of visited bins
+‘nan’: set unvisited bins to nan</li>
+<li><strong>unvisited_threshold</strong> (<em>numerical</em><em>, </em><em>a threshold for what makes a bin unvisited and</em>) – consequently a nan in the occupancy. If given an integer, it is the amount
+of times a bin is occupied. If given a value [0,1) it is the percent time
+spent in the bin relative to a uniform distribution</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.paired_bin_edges">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">paired_bin_edges</code><span class="sig-paren">(</span><em>bin_edges</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#paired_bin_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.paired_bin_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a set of edge pairs such that the limits of each bin is described
+e.g. for one dimensional bin edges [(1,2,3,4)]</p>
+<blockquote>
+<div>the paired bin edges are [[(1,2), (2,3), (3,4)]]</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.reshape_binned">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">reshape_binned</code><span class="sig-paren">(</span><em>x</em>, <em>bin_counts</em>, <em>reflect=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#reshape_binned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.reshape_binned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reshape an array of (n_samples, prod(n_bins_dim)) into (n_samples, n_bins_dim0, n_bins_dim1, …)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mlneuro.common.bins.reshape_flat">
+<code class="descclassname">mlneuro.common.bins.</code><code class="descname">reshape_flat</code><span class="sig-paren">(</span><em>x</em>, <em>bin_counts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/common/bins.html#reshape_flat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.common.bins.reshape_flat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reshape an array of (n_samples, n_bins_dim0, n_bins_dim1, …) into (n_samples, prod(n_bins_dim))</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

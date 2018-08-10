@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
-from mlneuro.regression import BinnedDenseNN
+from mlneuro.regression import DenseNNBinnedRegressor
 from mlneuro.multisignal import multi_to_single_signal
 from mlneuro.preprocessing.signals import process_clustered_signal_data
 from mlneuro.preprocessing.stimulus import stimulus_at_times
@@ -14,6 +14,7 @@ from mlneuro.utils.visuals import n_subplot_grid
 
 DISPLAY_PLOTS = True            # Plot the predicted value in each dimension
 SAVE_TO_FILE = 'example_test'
+STIMULUS_BINS = 32
 
 # Load data
 import os
@@ -31,13 +32,13 @@ T, X = process_clustered_signal_data(data['signal_times'], data['signal_cellids'
                                     flatten_history=True)
 
 
-pipeline = make_pipeline(StandardScaler(), BinnedDenseNN(units=[100, 200, 100, 50], num_epochs=50, dropout=0.45, ybins=32, verbose=1))
+pipeline = make_pipeline(StandardScaler(), DenseNNBinnedRegressor(num_epochs=20, dropout=0.40, ybins=STIMULUS_BINS, verbose=1))
 
 y = stimulus_at_times(data['full_stimulus_times'], data['full_stimulus'], T)
 
 X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, test_size=0.25)
 
-pipeline.fit(X_train, y_train, binneddensenn__validation_split=0.15)
+pipeline.fit(X_train, y_train, densennbinnedregressor__validation_split=0.15)
 y_pred = pipeline.predict_proba(X_test)
 
 # Already single signal but this will sort the arrays quickly
@@ -60,8 +61,8 @@ if DISPLAY_PLOTS:
     fig.show()
 
     plt.figure()
-    plt.plot(nn.model.history.history['loss'])
-    plt.plot(nn.model.history.history['val_loss'])
+    plt.plot(nn.model.model.history.history['loss'])
+    plt.plot(nn.model.model.history.history['val_loss'])
     plt.title('model train vs validation loss')
     plt.ylabel('loss')
     plt.xlabel('epoch')
@@ -72,5 +73,5 @@ if DISPLAY_PLOTS:
 if SAVE_TO_FILE is not None:
     from mlneuro.utils.io import save_array_dict
     save_array_dict(SAVE_TO_FILE, 
-        {'times': T_test, 'estimates': y_pred.reshape(-1, STIMULUS_BINS, STIMULUS_BINS), 'max_estimate': y_predicted, 'bin_centers': ybin_centers, 'test_stimulus': y_test},
+        {'times': T_test, 'estimates': y_pred.reshape(-1, STIMULUS_BINS, STIMULUS_BINS), 'max_estimate': y_predicted, 'bin_centers': nn.ybin_centers, 'test_stimulus': y_test},
         save_type='mat')

@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.regression.bayes &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>mlneuro.regression.bayes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/mlneuro.regression.bayes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mlneuro.regression.bayes">
+<span id="mlneuro-regression-bayes"></span><h1>mlneuro.regression.bayes<a class="headerlink" href="#module-mlneuro.regression.bayes" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="mlneuro.regression.bayes.PoissonBayesBinnedRegressor">
+<em class="property">class </em><code class="descclassname">mlneuro.regression.bayes.</code><code class="descname">PoissonBayesBinnedRegressor</code><span class="sig-paren">(</span><em>ybins=32</em>, <em>encoding_model='quadratic'</em>, <em>model_type='glm'</em>, <em>n_jobs=-1</em>, <em>use_prior=False</em>, <em>nan_unvisited=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/bayes.html#PoissonBayesBinnedRegressor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.bayes.PoissonBayesBinnedRegressor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <a class="reference internal" href="mlneuro.regression.base.html#mlneuro.regression.base.BinnedRegressorMixin" title="mlneuro.regression.base.BinnedRegressorMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.regression.base.BinnedRegressorMixin</span></code></a></p>
+<dl class="method">
+<dt id="mlneuro.regression.bayes.PoissonBayesBinnedRegressor.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>**glm_fit_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/bayes.html#PoissonBayesBinnedRegressor.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.bayes.PoissonBayesBinnedRegressor.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train Naive Bayes Decoder
+:param X: This is the neural training data.</p>
+<blockquote>
+<div>See example file for an example of how to format the neural data correctly</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> (<em>numpy 2d array of shape</em><em> [</em><em>n_samples</em><em>, </em><em>n_outputs</em><em>]</em>) – This is the outputs that are being predicted (training data)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.bayes.PoissonBayesBinnedRegressor.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/bayes.html#PoissonBayesBinnedRegressor.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.bayes.PoissonBayesBinnedRegressor.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict values of y given X</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like of shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The input samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>y</strong> (<em>array of shape = [n_samples, n_dims]</em>) – The center of the highest probability bin for each sample</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.bayes.PoissonBayesBinnedRegressor.predict_log_proba">
+<code class="descname">predict_log_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/bayes.html#PoissonBayesBinnedRegressor.predict_log_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.bayes.PoissonBayesBinnedRegressor.predict_log_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the log-probability of each y bin given X</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like of shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The input samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>log(p(y|X))</strong> (<em>array of shape = [n_samples, n_bins]</em>) – The log conditional probability distribution over the y bins given a sample X</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.bayes.PoissonBayesBinnedRegressor.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/bayes.html#PoissonBayesBinnedRegressor.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.bayes.PoissonBayesBinnedRegressor.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the probability of each y bin given X</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like of shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The input samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>p(y|X)</strong> (<em>array of shape = [n_samples, n_bins]</em>) – The conditional probability distribution over the y bins given a sample X</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

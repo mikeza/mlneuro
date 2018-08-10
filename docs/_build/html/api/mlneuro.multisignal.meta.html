@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.multisignal.meta &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>mlneuro.multisignal.meta</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/mlneuro.multisignal.meta.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mlneuro.multisignal.meta">
+<span id="mlneuro-multisignal-meta"></span><h1>mlneuro.multisignal.meta<a class="headerlink" href="#module-mlneuro.multisignal.meta" title="Permalink to this headline">¶</a></h1>
+<p>Meta-classes that wrap scikit-learn objects to support multisignal data</p>
+<dl class="class">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator">
+<em class="property">class </em><code class="descclassname">mlneuro.multisignal.meta.</code><code class="descname">MultisignalEstimator</code><span class="sig-paren">(</span><em>base_estimator</em>, <em>reduce_predictions=True</em>, <em>filt=None</em>, <em>estimator_params=()</em>, <em>pickle_estimators=False</em>, <em>pickle_results=False</em>, <em>pickler_kwargs={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <a class="reference internal" href="mlneuro.multisignal.base.html#mlneuro.multisignal.base.MultisignalMixin" title="mlneuro.multisignal.base.MultisignalMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.multisignal.base.MultisignalMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.MetaEstimatorMixin</span></code></p>
+<p>Estimator to wrap others enabling multisignal analysis in which a base estimator
+fits/transforms/predicts a list-item. On prediction, if given timestamps,
+the results are combined. If given a filter and sample times, the combined results
+are filtered. Supports writing estimates to disk for memory saving but
+with increased computation time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>base_estimator</strong> (<em>object</em><em>, </em><em>optional</em><em> (</em><em>default=None</em><em>)</em>) – The base estimator from which the multisignal estimator is built.</li>
+<li><strong>estimator_params</strong> (<em>list of strings</em>) – The list of attributes to use as parameters when instantiating a
+new base estimator. If none are given, default parameters are used.</li>
+<li><strong>pickle_estimators</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>default=False</em><em>)</em>) – Save the estimator to the disk after fitting the signal so</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.base_estimator_">
+<code class="descname">base_estimator_</code><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.base_estimator_" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>estimator</em> – The base estimator from which the multisignal estimator is grown.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.estimators_">
+<code class="descname">estimators_</code><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.estimators_" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of estimators</em> – The collection of fitted base estimators.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>Xs</em>, <em>ys</em>, <em>Ts=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.fit_predict">
+<code class="descname">fit_predict</code><span class="sig-paren">(</span><em>Xs_train</em>, <em>ys_train</em>, <em>Xs_test</em>, <em>*args</em>, <em>Ts_test=None</em>, <em>filter_times=None</em>, <em>discard_estimators=True</em>, <em>method='predict'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.fit_predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.fit_predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.fit_transform">
+<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>Xs</em>, <em>ys=None</em>, <em>Ts=None</em>, <em>discard_estimators=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>Xs</em>, <em>*args</em>, <em>Ts=None</em>, <em>filter_times=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.predict_log_proba">
+<code class="descname">predict_log_proba</code><span class="sig-paren">(</span><em>Xs</em>, <em>*args</em>, <em>Ts=None</em>, <em>filter_times=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.predict_log_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.predict_log_proba" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>Xs</em>, <em>*args</em>, <em>Ts=None</em>, <em>filter_times=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalEstimator.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>Xs</em>, <em>Ts=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalEstimator.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalEstimator.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mlneuro.multisignal.meta.MultisignalScorer">
+<em class="property">class </em><code class="descclassname">mlneuro.multisignal.meta.</code><code class="descname">MultisignalScorer</code><span class="sig-paren">(</span><em>base_scorer</em>, <em>aggr_method=&lt;function mean&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalScorer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalScorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlneuro.multisignal.base.html#mlneuro.multisignal.base.MultisignalMixin" title="mlneuro.multisignal.base.MultisignalMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.multisignal.base.MultisignalMixin</span></code></a></p>
+<p>Meta scorer that takes multisignal estimators and data and returns
+an aggregate score</p>
+<p>Filtering before scoring is not supported</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>base_scorer</strong> (<em>object</em>) – sklearn callable scorer</li>
+<li><strong>aggr_method</strong> (<em>callable</em><em>, </em><em>array-func</em><em> (</em><em>optional=np.mean</em><em>)</em>) – The method to reduce data between signals. If ‘raw’, the scores will be returned per-signal
+mean, median and std can also be as strings and are stored in the class.
+Otherwise, if callable, the function will be called to reduce the signal scores</li>
+<li><strong>arguments</strong> (<em>additional</em>) – both additional arguments and keyword arguments will be collected
+and passed to the base_cv object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="mlneuro.multisignal.meta.MultisignalSplit">
+<em class="property">class </em><code class="descclassname">mlneuro.multisignal.meta.</code><code class="descname">MultisignalSplit</code><span class="sig-paren">(</span><em>base_cv</em>, <em>*args</em>, <em>signal_arrays=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalSplit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalSplit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlneuro.multisignal.base.html#mlneuro.multisignal.base.MultisignalMixin" title="mlneuro.multisignal.base.MultisignalMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.multisignal.base.MultisignalMixin</span></code></a></p>
+<p>Meta cross validator that takes multisignal (list) inputs and
+applies a base cross validator to each list item.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>base_cv</strong> (<em>type</em>) – sklearn cross validator implementing split. If given an object,
+a new instance will not be created per signal and no collected
+args will be passed to it.</li>
+<li><strong>signal_arrays</strong> (<em>dictionary</em>) – <p>arrays to split on construction of sub cross-validator
+e.g.</p>
+<blockquote>
+<div>signal_arrays={‘signal_based_data’: [arr1, arr2, arr3]}</div></blockquote>
+<p>will pass the keyword signal_based_data=arr1 to signal1 and
+signal_based_data=arr2 to arr2, …</p>
+</li>
+<li><strong>arguments</strong> (<em>additional</em>) – both additional arguments and keyword arguments will be collected
+and passed to the base_cv object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalSplit.get_n_splits">
+<code class="descname">get_n_splits</code><span class="sig-paren">(</span><em>X=None</em>, <em>y=None</em>, <em>groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalSplit.get_n_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalSplit.get_n_splits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.multisignal.meta.MultisignalSplit.split">
+<code class="descname">split</code><span class="sig-paren">(</span><em>Xs</em>, <em>ys=None</em>, <em>groupss=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/meta.html#MultisignalSplit.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.meta.MultisignalSplit.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that pulls from each of the per signal
+base_cvs simultaneously and returns a list of outputs from each
+length of n_signals for training and test indices</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

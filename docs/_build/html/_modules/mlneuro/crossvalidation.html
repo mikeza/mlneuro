@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.crossvalidation &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mlneuro.crossvalidation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mlneuro.crossvalidation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Cross-validation objects allowing automatic generation of stacked cross-validators, noisy data masking, and cross-validation for binned regression</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">KFold</span><span class="p">,</span> <span class="n">StratifiedKFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">is_classifier</span>
+
+<span class="kn">from</span> <span class="nn">.multisignal</span> <span class="k">import</span> <span class="n">MultisignalSplit</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="generate_crossvalidator"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.generate_crossvalidator">[docs]</a><span class="k">def</span> <span class="nf">generate_crossvalidator</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_splits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">training_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit_training_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a cross-validation object which splits data into training and test sets. This is a general</span>
+<span class="sd">    function which simplifies the chaining of several cross-validator objects to extend the base cross-validators</span>
+<span class="sd">    available in sklearn.</span>
+
+<span class="sd">    Output crossvalidators:</span>
+<span class="sd">        KFold or StratifiedKFold if regression or classification is being done respectively</span>
+<span class="sd">        TrainOnSubsetCV if the training size is to be reduced for each fold</span>
+<span class="sd">        MaskedTrainingCV if the training set has noise in it that shouldn&#39;t be used</span>
+<span class="sd">        MultisignalCV if X is a list or tuple and needs each list-item to be split separately</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">is_multisignal</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">y_dtype</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">is_multisignal</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">y_dtype</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span> <span class="k">if</span> <span class="n">is_classifier</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span> <span class="k">else</span> <span class="n">KFold</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">base</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="n">StratifiedKFold</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Class based cross-validator is being generated but y data type is not integer&#39;</span><span class="p">)</span>
+
+    <span class="n">base_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">limit_training_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">limit_training_size</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">limit_training_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">limit_training_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                    <span class="n">max_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">limit_training_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                    <span class="n">max_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="n">min_size</span><span class="o">=</span><span class="n">limit_training_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;Unknown length for argument `limit_training_size`, it will be ignored and defaults will be used&#39;</span><span class="p">)</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">TrainOnSubsetCV</span><span class="p">(</span><span class="n">base_cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="o">**</span><span class="n">base_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">base_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">training_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_multisignal</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">training_mask</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">training_mask</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span> 
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Multisignal data must be given a multisignal training mask&#39;</span><span class="p">)</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="n">MultisignalSplit</span><span class="p">(</span><span class="n">MaskedTrainingCV</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">signal_arrays</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">train_mask</span><span class="o">=</span><span class="n">training_mask</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="n">MaskedTrainingCV</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="n">train_mask</span><span class="o">=</span><span class="n">training_mask</span><span class="p">,</span> <span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
+            <span class="n">base_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">is_multisignal</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="n">MultisignalSplit</span><span class="p">):</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">MultisignalSplit</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
+
+    <span class="c1"># Ensure the CV is initialized</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span><span class="p">(</span><span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cv</span></div>
+
+
+<div class="viewcode-block" id="MaskedTrainingCV"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.MaskedTrainingCV">[docs]</a><span class="k">class</span> <span class="nc">MaskedTrainingCV</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Meta cross validator that applies a mask to the training set to limit the</span>
+<span class="sd">    training to instances that are meaningful but still tests on all values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_cv</span><span class="p">,</span> <span class="n">train_mask</span><span class="p">,</span> <span class="n">cv_returns_idxs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_mask</span> <span class="o">=</span> <span class="n">train_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv_returns_idxs</span> <span class="o">=</span> <span class="n">cv_returns_idxs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span> <span class="o">=</span> <span class="n">base_cv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_cv</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_make_cv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cv_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span>
+
+<div class="viewcode-block" id="MaskedTrainingCV.split"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.MaskedTrainingCV.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_returns_idxs</span><span class="p">:</span>
+                <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_mask</span><span class="p">[</span><span class="n">train</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_mask</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span></div>
+
+<div class="viewcode-block" id="MaskedTrainingCV.get_n_splits"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.MaskedTrainingCV.get_n_splits">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;n_splits&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_kwargs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">n_splits</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_cv</span><span class="p">()</span><span class="o">.</span><span class="n">get_n_splits</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="o">.</span><span class="n">get_n_splits</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TrainOnSubsetCV"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.TrainOnSubsetCV">[docs]</a><span class="k">class</span> <span class="nc">TrainOnSubsetCV</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Meta cross validator that limits the size of the training set to a fractional amount</span>
+<span class="sd">    with upper and lower limits</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_cv</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">=</span> <span class="n">train_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">=</span> <span class="n">max_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_size</span> <span class="o">=</span> <span class="n">min_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span> <span class="o">=</span> <span class="n">base_cv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_cv</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_make_cv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cv_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span>
+
+<div class="viewcode-block" id="TrainOnSubsetCV.split"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.TrainOnSubsetCV.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+            <span class="n">train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_train_size</span><span class="p">(</span><span class="n">train</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_train_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">size</span>
+
+<div class="viewcode-block" id="TrainOnSubsetCV.get_n_splits"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.TrainOnSubsetCV.get_n_splits">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;n_splits&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv_kwargs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">n_splits</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_cv</span><span class="p">()</span><span class="o">.</span><span class="n">get_n_splits</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_cv</span><span class="o">.</span><span class="n">get_n_splits</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span></div></div>
+
+
+
+<span class="c1">### Converted SKLearn Functions</span>
+
+
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">clone</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">MetaEstimatorMixin</span><span class="p">,</span> <span class="n">is_classifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.metaestimators</span> <span class="k">import</span> <span class="n">_safe_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection._split</span> <span class="k">import</span> <span class="n">BaseCrossValidator</span><span class="p">,</span> <span class="n">check_cv</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">indexable</span><span class="p">,</span> <span class="n">check_random_state</span><span class="p">,</span> <span class="n">safe_indexing</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.deprecation</span> <span class="k">import</span> <span class="n">DeprecationDict</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">_is_arraylike</span><span class="p">,</span> <span class="n">_num_samples</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.metaestimators</span> <span class="k">import</span> <span class="n">_safe_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.externals.joblib</span> <span class="k">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+<span class="kn">from</span> <span class="nn">sklearn.externals.joblib.logger</span> <span class="k">import</span> <span class="n">short_format_time</span>
+<span class="kn">from</span> <span class="nn">sklearn.externals.six.moves</span> <span class="k">import</span> <span class="nb">zip</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.scorer</span> <span class="k">import</span> <span class="n">check_scoring</span><span class="p">,</span> <span class="n">_check_multimetric_scoring</span>
+<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="k">import</span> <span class="n">FitFailedWarning</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection._split</span> <span class="k">import</span> <span class="n">check_cv</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection._validation</span> <span class="k">import</span> <span class="n">_check_is_permutation</span><span class="p">,</span> <span class="n">_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+
+<div class="viewcode-block" id="cross_val_predict"><a class="viewcode-back" href="../../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.cross_val_predict">[docs]</a><span class="k">def</span> <span class="nf">cross_val_predict</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fit_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre_dispatch</span><span class="o">=</span><span class="s1">&#39;2*n_jobs&#39;</span><span class="p">,</span>
+                      <span class="n">method</span><span class="o">=</span><span class="s1">&#39;predict&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Please see sklearn for documenation</span>
+<span class="sd">    This has only been modified so binned regressors can return probabilites</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span> <span class="o">=</span> <span class="n">indexable</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
+
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">check_cv</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">is_classifier</span><span class="p">(</span><span class="n">estimator</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;decision_function&#39;</span><span class="p">,</span> <span class="s1">&#39;predict_proba&#39;</span><span class="p">,</span> <span class="s1">&#39;predict_log_proba&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">is_classifier</span><span class="p">(</span><span class="n">estimator</span><span class="p">):</span>
+        <span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># We clone the estimator to make sure that all the folds are</span>
+    <span class="c1"># independent, and that it is pickle-able.</span>
+    <span class="n">parallel</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                        <span class="n">pre_dispatch</span><span class="o">=</span><span class="n">pre_dispatch</span><span class="p">)</span>
+    <span class="n">prediction_blocks</span> <span class="o">=</span> <span class="n">parallel</span><span class="p">(</span><span class="n">delayed</span><span class="p">(</span><span class="n">_fit_and_predict</span><span class="p">)(</span>
+        <span class="n">clone</span><span class="p">(</span><span class="n">estimator</span><span class="p">),</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">fit_params</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">))</span>
+
+    <span class="c1"># Concatenate the predictions</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="p">[</span><span class="n">pred_block_i</span> <span class="k">for</span> <span class="n">pred_block_i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">prediction_blocks</span><span class="p">]</span>
+    <span class="n">test_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">indices_i</span>
+                                   <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">indices_i</span> <span class="ow">in</span> <span class="n">prediction_blocks</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_is_permutation</span><span class="p">(</span><span class="n">test_indices</span><span class="p">,</span> <span class="n">_num_samples</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;cross_val_predict only works for partitions&#39;</span><span class="p">)</span>
+
+    <span class="n">inv_test_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_indices</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">inv_test_indices</span><span class="p">[</span><span class="n">test_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_indices</span><span class="p">))</span>
+
+    <span class="c1"># Check for sparse predictions</span>
+    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">predictions</span><span class="p">[</span><span class="n">inv_test_indices</span><span class="p">]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_fit_and_predict</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">fit_params</span><span class="p">,</span>
+                     <span class="n">method</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Please see sklearn for documenation</span>
+<span class="sd">    This has only been modified so binned regressors can return probabilites</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Adjust length of sample weights</span>
+    <span class="n">fit_params</span> <span class="o">=</span> <span class="n">fit_params</span> <span class="k">if</span> <span class="n">fit_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="n">fit_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="n">_index_param_value</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">train</span><span class="p">))</span>
+                      <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fit_params</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">_safe_split</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span>
+    <span class="n">X_test</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_safe_split</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">y_train</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;decision_function&#39;</span><span class="p">,</span> <span class="s1">&#39;predict_proba&#39;</span><span class="p">,</span> <span class="s1">&#39;predict_log_proba&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">is_classifier</span><span class="p">(</span><span class="n">estimator</span><span class="p">):</span>
+        <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_classes</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">):</span>
+            <span class="n">recommendation</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;To fix this, use a cross-validation &#39;</span>
+                <span class="s1">&#39;technique resulting in properly &#39;</span>
+                <span class="s1">&#39;stratified folds&#39;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Number of classes in training fold (</span><span class="si">{}</span><span class="s1">) does &#39;</span>
+                          <span class="s1">&#39;not match total number of classes (</span><span class="si">{}</span><span class="s1">). &#39;</span>
+                          <span class="s1">&#39;Results may not be appropriate for your use case. &#39;</span>
+                          <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">),</span>
+                                      <span class="n">n_classes</span><span class="p">,</span> <span class="n">recommendation</span><span class="p">),</span>
+                          <span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;decision_function&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span>
+                        <span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">)):</span>
+                    <span class="c1"># This handles the case when the shape of predictions</span>
+                    <span class="c1"># does not match the number of classes used to train</span>
+                    <span class="c1"># it with. This case is found when sklearn.svm.SVC is</span>
+                    <span class="c1"># set to `decision_function_shape=&#39;ovo&#39;`.</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Output shape </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}</span><span class="s1"> does not match &#39;</span>
+                                     <span class="s1">&#39;number of classes (</span><span class="si">{}</span><span class="s1">) in fold. &#39;</span>
+                                     <span class="s1">&#39;Irregular decision_function outputs &#39;</span>
+                                     <span class="s1">&#39;are not currently supported by &#39;</span>
+                                     <span class="s1">&#39;cross_val_predict&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
+                                        <span class="nb">len</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">),</span>
+                                        <span class="n">recommendation</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># In this special case, `predictions` contains a 1D array.</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only </span><span class="si">{}</span><span class="s1"> class/es in training fold, this &#39;</span>
+                                     <span class="s1">&#39;is not supported for decision_function &#39;</span>
+                                     <span class="s1">&#39;with imbalanced folds. </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="nb">len</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">),</span>
+                                        <span class="n">recommendation</span><span class="p">))</span>
+
+            <span class="n">float_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+            <span class="n">default_values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;decision_function&#39;</span><span class="p">:</span> <span class="n">float_min</span><span class="p">,</span>
+                              <span class="s1">&#39;predict_log_proba&#39;</span><span class="p">:</span> <span class="n">float_min</span><span class="p">,</span>
+                              <span class="s1">&#39;predict_proba&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="n">predictions_for_all_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">_num_samples</span><span class="p">(</span><span class="n">predictions</span><span class="p">),</span>
+                                                   <span class="n">n_classes</span><span class="p">),</span>
+                                                  <span class="n">default_values</span><span class="p">[</span><span class="n">method</span><span class="p">])</span>
+            <span class="n">predictions_for_all_classes</span><span class="p">[:,</span> <span class="n">estimator</span><span class="o">.</span><span class="n">classes_</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions_for_all_classes</span>
+    <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">test</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

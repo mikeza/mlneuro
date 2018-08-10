@@ -95,8 +95,8 @@ y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 
 
 # Filter?
-filt = TransitionInformedBayesian(transition_obs=np.hstack([stimulus_times.reshape(-1, 1), stimulus_data]), bin_edges=pipeline.ybin_edges, transition_model='indiscriminate')
-T_filt, (y_pred_filt) = filter_at(filt, RESOLUTION, T_test, y_pred) 
+filt = TransitionInformedBayesian(transition_obs=np.hstack([stimulus_times.reshape(-1, 1), stimulus_data]), bin_edges=pipeline.ybin_edges, transition_model='directional', recursive_update_prop=0.75)
+y_pred_filt = filt.fit(T_test, y_pred).predict()
 y_pred_filt /= np.sum(y_pred_filt, axis=1)[:, np.newaxis]
 y_predicted_filt = ybin_grid[np.argmax(y_pred_filt, axis=1)]
 
@@ -105,7 +105,7 @@ if DISPLAY_PLOTS:
     for dim, ax in enumerate(axes):
         ax.plot(T_test, y_test[:, dim])
         ax.plot(T_test, y_predicted[:, dim])
-        ax.plot(T_filt, y_predicted_filt[:, dim])
+        ax.plot(T_test, y_predicted_filt[:, dim])
         ax.set_title('y test (blue) vs predicted (orange) dim={}'.format(dim))
 
     fig.show()

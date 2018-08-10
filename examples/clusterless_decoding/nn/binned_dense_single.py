@@ -50,7 +50,7 @@ X = X[idxs_keep, :][:, [0,1,2,3]]
 y = y[idxs_keep, :]
 
 pipeline = make_pipeline(StandardScaler(),
-                        DenseNNRegressor(verbose=1))
+                         DenseNNRegressor(verbose=1))
                          # DenseNNBinnedRegressor(units=[400,200], num_epochs=25, dropout=0.22, ybins=STIMULUS_BINS, optimizer='adam', verbose=1))
 
 X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, test_size=0.25)

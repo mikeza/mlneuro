@@ -1,0 +1,574 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.regression.kde &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>mlneuro.regression.kde</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mlneuro.regression.kde</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">numba</span> <span class="k">import</span> <span class="n">jit</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="k">import</span> <span class="n">logsumexp</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_X_y</span><span class="p">,</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_is_fitted</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">BallTree</span><span class="p">,</span> <span class="n">KDTree</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">BinnedRegressorMixin</span>
+<span class="kn">from</span> <span class="nn">..utils.arrayfuncs</span> <span class="k">import</span> <span class="n">atleast_2d</span>
+<span class="kn">from</span> <span class="nn">..utils.parallel</span> <span class="k">import</span> <span class="n">available_cpu_count</span><span class="p">,</span> <span class="n">spawn_threads</span>
+<span class="kn">from</span> <span class="nn">..utils.logging</span> <span class="k">import</span> <span class="n">LoggingMixin</span>
+<span class="kn">from</span> <span class="nn">..common.math</span> <span class="k">import</span> <span class="n">_gaussian_log_pdf</span><span class="p">,</span> <span class="n">_gaussian_log_pdf_norm</span><span class="p">,</span> <span class="n">_gaussian_pdf</span><span class="p">,</span> <span class="n">logdotexp</span><span class="p">,</span> <span class="n">tiny_epsilon</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Conditional import of the optional requirements</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">bufferkdtree</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;bufferkdtree not found. You need to install the package to use the GPU enabled KDE tree&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BivariateKernelDensity"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BivariateKernelDensity">[docs]</a><span class="k">class</span> <span class="nc">BivariateKernelDensity</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">BinnedRegressorMixin</span><span class="p">,</span> <span class="n">LoggingMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Conditional Kernel Density Estimator</span>
+<span class="sd">    Estimates the conditional probability of y given X by kernel density estimation</span>
+<span class="sd">    using the k-nearest neighbors for efficiency. Please note, bandwidth selection can </span>
+<span class="sd">    have large effects on performance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    k : int, optional (default = 30)</span>
+<span class="sd">        The number of training neighbors to use for each test point</span>
+
+<span class="sd">    bandwidth_X : float, optional (default = 1)</span>
+<span class="sd">        The bandwidth of the kernel in the X space</span>
+
+<span class="sd">    bandwidth_y : float, optional (default = 1)</span>
+<span class="sd">        The bandwidth of the kernel in the y space</span>
+
+<span class="sd">    ybins : array-like, optional (default = 32)</span>
+<span class="sd">        If a scalar, the number of bins in each y dimension resulting in ybins ** ndims bins.</span>
+
+<span class="sd">        If an array, expected to be a (n_bins + 1, n_dims) description of bin edges</span>
+
+<span class="sd">    unoccupied_std_from_mean : float, optional (default = 0.25)</span>
+<span class="sd">        The number of standard deviations below the mean to declare a y-bin unvisited.</span>
+<span class="sd">        Unvisited bins are set to the mean occupancy to avoid strong density results</span>
+<span class="sd">        in areas with nearly-zero occupancy</span>
+<span class="sd">        A smaller value will result in more bins being labeled as unvisited.</span>
+<span class="sd">        If None, the occupancy of the unvisited bins will not be changed</span>
+
+<span class="sd">    unoccupied_weight : float, optional (default = 2)</span>
+<span class="sd">        The multiplier for the mean when assigning value to unvisisted bins</span>
+<span class="sd">        A higher value will result in unvisisted bins having a lower density estimate</span>
+
+<span class="sd">    tree_backend : object, string optional (default = &#39;cpu&#39;)</span>
+<span class="sd">        A tree object for the nearest neighbor search. Must support fitting/creation</span>
+<span class="sd">        via init and a query function. </span>
+
+<span class="sd">        Or a string, specifying:</span>
+<span class="sd">            &#39;ball&#39;: Uses the BallTree from sklearn</span>
+<span class="sd">            &#39;kd&#39;:   Uses the KDTree from sklearn</span>
+<span class="sd">            &#39;gpu&#39;:  Uses the GPU enabled BufferKDTree </span>
+<span class="sd">            &#39;auto&#39;: Selects the best option based on data dimensionality and size</span>
+
+<span class="sd">        Suggested tree objects:</span>
+<span class="sd">            sklearn.neighbors.BallTree : fast tree for high dimensional data</span>
+<span class="sd">            sklearn.neighbors.KDTree : fast tree for low dimensional data</span>
+<span class="sd">            sklneuro.estimators.kde.BufferKDTreeWrapper: supplied as a wrapper to the bufferkdtree package</span>
+<span class="sd">                for GPU support</span>
+
+<span class="sd">    tree_build_args : dict, optional (default = {})</span>
+<span class="sd">        Additional keyword arguments for the tree __init__ function</span>
+
+<span class="sd">    n_jobs : int, optional (default = -1)</span>
+<span class="sd">        The number of threads to use for density estimation.</span>
+<span class="sd">        -1 uses all available cpus</span>
+
+<span class="sd">    limit_memory_use : bool, optional (default = False)</span>
+<span class="sd">        Will avoid... future</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_log_densities : array-like, shape = [n_bins, n_training_samples]</span>
+<span class="sd">        The y-space density estimate for each training samples</span>
+
+<span class="sd">    y_log_occupancy : array-like, shape = [n_bins]</span>
+<span class="sd">        The summed occupancy for each bin in y-space</span>
+<span class="sd">    </span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mlneuro.regression.base.BinnedRegressionMixin : Information about bin attributes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">bandwidth_X</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bandwidth_y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ybins</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">unoccupied_std_from_mean</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>
+                <span class="n">unoccupied_weight</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">tree_backend</span><span class="o">=</span><span class="s1">&#39;ball&#39;</span><span class="p">,</span> <span class="n">tree_build_args</span><span class="o">=</span><span class="p">{},</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">limit_memory_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">logger_level</span><span class="o">=</span><span class="s1">&#39;notset&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ybins</span> <span class="o">=</span> <span class="n">ybins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_X</span> <span class="o">=</span> <span class="n">bandwidth_X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_y</span> <span class="o">=</span> <span class="n">bandwidth_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unoccupied_std_from_mean</span> <span class="o">=</span> <span class="n">unoccupied_std_from_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unoccupied_weight</span> <span class="o">=</span> <span class="n">unoccupied_weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span> <span class="o">=</span> <span class="n">tree_backend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_build_args</span> <span class="o">=</span> <span class="n">tree_build_args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit_memory_use</span> <span class="o">=</span> <span class="n">limit_memory_use</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger_level</span> <span class="o">=</span> <span class="n">logger_level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_logger_level</span><span class="p">(</span><span class="n">logger_level</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_ybins_from_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bin_param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">bin_param</span><span class="p">):</span> <span class="c1"># bin count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_ybins</span><span class="p">(</span><span class="n">y_data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">ybin_count</span><span class="o">=</span><span class="n">bin_param</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>                  <span class="c1"># bin edges</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_param</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;If KDCE.bin_param is not a scalar, the number of rows must&#39;</span>
+                                 <span class="s1">&#39;be equal to the number y dimensions&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ybin_edges</span> <span class="o">=</span> <span class="n">bin_param</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_ybins</span><span class="p">(</span><span class="n">y_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ybin_auto</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_correct_ybin_occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># See parameter in class description</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoccupied_std_from_mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Move to at true probability distribution</span>
+            <span class="n">y_occupancy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_log_occupancy</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_log_occupancy</span><span class="p">))</span>
+            <span class="n">y_occupancy</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y_occupancy</span><span class="p">)</span>
+            <span class="n">unoccupied_idxs</span> <span class="o">=</span> <span class="n">y_occupancy</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_occupancy</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoccupied_std_from_mean</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y_occupancy</span><span class="p">))</span>
+            <span class="n">y_occupancy</span><span class="p">[</span><span class="n">unoccupied_idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_occupancy</span><span class="p">[</span><span class="o">~</span><span class="n">unoccupied_idxs</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoccupied_weight</span>
+            <span class="c1"># Return to log-space</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_log_occupancy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y_occupancy</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_y_densities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">partial</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">ybin_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">_inner_worker</span><span class="p">(</span><span class="n">ybin_grid</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_log_densities</span><span class="p">,</span> <span class="n">bandwidth_y</span><span class="p">,</span> <span class="n">i_start</span><span class="p">,</span> <span class="n">i_end</span><span class="p">):</span>
+                <span class="n">y_log_densities</span><span class="p">[:,</span> <span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">_gaussian_log_pdf</span><span class="p">(</span><span class="n">ybin_grid</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ybin_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">mean</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span><span class="p">,</span> <span class="p">:],</span><span class="n">std_deviation</span><span class="o">=</span><span class="n">bandwidth_y</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">n_splits</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">100000</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_memory_use</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span>
+            <span class="n">spawn_threads</span><span class="p">(</span><span class="n">n_splits</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">_inner_worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ybin_grid</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_y</span><span class="p">),</span> <span class="n">sequential</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">limit_memory_use</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span> <span class="o">=</span> <span class="n">_gaussian_log_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ybin_grid</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">mean</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+                    <span class="n">std_deviation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_y</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span> <span class="o">+=</span> <span class="n">_gaussian_log_pdf_norm</span><span class="p">(</span><span class="n">n_dims</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">std_deviation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_log_occupancy</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_select_tree_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">BallTree</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">data_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">30000</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">BufferKDTreeWrapper</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">data_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">BallTree</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">KDTree</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;kd&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">KDTree</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;ball&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">BallTree</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">=</span> <span class="n">BufferKDTreeWrapper</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown tree backend setting </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown tree backend setting of type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_backend</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Selected tree backend </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span><span class="p">))</span>
+
+<div class="viewcode-block" id="BivariateKernelDensity.fit"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BivariateKernelDensity.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the kernel density estimator by calculating y-space density </span>
+<span class="sd">        for each X point and constructing the nearest-neighbor tree</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like, shape = [n_samples, n_features]</span>
+<span class="sd">            The training input samples.</span>
+<span class="sd">        y : array-like, shape = [n_samples, n_dims]</span>
+<span class="sd">            The target values. Will be binned according to self.ybins.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : object</span>
+<span class="sd">            Returns self.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">multi_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">y_numeric</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">warn_on_dtype</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_select_tree_backend</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_ybins_from_param</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ybins</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_y_densities</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_correct_ybin_occupancy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_memory_use</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">==</span> <span class="n">BufferKDTreeWrapper</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t fit the tree now since the bufferkdtree is not pickleable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span> <span class="o">=</span> <span class="n">X</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Attempting to save memory by not fitting the tree until predict&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X_train_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_build_args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="BivariateKernelDensity.predict"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BivariateKernelDensity.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predict values of y given X</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape = [n_samples, n_features]</span>
+<span class="sd">            The input samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y : array of shape = [n_samples, n_dims]</span>
+<span class="sd">            The center of the highest probability bin for each sample</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ybin_grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="BivariateKernelDensity.predict_proba"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BivariateKernelDensity.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predict the probability of each y bin given X</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape = [n_samples, n_features]</span>
+<span class="sd">            The input samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Xy_densities : array of shape = [n_samples, n_bins]</span>
+<span class="sd">            The conditional probability distribution over the y bins given a sample X</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Xy_densities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_log_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">Xy_densities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Xy_densities</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Xy_densities</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+        <span class="n">Xy_densities</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Xy_densities</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Xy_densities</span></div>
+
+<div class="viewcode-block" id="BivariateKernelDensity.predict_log_proba"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BivariateKernelDensity.predict_log_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_log_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predict the log-probability of each y bin given X</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like of shape = [n_samples, n_features]</span>
+<span class="sd">            The input samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Xy_densities : array of shape = [n_samples, n_bins]</span>
+<span class="sd">            The conditional log-probability for each y bin given a sample X</span>
+
+<span class="sd">            See BinnedRegressionMixin.ybin_centers and ybin_grid for </span>
+<span class="sd">            the relationship of the binned output to the original input</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_memory_use</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">==</span> <span class="n">BufferKDTreeWrapper</span><span class="p">:</span>
+            <span class="c1"># Now fit the training tree when limiting memory use</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X_train_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_build_args</span><span class="p">)</span>
+
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;y_log_densities&#39;</span><span class="p">,</span> <span class="s1">&#39;y_log_occupancy&#39;</span><span class="p">])</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train_tree</span><span class="o">.</span><span class="n">get_arrays</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Negative or zero valued n_neighbors will do all neighbors</span>
+        <span class="c1"># Ensure the number of neighbors isn&#39;t greater than the size of X_train</span>
+        <span class="c1"># If X_test is sufficiently large, use the dualtree query algorithm</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">&lt;</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">neighbor_dists</span><span class="p">,</span> <span class="n">neighbor_idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train_tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dualtree</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">20000</span><span class="p">)</span>
+
+        <span class="n">Xy_densities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ybin_counts_flat_</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_memory_use</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_backend_</span> <span class="o">==</span> <span class="n">BufferKDTreeWrapper</span><span class="p">:</span>
+            <span class="c1"># And... discard the tree when limiting memory use</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X_train_tree</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_compiled_worker_neighbors</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">bandwidth_X</span><span class="p">,</span> <span class="n">neighbor_dists</span><span class="p">,</span> <span class="n">neighbor_idxs</span><span class="p">,</span>
+                             <span class="n">y_log_densities</span><span class="p">,</span> <span class="n">y_train_log_occupancy</span><span class="p">,</span>
+                             <span class="n">Xy_densities</span><span class="p">,</span> <span class="n">i_start</span><span class="p">,</span> <span class="n">i_end</span><span class="p">):</span>
+
+            <span class="n">n_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bandwidth_X</span><span class="p">)</span>
+            <span class="n">pdf_norm</span> <span class="o">=</span> <span class="n">_gaussian_log_pdf_norm</span><span class="p">(</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">bandwidth_X</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i_start</span><span class="p">,</span> <span class="n">i_end</span><span class="p">):</span>
+                <span class="n">X_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_gaussian_log_pdf</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">mean</span><span class="o">=</span><span class="n">X_train</span><span class="p">[</span><span class="n">neighbor_idxs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">:],</span>
+                                <span class="n">std_deviation</span><span class="o">=</span><span class="n">bandwidth_X</span><span class="p">)</span> <span class="o">+</span> <span class="n">pdf_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">Xy_density</span> <span class="o">=</span> <span class="n">logdotexp</span><span class="p">(</span><span class="n">y_log_densities</span><span class="p">[:,</span> <span class="n">neighbor_idxs</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">X_density</span><span class="p">)</span>
+                <span class="n">Xy_densities</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Xy_density</span> <span class="o">-</span> <span class="n">y_train_log_occupancy</span>
+
+        <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_compiled_worker_all</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">bandwidth_X</span><span class="p">,</span>
+                             <span class="n">y_log_densities</span><span class="p">,</span> <span class="n">y_train_log_occupancy</span><span class="p">,</span>
+                             <span class="n">Xy_densities</span><span class="p">,</span> <span class="n">i_start</span><span class="p">,</span> <span class="n">i_end</span><span class="p">):</span>
+
+            <span class="n">n_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bandwidth_X</span><span class="p">)</span>
+            <span class="n">pdf_norm</span> <span class="o">=</span> <span class="n">_gaussian_log_pdf_norm</span><span class="p">(</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">bandwidth_X</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i_start</span><span class="p">,</span> <span class="n">i_end</span><span class="p">):</span>
+                <span class="n">X_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_gaussian_log_pdf</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">mean</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
+                                <span class="n">std_deviation</span><span class="o">=</span><span class="n">bandwidth_X</span><span class="p">)</span> <span class="o">+</span> <span class="n">pdf_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">Xy_density</span> <span class="o">=</span> <span class="n">logdotexp</span><span class="p">(</span><span class="n">y_log_densities</span><span class="p">,</span> <span class="n">X_density</span><span class="p">)</span>
+                <span class="n">Xy_densities</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Xy_density</span> <span class="o">-</span> <span class="n">y_train_log_occupancy</span>
+
+        <span class="c1"># Launch the specified number of threads with the worker thread for k-nearest</span>
+        <span class="c1">#   or all points estimation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">&lt;</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">spawn_threads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">_compiled_worker_neighbors</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_X</span><span class="p">),</span> <span class="n">neighbor_dists</span><span class="p">,</span> <span class="n">neighbor_idxs</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_log_occupancy</span><span class="p">,</span> <span class="n">Xy_densities</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;The density estimate is being calculated for all points which may result in much slower computation&#39;</span><span class="p">)</span>
+            <span class="n">spawn_threads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">_compiled_worker_all</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_X</span><span class="p">),</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">y_log_densities</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_log_occupancy</span><span class="p">,</span> <span class="n">Xy_densities</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">Xy_densities</span></div></div>
+
+
+<div class="viewcode-block" id="BufferKDTreeWrapper"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BufferKDTreeWrapper">[docs]</a><span class="k">class</span> <span class="nc">BufferKDTreeWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A simple wrapper for the bufferkdtree module for GPU-enabled</span>
+<span class="sd">    nearest neighbor searches</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array-like, shape = [n_samples, n_features]</span>
+<span class="sd">        The data to fit the tree with</span>
+
+<span class="sd">    tree_depth : int, optional = 9</span>
+<span class="sd">        The maximum depth of the tree</span>
+
+<span class="sd">    plat_dev_ids dict, optional = {0:[0]}</span>
+<span class="sd">        The platform device ids as specified by bufferkdtree,</span>
+<span class="sd">        defaults to the first GPU</span>
+
+<span class="sd">    kwargs :</span>
+<span class="sd">        Are passed to the initialization of the tree</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tree : object</span>
+<span class="sd">        Access to the underlying NearestNeighbors object in bufferkdtree</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">tree_depth</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">plat_dev_ids</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">bufferkdtree</span><span class="o">.</span><span class="n">NearestNeighbors</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;buffer_kd_tree&quot;</span><span class="p">,</span> <span class="n">tree_depth</span><span class="o">=</span><span class="n">tree_depth</span><span class="p">,</span> <span class="n">plat_dev_ids</span><span class="o">=</span><span class="n">plat_dev_ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+
+<div class="viewcode-block" id="BufferKDTreeWrapper.query"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BufferKDTreeWrapper.query">[docs]</a>    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BufferKDTreeWrapper.get_arrays"><a class="viewcode-back" href="../../../api/mlneuro.regression.kde.html#mlneuro.regression.BufferKDTreeWrapper.get_arrays">[docs]</a>    <span class="k">def</span> <span class="nf">get_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
