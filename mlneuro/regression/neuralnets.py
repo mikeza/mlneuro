@@ -197,11 +197,19 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         The Keras optimizer to use for training
     activation : string or object
         The Keras activation type for the dense layers
+    loss : strnig or function (optional=None)
+        The Keras string defined loss function (e.g. 'kullback_leibler_divergence') for a function that takes
+        y_true, y_pred and produces a float value for loss (must use tensor math). 
+        By default, uses distance weighted KL-divergence
+    weighted_kl_constant : float
+        The constant added to the distances for weighted KL-divergence loss function. Larger values will allow the estimator
+        to fit near but not exactly on the bin of interest.
     verbose: binary, optional, default=0
         Whether to show progress of the fit after each epoch
     """
 
-    def __init__(self, units=200, dropout=0, num_epochs=20, ybins=32, optimizer='adam', activation='relu', verbose=0):
+    def __init__(self, units=[100, 200, 300, 100, 50], dropout=0.3, num_epochs=20, ybins=32, optimizer='adam', activation='relu', 
+                 verbose=0, loss=None, weighted_kl_constant=0.1):
         self.dropout = dropout
         self.num_epochs = num_epochs
         self.verbose = verbose
@@ -209,21 +217,33 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         self.ybins = ybins
         self.optimizer = optimizer
         self.activation = activation
+        self.loss = loss
+        self.weighted_kl_constant = weighted_kl_constant
 
     def _make_lossfn(self):
 
-        bin_dists = bin_distances(self.ybin_grid, return_squared=True)
+        if self.loss is None:
+            # Bin distances must be calculated outside the function
+            # but performance is improved by moving out of loss anyways
+            bin_dists = bin_distances(self.ybin_grid, return_squared=True)
+            bin_dists /= np.max(bin_dists, axis=1)
+            bin_dists += self.weighted_kl_constant * 1 / bin_dists.shape[0]
 
-        def loss(y_true, y_pred):
-            bin_dist_tensor = K.constant(bin_dists)
-            y_true_bins = K.argmax(y_true)
-            dists_from_correct = K.gather(bin_dist_tensor, y_true_bins)
-            weighted_dist = K.sum(dists_from_correct * y_pred, axis=1)
-            weighted_dist = K.mean(weighted_dist) / K.max(dists_from_correct, axis=1)
-            return weighted_dist * kullback_leibler_divergence(y_true, y_pred)
+            # distance weighted KL-divergence
+            def loss(y_true, y_pred):
+                bin_dist_tensor = K.constant(bin_dists)
+                y_true_bins = K.argmax(y_true, axis=-1)
+                dists_from_correct = K.gather(bin_dist_tensor, y_true_bins)
+                y_true = K.clip(y_true, K.epsilon(), 1)
+                y_pred = K.clip(y_pred, K.epsilon(), 1)
+                return K.sum(y_true * K.log(y_true / y_pred) / dists_from_correct, axis=-1)
 
-        return 'kullback_leibler_divergence'
-        return loss
+            return loss
+
+        elif callable(self.loss) or isinstance(self.loss, str):
+            return self.loss
+        else:
+            raise ValueError('Unrecognized loss of {}'.format(self.loss))
 
     def fit(self, X, y, **fit_params):
         """
