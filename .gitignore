@@ -55,3 +55,6 @@ coverage.xml
 
 # Old
 /examples/archive/*
+
+# Documentation
+docs/_*
