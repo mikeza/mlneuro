@@ -78,16 +78,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.crossvalidation</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -150,67 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.crossvalidation">
-<span id="mlneuro-crossvalidation"></span><h1>mlneuro.crossvalidation<a class="headerlink" href="#module-mlneuro.crossvalidation" title="Permalink to this headline">¶</a></h1>
-<p>Cross-validation objects allowing automatic generation of stacked cross-validators, noisy data masking, and cross-validation for binned regression</p>
-<dl class="class">
-<dt id="mlneuro.crossvalidation.MaskedTrainingCV">
-<em class="property">class </em><code class="descclassname">mlneuro.crossvalidation.</code><code class="descname">MaskedTrainingCV</code><span class="sig-paren">(</span><em>base_cv</em>, <em>train_mask</em>, <em>cv_returns_idxs=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#MaskedTrainingCV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.MaskedTrainingCV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Meta cross validator that applies a mask to the training set to limit the
-training to instances that are meaningful but still tests on all values</p>
-<dl class="method">
-<dt id="mlneuro.crossvalidation.MaskedTrainingCV.get_n_splits">
-<code class="descname">get_n_splits</code><span class="sig-paren">(</span><em>X=None</em>, <em>y=None</em>, <em>groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#MaskedTrainingCV.get_n_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.MaskedTrainingCV.get_n_splits" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mlneuro.crossvalidation.MaskedTrainingCV.split">
-<code class="descname">split</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em>, <em>groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#MaskedTrainingCV.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.MaskedTrainingCV.split" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mlneuro.crossvalidation.TrainOnSubsetCV">
-<em class="property">class </em><code class="descclassname">mlneuro.crossvalidation.</code><code class="descname">TrainOnSubsetCV</code><span class="sig-paren">(</span><em>base_cv</em>, <em>train_size=0.5</em>, <em>max_size=inf</em>, <em>min_size=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#TrainOnSubsetCV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.TrainOnSubsetCV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Meta cross validator that limits the size of the training set to a fractional amount
-with upper and lower limits</p>
-<dl class="method">
-<dt id="mlneuro.crossvalidation.TrainOnSubsetCV.get_n_splits">
-<code class="descname">get_n_splits</code><span class="sig-paren">(</span><em>X=None</em>, <em>y=None</em>, <em>groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#TrainOnSubsetCV.get_n_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.TrainOnSubsetCV.get_n_splits" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mlneuro.crossvalidation.TrainOnSubsetCV.split">
-<code class="descname">split</code><span class="sig-paren">(</span><em>X</em>, <em>y=None</em>, <em>groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#TrainOnSubsetCV.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.TrainOnSubsetCV.split" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.crossvalidation.cross_val_predict">
-<code class="descclassname">mlneuro.crossvalidation.</code><code class="descname">cross_val_predict</code><span class="sig-paren">(</span><em>estimator</em>, <em>X</em>, <em>y=None</em>, <em>groups=None</em>, <em>cv=None</em>, <em>n_jobs=1</em>, <em>verbose=0</em>, <em>fit_params=None</em>, <em>pre_dispatch='2*n_jobs'</em>, <em>method='predict'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#cross_val_predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.cross_val_predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Please see sklearn for documenation
-This has only been modified so binned regressors can return probabilites</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.crossvalidation.generate_crossvalidator">
-<code class="descclassname">mlneuro.crossvalidation.</code><code class="descname">generate_crossvalidator</code><span class="sig-paren">(</span><em>estimator</em>, <em>X</em>, <em>y=None</em>, <em>n_splits=3</em>, <em>base=None</em>, <em>training_mask=None</em>, <em>limit_training_size=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/crossvalidation.html#generate_crossvalidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.crossvalidation.generate_crossvalidator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a cross-validation object which splits data into training and test sets. This is a general
-function which simplifies the chaining of several cross-validator objects to extend the base cross-validators
-available in sklearn.</p>
-<dl class="docutils">
-<dt>Output crossvalidators:</dt>
-<dd>KFold or StratifiedKFold if regression or classification is being done respectively
-TrainOnSubsetCV if the training size is to be reduced for each fold
-MaskedTrainingCV if the training set has noise in it that shouldn’t be used
-MultisignalCV if X is a list or tuple and needs each list-item to be split separately</dd>
-</dl>
-</dd></dl>
-
+  <div class="section" id="mlneuro-crossvalidation">
+<h1>mlneuro.crossvalidation<a class="headerlink" href="#mlneuro-crossvalidation" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

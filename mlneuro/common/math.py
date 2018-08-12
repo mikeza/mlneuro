@@ -1,6 +1,4 @@
-"""Functions used throughout the package
-
-Primarily, functions that transform estimates
+"""Fast mathematical functions
 """
 import numpy as np
 

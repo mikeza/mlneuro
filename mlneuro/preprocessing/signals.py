@@ -1,5 +1,4 @@
-"""
-Functions for processing signal data
+"""Functions for processing signal data
 
 Generally signal data is of the form
     signal_times = [(n_samples_signal1,), (n_samples_signal2), ...]

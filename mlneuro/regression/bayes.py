@@ -26,6 +26,33 @@ except ImportError as e:
 
 
 class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
+    """Estimates the conditional probability of y given X (as count data) assuming X follows a poisson distribution.
+
+    The model is fit by calculating an expected X over a grid of possible y values. The prediction then follows
+    a naive bayesian inversion of the poisson.
+
+    X must have an integer dtype such as obtained from :func:`mlneuro.preprocessing.signals.firing_rates_history` with
+    `normalize=False`
+
+    Parameters
+    ---------
+    ybins : array-like, optional (default = 32)
+        If a scalar, the number of bins in each y dimension resulting in ybins ** ndims bins.
+
+        If an array, expected to be a (n_bins + 1, n_dims) description of bin edges
+    encoding_model : string, optional (default = 'quadratic')
+        'linear' or 'quadratic' specifying if the y values should be expanded to allow the glm to fit y^2 
+    model_type : string, optional (default = 'glm')
+        'glm', 'zeroinflated', or 'generalized' specifying the underlying statsmodel Poisson model to be used.
+        The results with anything but 'glm' are thusfar poor and not recommended.
+    use_prior : boolean, optional (default=False)
+        Multply estimates by the prior estimate of where y will be, based on the occupancy
+    nan_unvisited : boolean, optional (default=False)
+        If `use_prior` is True, then should bins visisted under a small threshold be set to nan in all estimates
+    n_jobs : int, optional (default=-1)
+        The number of threads to use for prediction. -1 uses all available cpus.
+
+    """
 
     def __init__(self, ybins=32, encoding_model='quadratic', model_type='glm', n_jobs=-1, use_prior=False, nan_unvisited=False):
         self.ybins = ybins
@@ -46,20 +73,24 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
             self._init_ybins(y_data=None, ybin_auto=False)
 
     def fit(self, X, y, **glm_fit_kwargs):
+        """Fit the Poisson GLMs for each feature of X
 
-        """
-        Train Naive Bayes Decoder
         Parameters
         ----------
-        X: numpy 2d array of shape [n_samples,n_neurons]
-            This is the neural training data.
-            See example file for an example of how to format the neural data correctly
-        y: numpy 2d array of shape [n_samples, n_outputs]
-            This is the outputs that are being predicted (training data)
+        X : array-like, shape = [n_samples, n_features]
+            The training input samples. Feature data must be count data.
+        y : array-like, shape = [n_samples, n_dims]
+            The target values. Will be binned according to `self.ybins`.
+        **glm_fit_kwargs
+            Additional arguments will be passed to the fit call for the statsmodel GLM
+
+        Returns
+        -------
+        self : object
+            Returns self.
         """
 
         X, y = check_X_y(X, y, multi_output=True, y_numeric=True, warn_on_dtype=True)
-
 
         # Generate bins for y
         self._init_ybins_from_param(y, self.ybins)
@@ -105,7 +136,6 @@ class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
         # Generate tuning curves for each neuron
         # Prediciting firing rate (X) given stimulus (y) for each neuron
-        # Scale by the mean of y to reduce chance of overflow in quadratic
         self.models, self.tuning_curves = zip(*[self._fit_predict_model(X[:,i], y_fit, y_sample, i, **glm_fit_kwargs) for i in range(X.shape[1])])
         self.tuning_curves = np.array(self.tuning_curves)
 

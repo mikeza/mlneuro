@@ -13,11 +13,13 @@ class BinnedRegressorMixin(RegressorMixin):
 
     Attributes
     ---------
+    ybin_edges : array-like, list of arrays, shape ~= [n_dims, n_bins_dim + 1]
+        The edges between bins.
+    ybin_centers : array-like, list of arrays, shape ~= [n_dims, n_bins_dim]
+        The centers of each bin
+    ybin_grid : array-like, shape = [prod(n_bins_dim), n_dims]
+        A grid of all bin intersections
 
-    ybin_edges : array-like, list of arrays (one array per dimension) 
-        or if bin count is consistent across dimensions array 
-        shape = [n_dims, n_bins_dim]
-        A
     """
 
     def _init_ybins_from_data(self, y_data, ybin_count):

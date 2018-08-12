@@ -12,7 +12,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class MultisignalScorer(MultisignalMixin):
     """Meta scorer that takes multisignal estimators and data and returns
     an aggregate score

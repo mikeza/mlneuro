@@ -1,5 +1,4 @@
-"""
-Functions for processing stimulus data which includes stimuli presented to 
+"""Functions for processing stimulus data which includes stimuli presented to 
 subjects and subject behavior
 """
 import numpy as np

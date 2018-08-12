@@ -78,16 +78,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.preprocessing.signals</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -150,124 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.preprocessing.signals">
-<span id="mlneuro-preprocessing-signals"></span><h1>mlneuro.preprocessing.signals<a class="headerlink" href="#module-mlneuro.preprocessing.signals" title="Permalink to this headline">¶</a></h1>
-<p>Functions for processing signal data</p>
-<dl class="docutils">
-<dt>Generally signal data is of the form</dt>
-<dd>signal_times = [(n_samples_signal1,), (n_samples_signal2), …]
-signal_data = [(n_samples_signal1, n_signal_dims), (n_samples_signal2, n_signal_dims), …]</dd>
-</dl>
-<p>Where each list item is an array-like timestamped recording from a sensor. The functions here
-are expecting the signal data to be spike features or cell labels for spiking data. This means
-that spikes have already been extracted from the raw waveform by another tool and either run
-through feature extraction or clustering.</p>
-<p>All functions using _enforce_multisignal_iterable should be able to take single signal data
-but may return as a singleton list</p>
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.firing_rates">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">firing_rates</code><span class="sig-paren">(</span><em>spike_times</em>, <em>spike_cellids</em>, <em>temporal_bin_edges</em>, <em>normalize=True</em>, <em>center=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#firing_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.firing_rates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the firing rates in temporal bins given edges and spike times/cell ids</p>
-<p>Note, here <a href="#id1"><span class="problematic" id="id2">spike_</span></a> are used instead of <a href="#id3"><span class="problematic" id="id4">signal_</span></a> because the multisignal data should
-be collapsed to a single single with <cite>multi_to_single_unit_signal_cellids</cite></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>firing_rates</strong> (<em>array shape [n_temporal_bins, n_cells]</em>)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.firing_rates_with_history">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">firing_rates_with_history</code><span class="sig-paren">(</span><em>firing_rates</em>, <em>bins_before=2</em>, <em>bins_after=2</em>, <em>include_concurrent=True</em>, <em>flatten_history=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#firing_rates_with_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.firing_rates_with_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert firing rates to include the firing rates of bins before and after each temporal bin</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>firing_rates</strong> (<em>array-like shape</em><em> [</em><em>n_temporal_bins</em><em>, </em><em>n_cells</em><em>]</em>) – </li>
-<li><strong>bins_before</strong> (<em>integer</em><em> (</em><em>optional=2</em><em>)</em>) – The number of bins before each temporal bin to include</li>
-<li><strong>bins_after</strong> (<em>integer</em><em> (</em><em>optional=2</em><em>)</em>) – The number of bins after each temporal bin to include</li>
-<li><strong>include_concurrent</strong> (<em>boolean</em><em> (</em><em>optional=True</em><em>)</em>) – Include the current temporal bin’s firing rates</li>
-<li><strong>flatten_history</strong> (<em>boolean</em><em> (</em><em>optional=False</em><em>)</em>) – If set, return a two dimensional array shape [n_temporal_bins, n_cells * n_bins_included]</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>firing_rates_history</strong> (<em>array-like</em>) – A three dimensional array, shape [n_temporal_bins, n_bins_history, n_cells]
-(see flatten_history for shape change)</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.limit_time_range">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">limit_time_range</code><span class="sig-paren">(</span><em>signal_times</em>, <em>*signal_arrs</em>, <em>time_start=0</em>, <em>time_end=inf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#limit_time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.limit_time_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Limit the time range of multiple (or single) signal time arrays and associated data arrays</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.multi_to_single_unit_signal_cellids">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">multi_to_single_unit_signal_cellids</code><span class="sig-paren">(</span><em>signal_times</em>, <em>signal_cellids</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#multi_to_single_unit_signal_cellids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.multi_to_single_unit_signal_cellids" title="Permalink to this definition">¶</a></dt>
-<dd><p>Combine the data from multiple signals into a single set with unique cell ids
-Assumes sensor independence</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>signal_times</strong> (<em>array-like</em><em> or </em><em>list of arrays</em><em>, </em><em>shape =</em><em> [</em><em>n_samples</em><em>] or </em><em>[</em><em>[</em><em>n_samples1</em><em>]</em><em>, </em><em>[</em><em>n_samples2</em><em>]</em><em>, </em><em>..</em><em>]</em>) – The timestamps of the spikes from a single signal or multiple signals</li>
-<li><strong>signal_cellids</strong> (<em>array-like</em><em> or </em><em>list of arrays</em><em>, </em><em>same shape as signal_times</em>) – The integer identifier for the cell each spike is assigned to. Signals may use the same number
-e.g. signal #1 has cells 1, 2, 3 and signal #2 has cells 1, 2 and these are assumed to be
-different cells and will be generated new cell ids such that the sorted_cellids are 0, 1, 2, 3, 4
-Will be cast to 64-bit integers</li>
-<li><strong>copy</strong> (<em>boolean</em><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – If set, signal_cellids will be copied in. The default is true since the array is modified
-while creating ‘unique’ cell ids across signals</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>all_times</strong> (<em>array-like, shape = [n_samples_all_sensors]</em>) – The sorted list of spike times from all sensors</li>
-<li><strong>all_cellids</strong> (<em>array-like, shape = [n_samples_all_sensors]</em>) – The cell id associated with each spike.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.process_clustered_signal_data">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">process_clustered_signal_data</code><span class="sig-paren">(</span><em>signal_times</em>, <em>signal_cellids</em>, <em>temporal_bin_size=0.25</em>, <em>normalize_firing=True</em>, <em>center_firing=False</em>, <em>**firing_rates_with_history_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#process_clustered_signal_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.process_clustered_signal_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate temporal bin edges and firing rates with history from labeled signal data</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.remove_unlabeled_spikes">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">remove_unlabeled_spikes</code><span class="sig-paren">(</span><em>signal_times</em>, <em>signal_cellids</em>, <em>*signal_arrs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#remove_unlabeled_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.remove_unlabeled_spikes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given signal times and cell ids and associated data/time arrays, remove
-spikes with cell ids of zero</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.separate_signal_features">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">separate_signal_features</code><span class="sig-paren">(</span><em>signal_data</em>, <em>separation=100</em>, <em>scaler=&lt;class 'sklearn.preprocessing.data.MinMaxScaler'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#separate_signal_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.separate_signal_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies a data scalar to signal data and then separates the features per signal by a specified amount
-that should far exceed the range of the data allowing single signal processing of multisignal data</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.preprocessing.signals.spike_stimulus">
-<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">spike_stimulus</code><span class="sig-paren">(</span><em>signal_times</em>, <em>stimulus_times</em>, <em>stimulus_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#spike_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.spike_stimulus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the stimulus value at signal times given stimulus data sampled at a different rate</p>
-</dd></dl>
-
+  <div class="section" id="mlneuro-preprocessing-signals">
+<h1>mlneuro.preprocessing.signals<a class="headerlink" href="#mlneuro-preprocessing-signals" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

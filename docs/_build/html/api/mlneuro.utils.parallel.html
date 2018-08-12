@@ -78,16 +78,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.utils.parallel</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -150,49 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.utils.parallel">
-<span id="mlneuro-utils-parallel"></span><h1>mlneuro.utils.parallel<a class="headerlink" href="#module-mlneuro.utils.parallel" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="mlneuro.utils.parallel.available_cpu_count">
-<code class="descclassname">mlneuro.utils.parallel.</code><code class="descname">available_cpu_count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/parallel.html#available_cpu_count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.parallel.available_cpu_count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of available virtual or physical CPUs on this system, i.e.
-user/real as output by time(1) when called with an optimally scaling
-userspace-only program</p>
-<p>from <a class="reference external" href="http://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python">http://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python</a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.utils.parallel.spawn_threads">
-<code class="descclassname">mlneuro.utils.parallel.</code><code class="descname">spawn_threads</code><span class="sig-paren">(</span><em>n_threads</em>, <em>split_array</em>, <em>target</em>, <em>args</em>, <em>axis=0</em>, <em>sanity_check=True</em>, <em>sequential=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/utils/parallel.html#spawn_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.utils.parallel.spawn_threads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Spawns n_threads to do a computation on an array. A target function
-is launched with the extra args and start/end indices.</p>
-<dl class="docutils">
-<dt>e.g. each thread is run with</dt>
-<dd>target(<a href="#id1"><span class="problematic" id="id2">*</span></a>args, start_idx, end_idx)</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_threads</strong> (<em>integer</em>) – The number of threads to launch. If -1, the number of cpus is used. If less than -1,
-all cpus are used except the specified amount (e.g. -3 all but 2 are used).</li>
-<li><strong>split_array</strong> (<em>array-like</em>) – The array to split amongst threads. The start and end indices passed are based on the
-given axis</li>
-<li><strong>target</strong> (<em>function</em>) – The function to call</li>
-<li><strong>args</strong> (<em>tuple</em>) – The additional args to pass to the function, the split array must be included here if needed</li>
-<li><strong>axis</strong> (<em>integer</em><em> (</em><em>optional=0</em><em>)</em>) – The axis to split on</li>
-<li><strong>sanity_check</strong> (<em>boolean</em><em> (</em><em>optional=True</em><em>)</em>) – If set, warns on threads &gt; cpu count and threads &gt; array length. Reduces threads to 1 if there
-are more threads than the array length.</li>
-<li><strong>sequential</strong> (<em>boolean</em><em> (</em><em>optional=False</em><em>)</em>) – If set, threads will be run sequentially instead of in parallel. Useful if a task requires a
-large amount of intermediate memory use.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+  <div class="section" id="mlneuro-utils-parallel">
+<h1>mlneuro.utils.parallel<a class="headerlink" href="#mlneuro-utils-parallel" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

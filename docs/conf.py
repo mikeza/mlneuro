@@ -45,7 +45,14 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
     'sphinx.ext.viewcode',
+    'sphinx_gallery.gen_gallery'
 ]
+
+sphinx_gallery_conf = {
+    # path to examples scripts
+    'examples_dirs' : '../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs'  : 'auto_examples'}
 
 autosummary_generate = True 
 napoleon_use_rtype = False

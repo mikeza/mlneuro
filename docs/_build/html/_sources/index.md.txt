@@ -1,19 +1,7 @@
-Welcome to mlneuro's documentation!
-===================================
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+mlneuro
+=======
+**Machine learning for neural decoding**
 
 .. automodule:: mlneuro
 
-   Members
-   =======
-
-
-Indices and tables
-==================
-
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

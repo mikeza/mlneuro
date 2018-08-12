@@ -7,30 +7,40 @@ from ..common.math import tiny_epsilon, _gaussian_pdf
 from ..common.bins import bin_centers_from_edges, linearized_bin_grid, binned_data, bin_distances
 from ..utils.parallel import spawn_threads
 
-class TransitionInformedBayesian(BaseEstimator):
 
+class TransitionInformedBayesian(BaseEstimator):
+    """Filter a binned regressor probability array by recursively applying a transition matrix generated
+    by the observed transition of bin to bin
+
+    Parameters
+    ---------
+    transition_obs: array-like shape=[n_times, n_dims]
+        Timestamped observations for the transition matrix creation
+    bin_edges: array-like shape [n_dims, n_bins_dim]
+        Defines bin edges for each dimension of the estimate. Used to map observations into estimate bins.
+            Additionally, a callable function can be passed instead if bin edges are defined at filter
+            construction time.
+    transition_model: string (optional='indiscriminate')
+        The transition model to use for constructing a transition matrix:
+            'indiscriminate': a kernel based spread based on mean velocity
+            'directional': bin transition based in the forward direction
+            'bidirectional': bin transition based in the sum of forward and backward directions
+            'custom': must define transition_model_func, allows a custom matrix function
+    propogation_factor, float range [0,1] (optional=1)
+        The power to raise the transition matrix to. *Speeds* up time.
+    transition_model_func: function (optional=None)
+        Function that takes the observations and bin edges and returns a transition matrix
+    **transition_model_kwargs
+        Additional keyword arguments are passed to the transition model function
+
+    Notes
+    -----
+    Not thoroughly tested yet. Do not use for sensitive data without additional verification.
+    """
     def __init__(self, transition_obs, bin_edges, recursive_update_prop=0, 
         transition_model='indiscriminate', propogation_factor=1, n_jobs=-1, transition_model_func=None, 
         **transition_model_kwargs):
-        """
-        transition_obs: array-like shape=[n_times, n_dims]
-            Timestamped observations for the transition matrix creation
-        bin_edges: array-like shape [n_dims, n_bins_dim]
-            Defines bin edges for each dimension of the estimate. Used to map observations into estimate bins.
-                Additionally, a callable function can be passed instead if bin edges are defined at filter
-                construction time.
-        transition_model: string (optional='indiscriminate')
-            The transition model to use for constructing a transition matrix:
-                'indiscriminate': a kernel based spread based on mean velocity
-                'directional': bin transition based in the forward direction
-                'bidirectional': bin transition based in the sum of forward and backward directions
-                'custom': must define transition_model_func, allows a custom matrix function
-        propogation_factor, float range [0,1] (optional=1)
-        transition_model_func: function (optional=None)
-            Function that takes the observations and bin edges and returns a transition matrix
 
-        Additional keyword arguments are passed to the transition model function
-        """
 
         TRANSITION_MODELS = {'indiscriminate': self._indiscriminate_kernel_transition_matrix,
                              'directional':    self._directional_transition_matrix,
@@ -61,7 +71,21 @@ class TransitionInformedBayesian(BaseEstimator):
         self.n_jobs = n_jobs
 
     def fit(self, T, y_proba):
+        """Fit the filter by storing the time-stamped probability array 
+        and generating a transition-matrix
 
+        Parameters
+        ----------
+        T : array-like, shape = [n_samples,]
+            Timestamps
+        y_proba : array-like, shape = [n_samples, n_bins]
+            Array to filter, probabilities of bins at each sample.
+            
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
         self.T_fit = T
         self.y_proba = y_proba
         self.M = self._init_transition_matrix()
@@ -69,7 +93,16 @@ class TransitionInformedBayesian(BaseEstimator):
         return self
 
     def predict(self, T_test=None):
+        """Filter at the given times
 
+        T : array-like, shape = [n_samples_new,] (optional=None)
+            Times to sample filter at, if not provided, fit times are used
+
+        Returns
+        -------
+        filtered_array : array-like, shape = [n_samples_new, n_bins]
+            The filtered probability transformed by recursive transition matrix product
+        """
         if T_test is None:
             T_test = self.M
             posterior = self.y_proba.copy()

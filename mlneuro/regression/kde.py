@@ -1,3 +1,6 @@
+"""Multivariable kernel density estimation
+"""
+
 import numpy as np
 
 from numba import jit
@@ -24,8 +27,7 @@ except ImportError:
 
 
 class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
-    """ Conditional Kernel Density Estimator
-    Estimates the conditional probability of y given X by kernel density estimation
+    """Estimates the conditional probability of y given X by kernel density estimation
     using the k-nearest neighbors for efficiency. Please note, bandwidth selection can 
     have large effects on performance.
 
@@ -58,18 +60,18 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
     tree_backend : object, string optional (default = 'cpu')
         A tree object for the nearest neighbor search. Must support fitting/creation
-        via init and a query function. 
+        via init and a query function.
 
         Or a string, specifying:
-            'ball': Uses the BallTree from sklearn
-            'kd':   Uses the KDTree from sklearn
-            'gpu':  Uses the GPU enabled BufferKDTree 
-            'auto': Selects the best option based on data dimensionality and size
+        - 'ball': Uses the BallTree from sklearn
+        - 'kd':   Uses the KDTree from sklearn
+        - 'gpu':  Uses the GPU enabled BufferKDTree 
+        - 'auto': Selects the best option based on data dimensionality and size
 
         Suggested tree objects:
-            sklearn.neighbors.BallTree : fast tree for high dimensional data
-            sklearn.neighbors.KDTree : fast tree for low dimensional data
-            sklneuro.estimators.kde.BufferKDTreeWrapper: supplied as a wrapper to the bufferkdtree package
+        - :class:`sklearn.neighbors.BallTree` : fast tree for high dimensional data
+        - :class:`sklearn.neighbors.KDTree` : fast tree for low dimensional data
+        - :class:`mlneuro.regression.kde.BufferKDTreeWrapper`: supplied as a wrapper to the bufferkdtree package
                 for GPU support
 
     tree_build_args : dict, optional (default = {})
@@ -92,7 +94,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
     
     See Also
     --------
-    mlneuro.regression.base.BinnedRegressionMixin : Information about bin attributes
+    :class:`mlneuro.regression.base.BinnedRegressionMixin` : Information about bin attributes
     """
 
     def __init__(self, n_neighbors=30, bandwidth_X=1, bandwidth_y=1, ybins=32, unoccupied_std_from_mean=0.20,

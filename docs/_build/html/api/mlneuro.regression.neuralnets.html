@@ -78,16 +78,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.regression.neuralnets</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -150,186 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.regression.neuralnets">
-<span id="mlneuro-regression-neuralnets"></span><h1>mlneuro.regression.neuralnets<a class="headerlink" href="#module-mlneuro.regression.neuralnets" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="mlneuro.regression.neuralnets.DenseNNBinnedRegressor">
-<em class="property">class </em><code class="descclassname">mlneuro.regression.neuralnets.</code><code class="descname">DenseNNBinnedRegressor</code><span class="sig-paren">(</span><em>units=[100, 200, 300, 100, 50], dropout=0.3, num_epochs=20, ybins=32, optimizer='adam', activation='relu', verbose=0, loss=None, weighted_kl_constant=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#DenseNNBinnedRegressor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.DenseNNBinnedRegressor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <a class="reference internal" href="mlneuro.regression.base.html#mlneuro.regression.base.BinnedRegressorMixin" title="mlneuro.regression.base.BinnedRegressorMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.regression.base.BinnedRegressorMixin</span></code></a></p>
-<p>Class for the dense (fully-connected) neural network decoder
-:param units: The number of hidden units in each layer, can be a single integer for one layer
-:type units: array-like, integers, shape [n_layers]
-:param dropout: Proportion of units that get dropped out, if 0, no dropout layer is included
-:type dropout: decimal from [0,1]
-:param num_epochs: Number of epochs used for training
-:type num_epochs: integer, optional, default 10
-:param optimizer: The Keras optimizer to use for training
-:type optimizer: string or object
-:param activation: The Keras activation type for the dense layers
-:type activation: string or object
-:param loss: The Keras string defined loss function (e.g. ‘kullback_leibler_divergence’) for a function that takes</p>
-<blockquote>
-<div>y_true, y_pred and produces a float value for loss (must use tensor math).
-By default, uses distance weighted KL-divergence</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>weighted_kl_constant</strong> (<em>float</em>) – The constant added to the distances for weighted KL-divergence loss function. Larger values will allow the estimator
-to fit near but not exactly on the bin of interest.</li>
-<li><strong>verbose</strong> (<em>binary</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Whether to show progress of the fit after each epoch</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="mlneuro.regression.neuralnets.DenseNNBinnedRegressor.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>**fit_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#DenseNNBinnedRegressor.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.DenseNNBinnedRegressor.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Construct the neural network model and fit it with the training data
-:param X: This is the neural data.</p>
-<blockquote>
-<div>See example file for an example of how to format the neural data correctly</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> (<em>array-like</em><em>, </em><em>shape</em><em> [</em><em>n_samples</em><em>, </em><em>n_outputs</em><em>]</em>) – This is the outputs that are being predicted</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlneuro.regression.neuralnets.DenseNNBinnedRegressor.predict_proba">
-<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#DenseNNBinnedRegressor.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.DenseNNBinnedRegressor.predict_proba" title="Permalink to this definition">¶</a></dt>
-<dd><p>Predict using the trained network</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like</em><em>, </em><em>shape</em><em> [</em><em>n_samples</em><em>,</em><em>n_features</em><em>]</em>) – Test samples</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>y_test_predicted</strong> (<em>array-like, shape [n_samples,n_outputs]</em>) – The predicted outputs</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mlneuro.regression.neuralnets.DenseNNRegressor">
-<em class="property">class </em><code class="descclassname">mlneuro.regression.neuralnets.</code><code class="descname">DenseNNRegressor</code><span class="sig-paren">(</span><em>units=[100, 200, 100, 50], dropout=0, num_epochs=20, optimizer='adam', activation='relu', verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#DenseNNRegressor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.DenseNNRegressor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.RegressorMixin</span></code></p>
-<p>Class for the dense (fully-connected) neural network decoder
-:param units: The number of hidden units in each layer, can be a single integer for one layer
-:type units: array-like, integers, shape [n_layers]
-:param dropout: Proportion of units that get dropped out, if 0, no dropout layer is included
-:type dropout: decimal from [0,1]
-:param num_epochs: Number of epochs used for training
-:type num_epochs: integer, optional, default 10
-:param optimizer: The Keras optimizer to use for training
-:type optimizer: string or object
-:param activation: The Keras activation type for the dense layers
-:type activation: string or object
-:param verbose: Whether to show progress of the fit after each epoch
-:type verbose: binary, optional, default=0
-:param Modified from the KordingLab:
-:param https:
-:type https: //github.com/KordingLab/Neural_Decoding/blob/master/decoders.py</p>
-<dl class="method">
-<dt id="mlneuro.regression.neuralnets.DenseNNRegressor.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>**fit_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#DenseNNRegressor.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.DenseNNRegressor.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Construct the neural network model and fit it with the training data
-:param X: This is the neural data.</p>
-<blockquote>
-<div>See example file for an example of how to format the neural data correctly</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> (<em>array-like</em><em>, </em><em>shape</em><em> [</em><em>n_samples</em><em>, </em><em>n_outputs</em><em>]</em>) – This is the outputs that are being predicted</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlneuro.regression.neuralnets.DenseNNRegressor.predict">
-<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#DenseNNRegressor.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.DenseNNRegressor.predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Predict using the trained network</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like</em><em>, </em><em>shape</em><em> [</em><em>n_samples</em><em>,</em><em>n_features</em><em>]</em>) – Test samples</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>y_test_predicted</strong> (<em>array-like, shape [n_samples,n_outputs]</em>) – The predicted outputs</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="mlneuro.regression.neuralnets.LSTMRegressor">
-<em class="property">class </em><code class="descclassname">mlneuro.regression.neuralnets.</code><code class="descname">LSTMRegressor</code><span class="sig-paren">(</span><em>units=400</em>, <em>dropout=0</em>, <em>num_epochs=30</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#LSTMRegressor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.LSTMRegressor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.RegressorMixin</span></code></p>
-<p>Firing rate based long-term short-term memory neural network based estimator</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>units</strong> (<em>integer</em><em>, </em><em>optional</em><em>, </em><em>default 400</em>) – Number of hidden units in each layer</li>
-<li><strong>dropout</strong> (<em>decimal</em><em>, </em><em>optional</em><em>, </em><em>default 0</em>) – Proportion of units that get dropped out</li>
-<li><strong>num_epochs</strong> (<em>integer</em><em>, </em><em>optional</em><em>, </em><em>default 10</em>) – Number of epochs used for training</li>
-<li><strong>verbose</strong> (<em>binary</em><em>, </em><em>optional</em><em>, </em><em>default=0</em>) – Whether to show progress of the fit after each epoch</li>
-<li><strong>from the KordingLab</strong> (<em>Modified</em>) – </li>
-<li><strong>https</strong> (<em>//github.com/KordingLab/Neural_Decoding/blob/master/decoders.py</em>) – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="mlneuro.regression.neuralnets.LSTMRegressor.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#LSTMRegressor.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.LSTMRegressor.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Train LSTM Decoder
-:param X: This is the neural data.</p>
-<blockquote>
-<div>See example file for an example of how to format the neural data correctly</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> (<em>array-like</em><em>, </em><em>shape</em><em> [</em><em>n_samples</em><em>, </em><em>n_outputs</em><em>]</em>) – This is the outputs that are being predicted</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlneuro.regression.neuralnets.LSTMRegressor.predict">
-<code class="descname">predict</code><span class="sig-paren">(</span><em>X_test</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/neuralnets.html#LSTMRegressor.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.neuralnets.LSTMRegressor.predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Predict outcomes using trained LSTM Decoder</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X_test</strong> (<em>numpy 3d array of shape</em><em> [</em><em>n_samples</em><em>,</em><em>n_time_bins</em><em>,</em><em>n_neurons</em><em>]</em>) – This is the neural data being used to predict outputs.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>y_test_predicted</strong> (<em>array-like, shape [n_samples,n_outputs]</em>) – The predicted outputs</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="mlneuro-regression-neuralnets">
+<h1>mlneuro.regression.neuralnets<a class="headerlink" href="#mlneuro-regression-neuralnets" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

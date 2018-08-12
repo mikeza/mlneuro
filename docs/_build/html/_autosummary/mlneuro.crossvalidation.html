@@ -28,8 +28,6 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mlneuro.preprocessing" href="mlneuro.preprocessing.html" />
-    <link rel="prev" title="mlneuro.filtering" href="mlneuro.filtering.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 
@@ -80,16 +78,11 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.crossvalidation</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -152,39 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.crossvalidation">
-<span id="mlneuro-crossvalidation"></span><h1>mlneuro.crossvalidation<a class="headerlink" href="#module-mlneuro.crossvalidation" title="Permalink to this headline">¶</a></h1>
-<p>Cross-validation objects allowing automatic generation of stacked cross-validators, noisy data masking, and cross-validation for binned regression</p>
-<p class="rubric">Functions</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.cross_val_predict" title="mlneuro.crossvalidation.cross_val_predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_val_predict</span></code></a>(estimator,&nbsp;X[,&nbsp;y,&nbsp;groups,&nbsp;…])</td>
-<td>Please see sklearn for documenation This has only been modified so binned regressors can return probabilites</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.generate_crossvalidator" title="mlneuro.crossvalidation.generate_crossvalidator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_crossvalidator</span></code></a>(estimator,&nbsp;X[,&nbsp;y,&nbsp;…])</td>
-<td>Create a cross-validation object which splits data into training and test sets.</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Classes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.MaskedTrainingCV" title="mlneuro.crossvalidation.MaskedTrainingCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MaskedTrainingCV</span></code></a>(base_cv,&nbsp;train_mask[,&nbsp;…])</td>
-<td>Meta cross validator that applies a mask to the training set to limit the training to instances that are meaningful but still tests on all values</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="../api/mlneuro.crossvalidation.html#mlneuro.crossvalidation.TrainOnSubsetCV" title="mlneuro.crossvalidation.TrainOnSubsetCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrainOnSubsetCV</span></code></a>(base_cv[,&nbsp;train_size,&nbsp;…])</td>
-<td>Meta cross validator that limits the size of the training set to a fractional amount with upper and lower limits</td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="mlneuro-crossvalidation">
+<h1>mlneuro.crossvalidation<a class="headerlink" href="#mlneuro-crossvalidation" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -192,15 +154,6 @@
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="mlneuro.preprocessing.html" class="btn btn-neutral float-right" title="mlneuro.preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="mlneuro.filtering.html" class="btn btn-neutral" title="mlneuro.filtering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

@@ -30,6 +30,19 @@ class TemporalSmoothedFilter(BaseEstimator):
         self.n_jobs = n_jobs
 
     def fit(self, T, *data_arrays):
+        """Fit the filter by storing timestamped data arrays
+
+        Parameters
+        ----------
+        T : array-like, shape = [n_samples,]
+            Timestamps
+        *data_arrays : array-like, shape = [n_samples, n_dims]
+            Arrays to filter
+
+        Returns
+        -------
+        self
+        """
         if len(data_arrays) == 0:
             T, X = self._parse_timestamps(T)
             data_arrays = [X]
@@ -37,7 +50,19 @@ class TemporalSmoothedFilter(BaseEstimator):
         self.T_train = T
         self.data_arrays = data_arrays
 
+        return self
+
     def predict(self, T):
+        """Filter at the given times
+
+        T : array-like, shape = [n_samples_new,]
+            Times to sample filter at
+
+        Returns
+        -------
+        filtered_arrays : array-like, shape = [n_samples_new, n_dims] or list of such
+            The filtered data_arrays passed during fit, a list if not a single array
+        """
         self._validate_std_deviation()
         results = [self._predict(T, data_array) for data_array in self.data_arrays]
         return results[0] if len(results) == 1 else results

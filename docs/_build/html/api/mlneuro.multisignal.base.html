@@ -78,16 +78,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.multisignal.base</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -150,42 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.multisignal.base">
-<span id="mlneuro-multisignal-base"></span><h1>mlneuro.multisignal.base<a class="headerlink" href="#module-mlneuro.multisignal.base" title="Permalink to this headline">¶</a></h1>
-<p>Base objects and functions for multisignal handling</p>
-<dl class="class">
-<dt id="mlneuro.multisignal.base.MultisignalMixin">
-<em class="property">class </em><code class="descclassname">mlneuro.multisignal.base.</code><code class="descname">MultisignalMixin</code><a class="reference internal" href="../_modules/mlneuro/multisignal/base.html#MultisignalMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.base.MultisignalMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Primarily an identifier for if an object supports multisignal data</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.multisignal.base.make_multisignal_fn">
-<code class="descclassname">mlneuro.multisignal.base.</code><code class="descname">make_multisignal_fn</code><span class="sig-paren">(</span><em>fn</em>, <em>reshape_default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/base.html#make_multisignal_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.base.make_multisignal_fn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a function that operates on a single signal data to apply to multiple signals</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>fn</strong> (<em>function pointer</em>) – The function to transform. Leading non-list/tuple arguments will be collected and passed
-with each call. Following lists and/or tuples will be split into n signals and passed
-with one item from each list per call. Keyword argumentss are passed with each call, unsplit.</li>
-<li><strong>reshape_default</strong> (<em>boolean</em><em> (</em><em>optional=False</em><em>)</em>) – The default value for the reshape_result kwarg added to the function. Reshaping the result
-transposes the results from each function.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mlneuro.multisignal.base.multi_to_single_signal">
-<code class="descclassname">mlneuro.multisignal.base.</code><code class="descname">multi_to_single_signal</code><span class="sig-paren">(</span><em>signal_times</em>, <em>*signal_data_lists</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/multisignal/base.html#multi_to_single_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.multisignal.base.multi_to_single_signal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="mlneuro-multisignal-base">
+<h1>mlneuro.multisignal.base<a class="headerlink" href="#mlneuro-multisignal-base" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

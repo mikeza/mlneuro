@@ -78,16 +78,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.regression.html">mlneuro.regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.classification.html">mlneuro.classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.filtering.html">mlneuro.filtering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.crossvalidation.html">mlneuro.crossvalidation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.preprocessing.html">mlneuro.preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.common.html">mlneuro.common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/mlneuro.utils.html">mlneuro.utils</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">mlneuro.filtering.bayesian</a></li>
 </ul>
-
+</div>
             
           
         </div>
@@ -150,49 +145,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlneuro.filtering.bayesian">
-<span id="mlneuro-filtering-bayesian"></span><h1>mlneuro.filtering.bayesian<a class="headerlink" href="#module-mlneuro.filtering.bayesian" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="mlneuro.filtering.bayesian.TransitionInformedBayesian">
-<em class="property">class </em><code class="descclassname">mlneuro.filtering.bayesian.</code><code class="descname">TransitionInformedBayesian</code><span class="sig-paren">(</span><em>transition_obs</em>, <em>bin_edges</em>, <em>recursive_update_prop=0</em>, <em>transition_model='indiscriminate'</em>, <em>propogation_factor=1</em>, <em>n_jobs=-1</em>, <em>transition_model_func=None</em>, <em>**transition_model_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.bayesian.TransitionInformedBayesian" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code></p>
-<dl class="docutils">
-<dt>transition_obs: array-like shape=[n_times, n_dims]</dt>
-<dd>Timestamped observations for the transition matrix creation</dd>
-<dt>bin_edges: array-like shape [n_dims, n_bins_dim]</dt>
-<dd><dl class="first last docutils">
-<dt>Defines bin edges for each dimension of the estimate. Used to map observations into estimate bins.</dt>
-<dd>Additionally, a callable function can be passed instead if bin edges are defined at filter
-construction time.</dd>
-</dl>
-</dd>
-<dt>transition_model: string (optional=’indiscriminate’)</dt>
-<dd><dl class="first last docutils">
-<dt>The transition model to use for constructing a transition matrix:</dt>
-<dd>‘indiscriminate’: a kernel based spread based on mean velocity
-‘directional’: bin transition based in the forward direction
-‘bidirectional’: bin transition based in the sum of forward and backward directions
-‘custom’: must define transition_model_func, allows a custom matrix function</dd>
-</dl>
-</dd>
-</dl>
-<p>propogation_factor, float range [0,1] (optional=1)
-transition_model_func: function (optional=None)</p>
-<blockquote>
-<div>Function that takes the observations and bin edges and returns a transition matrix</div></blockquote>
-<p>Additional keyword arguments are passed to the transition model function</p>
-<dl class="method">
-<dt id="mlneuro.filtering.bayesian.TransitionInformedBayesian.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>T</em>, <em>y_proba</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.bayesian.TransitionInformedBayesian.fit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mlneuro.filtering.bayesian.TransitionInformedBayesian.predict">
-<code class="descname">predict</code><span class="sig-paren">(</span><em>T_test=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.bayesian.TransitionInformedBayesian.predict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="mlneuro-filtering-bayesian">
+<h1>mlneuro.filtering.bayesian<a class="headerlink" href="#mlneuro-filtering-bayesian" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
