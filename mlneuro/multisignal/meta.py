@@ -173,6 +173,9 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
             self.pickler = None
 
     def fit_predict(self, Xs_train, ys_train, Xs_test, *args, Ts_test=None, filter_times=None, discard_estimators=True, method='predict', **kwargs):
+        """Fit each estimator and predict immediately, discarding the estimator immediately by default. Useful if holding all of the fit estimators
+        in memory is limiting
+        """
         self._reset()
 
         predict_results = []
@@ -354,9 +357,9 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
         """Returns the index'th estimator in the multisignal estimator."""
         item = self.estimators_[index]
         return (item if not self.pickle_estimators
-            else self.pickler_.unpickle_estimator(self.estimators_[index]))
+            else self.pickler_.unpickle_data(self.estimators_[index]))
 
     def __iter__(self):
         """Returns iterator over estimators in the multisignal estimator."""
         return (iter(self.estimators_) if not self.pickle_estimators 
-            else map(self.pickler_.unpickle_estimator, self.estimators_))
+            else map(self.pickler_.unpickle_data, self.estimators_))

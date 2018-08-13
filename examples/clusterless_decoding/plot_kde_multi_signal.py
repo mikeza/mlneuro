@@ -36,9 +36,10 @@ from mlneuro.regression import BivariateKernelDensity
 from mlneuro.multisignal import MultisignalEstimator, train_test_split_multisignal, multi_to_single_signal
 from mlneuro.preprocessing.signals import remove_unlabeled_spikes
 from mlneuro.filtering import filter_at, TemporalSmoothedFilter
-from mlneuro.common.bins import bin_edges_from_data
+from mlneuro.common.bins import bin_edges_from_data, bin_centers_from_edges, linearized_bin_grid
 from mlneuro.utils.visuals import n_subplot_grid
 from mlneuro.utils.io import load_array_dict
+
 
 # Options
 
@@ -95,10 +96,10 @@ T_pred, (y_pred, y_test) = pipeline.predict_proba(Xs_test, ys_test, Ts=Ts_test, 
 # Normalize to a probability distribution
 y_pred /= np.sum(y_pred, axis=1)[:, np.newaxis]
 
-# Grab the grid from the first estimator to get the maximum estimate position quickly
-ybin_grid = pipeline[0].steps[-1][1].ybin_grid
+# Calculate the max-predicted bin
+ybin_centers = bin_centers_from_edges(ybin_edges)
+ybin_grid = linearized_bin_grid(ybin_centers)
 y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
-
 
 # Output
 

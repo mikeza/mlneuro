@@ -35,7 +35,7 @@ SAVE_TO_FILE = None
 # Use a GPU for the KDE?
 GPU = False
 # A subset of a features to use? (list of indices), None uses all
-FEATURE_SUBSET = None
+FEATURE_SUBSET = [0,1,2,3]
 
 # Load data
 from mlneuro.datasets import load_restaurant_row
