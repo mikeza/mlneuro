@@ -1,3 +1,5 @@
+"""Base classes for regressors to inherit
+"""
 import numpy as np
 
 from sklearn.base import RegressorMixin

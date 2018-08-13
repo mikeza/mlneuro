@@ -14,7 +14,7 @@ from .base import BinnedRegressorMixin
 from ..utils.arrayfuncs import atleast_2d
 from ..utils.parallel import available_cpu_count, spawn_threads
 from ..utils.logging import LoggingMixin
-from ..common.math import _gaussian_log_pdf, _gaussian_log_pdf_norm, _gaussian_pdf, logdotexp, tiny_epsilon
+from ..common.math import gaussian_log_pdf, gaussian_log_pdf_norm, gaussian_pdf, logdotexp, tiny_epsilon
 
 import logging
 logger = logging.getLogger(__name__)
@@ -63,15 +63,15 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         via init and a query function.
 
         Or a string, specifying:
-        - 'ball': Uses the BallTree from sklearn
-        - 'kd':   Uses the KDTree from sklearn
-        - 'gpu':  Uses the GPU enabled BufferKDTree 
-        - 'auto': Selects the best option based on data dimensionality and size
+        * 'ball': Uses the BallTree from sklearn
+        * 'kd':   Uses the KDTree from sklearn
+        * 'gpu':  Uses the GPU enabled BufferKDTree 
+        * 'auto': Selects the best option based on data dimensionality and size
 
         Suggested tree objects:
-        - :class:`sklearn.neighbors.BallTree` : fast tree for high dimensional data
-        - :class:`sklearn.neighbors.KDTree` : fast tree for low dimensional data
-        - :class:`mlneuro.regression.kde.BufferKDTreeWrapper`: supplied as a wrapper to the bufferkdtree package
+        * :class:`sklearn.neighbors.BallTree` : fast tree for high dimensional data
+        * :class:`sklearn.neighbors.KDTree` : fast tree for low dimensional data
+        * :class:`mlneuro.regression.kde.BufferKDTreeWrapper`: supplied as a wrapper to the bufferkdtree package
                 for GPU support
 
     tree_build_args : dict, optional (default = {})
@@ -141,16 +141,16 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
             @jit(nopython=True, nogil=True)
             def _inner_worker(ybin_grid, y, y_log_densities, bandwidth_y, i_start, i_end):
-                y_log_densities[:, i_start:i_end] = _gaussian_log_pdf(ybin_grid.reshape(ybin_grid.shape[0], 1, -1), mean=y[i_start:i_end, :],std_deviation=bandwidth_y).sum(axis=-1)
+                y_log_densities[:, i_start:i_end] = gaussian_log_pdf(ybin_grid.reshape(ybin_grid.shape[0], 1, -1), mean=y[i_start:i_end, :],std_deviation=bandwidth_y).sum(axis=-1)
 
             n_splits = y.shape[0] // 100000 + 1 if self.limit_memory_use else self.n_jobs
             spawn_threads(n_splits, y, target=_inner_worker, args=(self.ybin_grid, y, self.y_log_densities, self.bandwidth_y), sequential=self.limit_memory_use)
 
         else:
-            self.y_log_densities = _gaussian_log_pdf(self.ybin_grid[:, np.newaxis, :], mean=y,
+            self.y_log_densities = gaussian_log_pdf(self.ybin_grid[:, np.newaxis, :], mean=y,
                     std_deviation=self.bandwidth_y).sum(axis=-1)
 
-        self.y_log_densities += _gaussian_log_pdf_norm(n_dims=1, std_deviation=self.bandwidth_y)
+        self.y_log_densities += gaussian_log_pdf_norm(n_dims=1, std_deviation=self.bandwidth_y)
         self.y_log_occupancy = logsumexp(self.y_log_densities, axis=1)
 
     def _select_tree_backend(self, data_shape=None):
@@ -292,10 +292,10 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                              Xy_densities, i_start, i_end):
 
             n_dims = len(bandwidth_X)
-            pdf_norm = _gaussian_log_pdf_norm(n_dims, bandwidth_X)
+            pdf_norm = gaussian_log_pdf_norm(n_dims, bandwidth_X)
 
             for i in range(i_start, i_end):
-                X_density = np.sum(_gaussian_log_pdf(X[i, :], mean=X_train[neighbor_idxs[i], :],
+                X_density = np.sum(gaussian_log_pdf(X[i, :], mean=X_train[neighbor_idxs[i], :],
                                 std_deviation=bandwidth_X) + pdf_norm, axis=1)
                 Xy_density = logdotexp(y_log_densities[:, neighbor_idxs[i]], X_density)
                 Xy_densities[i, :] = Xy_density - y_train_log_occupancy
@@ -306,10 +306,10 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                              Xy_densities, i_start, i_end):
 
             n_dims = len(bandwidth_X)
-            pdf_norm = _gaussian_log_pdf_norm(n_dims, bandwidth_X)
+            pdf_norm = gaussian_log_pdf_norm(n_dims, bandwidth_X)
 
             for i in range(i_start, i_end):
-                X_density = np.sum(_gaussian_log_pdf(X[i, :], mean=X_train,
+                X_density = np.sum(gaussian_log_pdf(X[i, :], mean=X_train,
                                 std_deviation=bandwidth_X) + pdf_norm, axis=1)
                 Xy_density = logdotexp(y_log_densities, X_density)
                 Xy_densities[i, :] = Xy_density - y_train_log_occupancy

@@ -69,10 +69,9 @@ class MultisignalSplit(MultisignalMixin):
         args will be passed to it.
     signal_arrays : dictionary
         arrays to split on construction of sub cross-validator
-        e.g.
-            signal_arrays={'signal_based_data': [arr1, arr2, arr3]}
-        will pass the keyword signal_based_data=arr1 to signal1 and
-        signal_based_data=arr2 to arr2, ...
+        e.g. `signal_arrays={'signal_based_data': [arr1, arr2, arr3]}`
+        will pass the keyword `signal_based_data=arr1` to signal1 and
+        `signal_based_data=arr2` to arr2, ...
     additional arguments :
         both additional arguments and keyword arguments will be collected
         and passed to the base_cv object
@@ -216,10 +215,10 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
             raise ValueError('More signals passed to predict than fitted estimators')
 
         predict_results = []
-        for X, estimator in zip(Xs, self.estimators_):
+        for i, (X, estimator) in enumerate(zip(Xs, self.estimators_)):
             if self.pickle_estimators:
                 estimator = self.pickler_.unpickle_data(estimator)
-            logger.info('Predicting on signal {}/{} with test size {}'.format(i + 1, len(Xs), X_test.shape[0]))
+            logger.info('Predicting on signal {}/{} with test size {}'.format(i + 1, len(Xs), X.shape[0]))
             result = estimator.predict(X, **kwargs)
             if self.pickle_results:
                 result = self.pickler_.pickle_data(result)
@@ -233,10 +232,10 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
             raise ValueError('More signals passed to predict than fitted estimators')
 
         predict_results = []
-        for X, estimator in zip(Xs, self.estimators_):
+        for i, (X, estimator) in enumerate(zip(Xs, self.estimators_)):
             if self.pickle_estimators:
                 estimator = self.pickler_.unpickle_data(estimator)
-            logger.info('Predicting on signal {}/{} with test size {}'.format(i + 1, len(Xs), X_test.shape[0]))
+            logger.info('Predicting on signal {}/{} with test size {}'.format(i + 1, len(Xs), X.shape[0]))
             result = estimator.predict_proba(X, **kwargs)
             if self.pickle_results:
                 result = self.pickler_.pickle_data(result)
@@ -249,10 +248,10 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
             raise ValueError('More signals passed to predict than fitted estimators')
 
         predict_results = []
-        for X, estimator in zip(Xs, self.estimators_):
+        for i, (X, estimator) in enumerate(zip(Xs, self.estimators_)):
             if self.pickle_estimators:
                 estimator = self.pickler_.unpickle_data(estimator)
-            logger.info('Predicting on signal {}/{} with test size {}'.format(i + 1, len(Xs), X_test.shape[0]))
+            logger.info('Predicting on signal {}/{} with test size {}'.format(i + 1, len(Xs), X.shape[0]))
             result = estimator.predict_log_proba(X, **kwargs)
             if self.pickle_results:
                 result = self.pickler_.pickle_data(result)

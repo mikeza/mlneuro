@@ -8,6 +8,11 @@ from sklearn.preprocessing import normalize
 
 from ..utils.arrayfuncs import atleast_2d
 
+__all__ = ['linearized_bin_grid', 'bin_edges_from_centers', 'bin_centers_from_edges', 'bin_edges_from_data',
+           'bin_edges_from_data_bysize', 'paired_bin_edges', 'bin_counts', 'bin_distances', 'reshape_flat',
+           'reshape_binned', 'binned_data', 'binned_data_onehot', 'binned_data_gaussian', 'occupancy',
+           'binned_indices_to_masks', 'idxs_in_bins']
+
 
 def linearized_bin_grid(bin_centers):
     """Given the centers of bins as a n_dims length list of arrays of shape (n_bins_dim,)
@@ -104,8 +109,7 @@ def bin_edges_from_data_bysize(data, bin_size):
 
 def paired_bin_edges(bin_edges):
     """Generate a set of edge pairs such that the limits of each bin is described
-    e.g. for one dimensional bin edges [(1,2,3,4)]
-        the paired bin edges are [[(1,2), (2,3), (3,4)]]
+    e.g. for one dimensional bin edges `[(1,2,3,4)]` the paired bin edges are `[[(1,2), (2,3), (3,4)]]`
     """
     paired_edges = []
     for d in range(len(bin_edges)):
@@ -120,12 +124,10 @@ def bin_counts(bin_centers):
 
 
 def bin_distances(bin_grid, directional=False, return_squared=False):
-    """Calculate the euclidean distance betwen a set of bins given the bin_grid
-    (see linearized_bin_grid)
+    """Calculate the euclidean distance betwen a set of bins given the bin grid
+    (see :func:`linearized_bin_grid`) where `n_bins = prod(n_bins_dim)`
 
-    n_bins = prod(n_bins_dim)
-
-    Arguments
+    Parameters
     ---------
     bin_grid : an array of n dimensional coordinates of bin interesection centers
         shape (n_bins, n_dims)
@@ -151,13 +153,13 @@ def bin_distances(bin_grid, directional=False, return_squared=False):
 
 
 def reshape_flat(x, bin_counts=None):
-    """Reshape an array of (n_samples, n_bins_dim0, n_bins_dim1, ...) into (n_samples, prod(n_bins_dim))
+    """Reshape an array of `(n_samples, n_bins_dim0, n_bins_dim1, ...)` into `(n_samples, prod(n_bins_dim))`
     """
     return x.reshape((-1, np.prod(bin_counts))) if bin_counts is not None else x.reshape(x.shape[0], -1)
 
 
 def reshape_binned(x, bin_counts, reflect=False):
-    """Reshape an array of (n_samples, prod(n_bins_dim)) into (n_samples, n_bins_dim0, n_bins_dim1, ...) 
+    """Reshape an array of `(n_samples, prod(n_bins_dim))` into `(n_samples, n_bins_dim0, n_bins_dim1, ...)`
     """
     x = x.reshape(-1, *bin_counts)
     ndims = len(bin_counts)

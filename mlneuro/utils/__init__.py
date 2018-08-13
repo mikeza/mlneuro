@@ -1,3 +1,16 @@
-"""Utilties for IO, memory management, parallelization, logging, and more...
+"""Utilties for ease of programming
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    arrayfuncs
+    io
+    logging
+    memory
+    parallel
+    visuals
 """
 from . import arrayfuncs, io, logging, memory, parallel, visuals

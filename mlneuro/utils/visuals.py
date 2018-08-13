@@ -1,3 +1,5 @@
+"""Utilties for data visualization
+"""
 import math
 
 import logging

@@ -7,23 +7,23 @@ from ..utils.parallel import spawn_threads
 
 
 class TemporalSmoothedFilter(BaseEstimator):
+    """
+    A filter for smoothing temporal predictiosn/data. Fit with times and and a set of same-length
+    data arrays to filter. Predict at a given set of times sampling values from nearby data points
+    using a gaussian for weights.
 
+    Parameters
+    ---------
+    bandwidth_T: float (optional=0.10)
+        The bandwith parameter of the kernel
+    std_deviation: float (optional=2.5)
+        The number of standard deviations to truncate the kernel at
+    kernel: string or function
+        A function pointer for the kernel to use, or a string specifying a built in kernel shape
+
+    """
+        
     def __init__(self, bandwidth_T=0.10, std_deviation=2.5, kernel='gaussian', n_jobs=1):
-        """
-        A filter for smoothing temporal predictiosn/data. Fit with times and and a set of same-length
-        data arrays to filter. Predict at a given set of times sampling values from nearby data points
-        using a gaussian for weights.
-
-        Parameters
-        ---------
-        bandwidth_T: float (optional=0.10)
-            The bandwith parameter of the kernel
-        std_deviation: float (optional=2.5)
-            The number of standard deviations to truncate the kernel at
-        kernel: string or function
-            A function pointer for the kernel to use, or a string specifying a built in kernel shape
-
-        """
         self.bandwidth_T = bandwidth_T
         self.std_deviation = std_deviation
         self.kernel = kernel

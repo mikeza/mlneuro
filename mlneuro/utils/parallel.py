@@ -1,3 +1,5 @@
+"""Utilities for parallelization
+"""
 import numpy as np
 import threading
 import re

@@ -1,3 +1,5 @@
+"""Utilties for dealing with memory restrictions
+"""
 import pickle
 import numpy as np
 
@@ -9,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class CachingPickler(object):
+    """Pickle objects to and from disk to reduce memory usage
+    """
 
     def __init__(self, keygen_fn=hash, save_location=None, clear_disk_on_reset=True, cache_items=True, cache_size=2):
         self.save_location = save_location

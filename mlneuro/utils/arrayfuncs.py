@@ -1,3 +1,5 @@
+"""Utility functions for dealing with array-like data
+"""
 import numpy as np
 import sys
 

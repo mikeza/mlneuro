@@ -27,6 +27,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+__all__ = ['limit_time_range', 'remove_unlabeled_spikes', 'spike_stimulus', 'process_clustered_signal_data',
+           'multi_to_single_unit_signal_cellids', 'separate_signal_features', 'firing_rates', 'firing_rates_with_history']
+
+
 def limit_time_range(signal_times, *signal_arrs, time_start=0, time_end=np.inf):
     """Limit the time range of multiple (or single) signal time arrays and associated data arrays
     """
@@ -168,8 +172,8 @@ def separate_signal_features(signal_data, separation=100, scaler=MinMaxScaler):
 def firing_rates(spike_times, spike_cellids, temporal_bin_edges, normalize=True, center=False):
     """Calculate the firing rates in temporal bins given edges and spike times/cell ids
 
-    Note, here spike_ are used instead of signal_ because the multisignal data should
-    be collapsed to a single single with `multi_to_single_unit_signal_cellids`
+    Note, here the prefix `spike_` is used instead of `signal_` because the multisignal data should
+    be collapsed to a single signal with :func:`multi_to_single_unit_signal_cellids`
 
     Returns
     ------

@@ -3,7 +3,7 @@ import numpy as np
 from numba import jit
 from sklearn.base import BaseEstimator
 
-from ..common.math import tiny_epsilon, _gaussian_pdf
+from ..common.math import tiny_epsilon, gaussian_pdf
 from ..common.bins import bin_centers_from_edges, linearized_bin_grid, binned_data, bin_distances
 from ..utils.parallel import spawn_threads
 
@@ -200,7 +200,7 @@ class TransitionInformedBayesian(BaseEstimator):
         dists = bin_distances(bin_grid, return_squared=False)
 
         # Apply a gaussian kernel to every distance
-        return _gaussian_pdf(dists, std_deviation=v)
+        return gaussian_pdf(dists, std_deviation=v)
 
     def _directional_transition_matrix(self, observations, bin_edges):
         binned_obs = binned_data(observations[:,1:], bin_edges, flat=True)

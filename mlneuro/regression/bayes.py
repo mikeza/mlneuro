@@ -1,3 +1,9 @@
+"""Bayesian based regressors that invert a model 
+
+.. autosummary::
+    :toctree: _autosummary
+
+"""
 import numpy as np
 
 from math import factorial, log
@@ -11,7 +17,7 @@ from .base import BinnedRegressorMixin
 from ..utils.arrayfuncs import atleast_2d
 from ..utils.parallel import available_cpu_count, spawn_threads
 from ..utils.logging import LoggingMixin
-from ..common.math import _gaussian_log_pdf, _gaussian_log_pdf_norm, _gaussian_pdf, logdotexp, tiny_epsilon
+from ..common.math import gaussian_log_pdf, gaussian_log_pdf_norm, gaussian_pdf, logdotexp, tiny_epsilon
 from ..common.bins import bin_distances, occupancy
 
 import logging
@@ -24,6 +30,8 @@ try:
 except ImportError as e:
     logger.warning("Statsmodels is not installed. You will be unable to use the GLM Bayesian estimators {}".format(e))
 
+
+__all__ = ['PoissonBayesBinnedRegressor']
 
 class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
     """Estimates the conditional probability of y given X (as count data) assuming X follows a poisson distribution.

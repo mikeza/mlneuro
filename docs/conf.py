@@ -38,27 +38,30 @@ release = '1.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-autoclass_content = "both"
+# autoclass_content = "both"
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery'
 ]
 
 sphinx_gallery_conf = {
     # path to examples scripts
-    'examples_dirs' : '../examples',
+    'examples_dirs' : ['../examples/clusterless_decoding/', '../examples/clustered_decoding/'],
     # path where to save gallery generated examples
-    'gallery_dirs'  : 'auto_examples'}
+    'gallery_dirs'  : 'generated/examples'}
 
 autosummary_generate = True 
 napoleon_use_rtype = False
+autodoc_default_flags = ['members', 'inherited-members']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['_templates', '_templates/autosummary']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

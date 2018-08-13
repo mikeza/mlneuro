@@ -4,8 +4,9 @@ import numpy as np
 
 from numba import jit
 
+__all__ = ['tiny_epsilon', 'scale_to_range', 'logdotexp', 'gaussian_pdf', 'gaussian_log_pdf', 'gaussian_log_pdf_norm']
 
-_gaussian_pdf_C = np.sqrt(2.0 * np.pi) 
+gaussian_pdf_C = np.sqrt(2.0 * np.pi) 
 
 
 def tiny_epsilon(dtype):
@@ -46,7 +47,7 @@ def logdotexp(a, b):
 
 
 @jit(nopython=True)
-def _gaussian_pdf(x, mean=0, std_deviation=1):
+def gaussian_pdf(x, mean=0, std_deviation=1):
     """Evaluate the normal probability density function at specified points.
     Unlike the `scipy.stats.norm.pdf`, this function is not general and does
     not do any sanity checking of the inputs. As a result it is a much faster
@@ -66,14 +67,14 @@ def _gaussian_pdf(x, mean=0, std_deviation=1):
         The normal probability density function evaluated at `x`
     """
     z = (x - mean) / std_deviation
-    return np.exp(-0.5 * z ** 2) / (_gaussian_pdf_C * std_deviation)
+    return np.exp(-0.5 * z ** 2) / (gaussian_pdf_C * std_deviation)
 
 
 @jit(nopython=True)
-def _gaussian_log_pdf(x, mean=0, std_deviation=1):
-    """Same as _gaussian_pdf but returns the unnormalized log probabilty
+def gaussian_log_pdf(x, mean=0, std_deviation=1):
+    """Same as :func:`gaussian_pdf` but returns the unnormalized log probabilty
     to reduce rounding error. The normalizing factor must be retrieved
-    from _gaussian_log_pdf_norm, it has been moved out to increase the 
+    from :func:`gaussian_log_pdf_norm`, it has been moved out to increase the 
     speed of this function.
     """
     z = (x - mean) / std_deviation
@@ -81,7 +82,7 @@ def _gaussian_log_pdf(x, mean=0, std_deviation=1):
 
 
 @jit(nopython=True)
-def _gaussian_log_pdf_norm(n_dims=1, std_deviation=1):
+def gaussian_log_pdf_norm(n_dims=1, std_deviation=1):
     """Generate a log normalizing factor for a n-dimensional gaussian with 
     a given standard deviation. Since it is negative, it should be added to
     the log pdf.

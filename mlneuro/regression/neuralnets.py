@@ -29,14 +29,19 @@ class LSTMRegressor(BaseEstimator, RegressorMixin):
 
     Parameters
     ----------
-    units: integer, optional, default 400
+    units : integer, optional, default 400
         Number of hidden units in each layer
-    dropout: decimal, optional, default 0
+    dropout : decimal, optional, default 0
         Proportion of units that get dropped out
-    num_epochs: integer, optional, default 10
+    num_epochs : integer, optional, default 10
         Number of epochs used for training
-    verbose: binary, optional, default=0
+    verbose : binary, optional, default=0
         Whether to show progress of the fit after each epoch
+
+    Attributes
+    ---------
+    model : Keras model
+        Access to the underlying keras model. Useful for parameter access and history.
     """
 
     def __init__(self, units=400, dropout=0, num_epochs=30, verbose=0):
@@ -45,17 +50,24 @@ class LSTMRegressor(BaseEstimator, RegressorMixin):
         self.num_epochs = num_epochs
         self.verbose = verbose
 
-    def fit(self, X, y, **kwargs):
+    def fit(self, X, y, **fit_params):
+        """Construct the neural network model and fit it with the training data
 
-        """
-        Train LSTM Decoder
+
         Parameters
         ----------
-        X: numpy 3d array of shape [n_samples,n_time_bins,n_neurons]
-            This is the neural data.
-            See example file for an example of how to format the neural data correctly
-        y: array-like, shape [n_samples, n_outputs]
-            This is the outputs that are being predicted
+        X : array-like, shape = [n_samples, n_bins_history, n_features]
+            The training input samples, with the history to include in the recurrent network as
+            the second axis.
+        y : array-like, shape = [n_samples, n_dims]
+            The target values.
+        **fit_params
+            Additional keyword arguments are passed to the keras `model.fit` call
+
+        Returns
+        -------
+        self : object
+            Returns self.
         """
 
         model = Sequential()
@@ -70,21 +82,20 @@ class LSTMRegressor(BaseEstimator, RegressorMixin):
 
         # Fit model (and set fitting parameters)
         model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-        model.fit(X, y, epochs=self.num_epochs, verbose=self.verbose, **kwargs)
+        model.fit(X, y, epochs=self.num_epochs, verbose=self.verbose, **fit_params)
         self.model = model
 
     def predict(self, X_test):
-
-        """
-        Predict outcomes using trained LSTM Decoder
+        """Predict using the trained network
 
         Parameters
         ----------
-        X_test: numpy 3d array of shape [n_samples,n_time_bins,n_neurons]
-            This is the neural data being used to predict outputs.
+        X: array-like, shape [n_samples, n_bins_history, n_features]
+            Test samples
+
         Returns
         -------
-        y_test_predicted: array-like, shape [n_samples,n_outputs]
+        y_test_predicted: array-like, shape [n_samples, n_outputs]
             The predicted outputs
         """
 
@@ -93,16 +104,15 @@ class LSTMRegressor(BaseEstimator, RegressorMixin):
 
 
 class DenseNNRegressor(BaseEstimator, RegressorMixin):
-    """
-    Class for the dense (fully-connected) neural network decoder
+    """ Class for the dense (fully-connected) neural network decoder
 
     Parameters
     ----------
-    units: array-like, integers, shape [n_layers]
+    units : array-like, integers, shape [n_layers]
         The number of hidden units in each layer, can be a single integer for one layer
-    dropout: decimal from [0,1]
+    dropout : decimal from [0,1]
         Proportion of units that get dropped out, if 0, no dropout layer is included
-    num_epochs: integer, optional, default 10
+    num_epochs : integer, optional, default 10
         Number of epochs used for training
     optimizer : string or object
         The Keras optimizer to use for training
@@ -121,15 +131,21 @@ class DenseNNRegressor(BaseEstimator, RegressorMixin):
         self.activation = activation
 
     def fit(self, X, y, **fit_params):
-        """
-        Construct the neural network model and fit it with the training data
+        """Construct the neural network model and fit it with the training data
+
         Parameters
         ----------
-        X: array-like, shape [n_samples,n_features]
-            This is the neural data.
-            See example file for an example of how to format the neural data correctly
-        y: array-like, shape [n_samples, n_outputs]
-            This is the outputs that are being predicted
+        X : array-like, shape = [n_samples, n_features]
+            The training input samples. 
+        y : array-like, shape = [n_samples, n_dims]
+            The target values.
+        **fit_params
+            Additional keyword arguments are passed to the keras `model.fit` call
+
+        Returns
+        -------
+        self : object
+            Returns self.
         """
         self.units_ = np.atleast_1d(self.units).astype(np.int32)
 
@@ -162,7 +178,6 @@ class DenseNNRegressor(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, X):
-
         """
         Predict using the trained network
 
@@ -185,13 +200,14 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
     """
     Class for the dense (fully-connected) neural network decoder
+
     Parameters
     ----------
-    units: array-like, integers, shape [n_layers]
+    units : array-like, integers, shape [n_layers]
         The number of hidden units in each layer, can be a single integer for one layer
-    dropout: decimal from [0,1]
+    dropout : decimal from [0,1]
         Proportion of units that get dropped out, if 0, no dropout layer is included
-    num_epochs: integer, optional, default 10
+    num_epochs : integer, optional, default 10
         Number of epochs used for training
     optimizer : string or object
         The Keras optimizer to use for training
@@ -246,15 +262,21 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
             raise ValueError('Unrecognized loss of {}'.format(self.loss))
 
     def fit(self, X, y, **fit_params):
-        """
-        Construct the neural network model and fit it with the training data
+        """Construct the neural network model and fit it with the training data
+
         Parameters
         ----------
-        X: array-like, shape [n_samples,n_features]
-            This is the neural data.
-            See example file for an example of how to format the neural data correctly
-        y: array-like, shape [n_samples, n_outputs]
-            This is the outputs that are being predicted
+        X : array-like, shape = [n_samples, n_features]
+            The training input samples. 
+        y : array-like, shape = [n_samples, n_dims]
+            The target values.
+        **fit_params
+            Additional keyword arguments are passed to the keras `model.fit` call
+
+        Returns
+        -------
+        self : object
+            Returns self.
         """
 
         self.units_ = np.atleast_1d(self.units).astype(np.int32)

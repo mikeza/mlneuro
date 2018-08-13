@@ -1,8 +1,12 @@
+"""Utilities for logging
+"""
 import logging
 from time import perf_counter
 
 
 class LoggingMixin(object):
+    """Add a logging attribute to a class
+    """
 
     @property
     def logger(self):
