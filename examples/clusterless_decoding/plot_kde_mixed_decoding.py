@@ -1,4 +1,7 @@
-"""Placeholder docstring
+"""
+=======================================================================
+Clusterless decoding with cluster information for additional performance
+========================================================================
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,9 +22,9 @@ from mlneuro.common.bins import bin_edges_from_data, bin_centers_from_edges, lin
 
 # Options
 # Temporal resolution to filter at, in seconds
-RESOLUTION = 0.1               
+RESOLUTION = 0.05          
 # Number of stimulus bins per dimension
-STIMULUS_BINS = 24
+STIMULUS_BINS = 16
 # Number of cross-validation folds
 N_FOLDS = 3
 # Plot the maximum predicted value in each dimension                     
@@ -36,6 +39,9 @@ SAVE_TO_FILE = None
 GPU = False
 # A subset of a features to use? (list of indices), None uses all
 FEATURE_SUBSET = [0,1,2,3]
+# Reduce the amount of time decoded to allow for low-memory systems (use 0, np.inf to not limit)
+TIME_START = 1500
+TIME_END = 3000
 
 # Load data
 from mlneuro.datasets import load_restaurant_row
@@ -52,6 +58,9 @@ if FEATURE_SUBSET is None: # Keep all marks
 Ts = data['signal_times']
 Xs = [np.hstack([marks[:, FEATURE_SUBSET], atleast_2d(cellids)]) for marks, cellids in zip(data['signal_marks'], data['signal_cellids'])]
 ys = spike_stimulus(Ts, stimulus_times, stimulus_data)
+
+# Limit the time range as specified
+Ts, (Xs, ys) = limit_time_range(Ts, Xs, ys, time_start=TIME_START, time_end=TIME_END)
 
 # Separate signal features
 Xs = separate_signal_features(Xs)
@@ -72,12 +81,12 @@ bandwidth_X = bandwidth_X = np.array(([bandwidth_features] * len(FEATURE_SUBSET)
 
 # Construct the KDE
 estimator = BivariateKernelDensity(n_neighbors=30, bandwidth_X=0.13, bandwidth_y=12, ybins=ybin_edges, 
-                                    tree_backend='auto' if GPU else 'ball', n_jobs=8)
+                                    tree_backend='auto' if GPU else 'ball', n_jobs=8, logger_level='debug')
 
 # Create a cross-validator object
-cv = generate_crossvalidator(estimator, X, y, training_mask=y_train_mask, n_splits=N_FOLDS)
+cv = generate_crossvalidator(estimator, X, y, training_mask=y_train_mask, n_splits=N_FOLDS, limit_training_size=0.35)
 
-# Run the prediction cross-validated (method='predict_proba' by default)
+# Run the prediction cross-validated and get probabilties
 y_pred = cross_val_predict(estimator, X, y, cv=cv, n_jobs=1, method='predict_proba')
 
 # Filter the data
