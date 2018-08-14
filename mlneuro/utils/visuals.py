@@ -32,7 +32,8 @@ def n_subplot_grid(n, max_horizontal=4, **kwargs):
         ncols = sq_side
 
     nrows = -(-n // ncols) # Round up (one-liner)
-    fig, axes = plt.subplots(nrows, ncols, **kwargs)
+    constrained = kwargs.pop('constrained_layout', True) # Constrained layout by default
+    fig, axes = plt.subplots(nrows, ncols, constrained_layout=constrained, **kwargs)
 
     axes = axes.flatten()
 
