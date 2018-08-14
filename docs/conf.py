@@ -54,7 +54,7 @@ sphinx_gallery_conf = {
     # path to examples scripts
     'examples_dirs' : ['../examples/clusterless_decoding/', '../examples/clustered_decoding/'],
     # path where to save gallery generated examples
-    'gallery_dirs'  : 'generated/examples'}
+    'gallery_dirs'  : ['generated/examples/clusterless', 'generated/examples/clustered']}
 
 autosummary_generate = True 
 napoleon_use_rtype = False
