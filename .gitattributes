@@ -1,0 +1,3 @@
+mlneuro/datasets/data/RestaurantRowExampleDay.pickle filter=lfs diff=lfs merge=lfs -text
+mlneuro/datasets/data/RestaurantRowTimeOutExampleDay_RR.pickle filter=lfs diff=lfs merge=lfs -text
+mlneuro/datasets/data/RestaurantRowTimeOutExampleDay_TO.pickle filter=lfs diff=lfs merge=lfs -text
