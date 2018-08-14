@@ -143,7 +143,8 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
             def _inner_worker(ybin_grid, y, y_log_densities, bandwidth_y, i_start, i_end):
                 y_log_densities[:, i_start:i_end] = gaussian_log_pdf(ybin_grid.reshape(ybin_grid.shape[0], 1, -1), mean=y[i_start:i_end, :],std_deviation=bandwidth_y).sum(axis=-1)
 
-            n_splits = y.shape[0] // 100000 + 1 if self.limit_memory_use else self.n_jobs
+            # Launch n_jobs parallel workers, unless limting memory use then do sequential workers each with a chunk
+            n_splits = y.shape[0] // 50000 + 1 if self.limit_memory_use else self.n_jobs
             spawn_threads(n_splits, y, target=_inner_worker, args=(self.ybin_grid, y, self.y_log_densities, self.bandwidth_y), sequential=self.limit_memory_use)
 
         else:
@@ -179,7 +180,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         else:
             raise ValueError('Unknown tree backend setting of type {}'.format(type(self.tree_backend)))
 
-        self.logger.debug('Selected tree backend {}'.format(self.tree_backend_.__class__.__qualname__))
+        self.logger.debug('Selected tree backend {}'.format(self.tree_backend))
 
     def fit(self, X, y):
         """Fit the kernel density estimator by calculating y-space density 
@@ -202,6 +203,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         self._select_tree_backend(X.shape)
         self._init_ybins_from_param(y, self.ybins)
 
+        self.logger.debug('Calculating y densities over {} bins for {} points'.format(self.ybin_grid.shape[0], y.shape[0]))
         self._calculate_y_densities(y)
 
         self._correct_ybin_occupancy()
@@ -211,6 +213,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
             self.X_train = X
             self.logger.debug('Attempting to save memory by not fitting the tree until predict')
         else:
+            self.logger.debug('Fitting nearest neighbor tree of type {}'.format(self.tree_backend))
             self.X_train_tree = self.tree_backend_(X, **self.tree_build_args)
 
         return self
@@ -278,7 +281,10 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         # If X_test is sufficiently large, use the dualtree query algorithm
         if self.n_neighbors > 0:
             k = self.n_neighbors if self.n_neighbors < X_train.shape[0] else X_train.shape[0]
-            neighbor_dists, neighbor_idxs = self.X_train_tree.query(X, k=k, dualtree=X.shape[0] > 20000)
+            use_dual = X.shape[0] > 20000
+            self.logger.debug('Finding nearest {} neighbors for {} query points in training data '
+                              'size {} with dualtree={}'.format(k, X.shape[0], X_train.shape[0], use_dual))
+            neighbor_dists, neighbor_idxs = self.X_train_tree.query(X, k=k, dualtree=use_dual)
 
         Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_))
 
@@ -316,12 +322,13 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
         # Launch the specified number of threads with the worker thread for k-nearest
         #   or all points estimation
+        self.logger.debug('Calculating bivariate density over {} bins for {} points'.format(self.ybin_grid.shape[0], X.shape[0]))
         if self.n_neighbors > 0 and self.n_neighbors < X_train.shape[0]:
             spawn_threads(self.n_jobs, X, _compiled_worker_neighbors,
                 args=(X, X_train, np.atleast_1d(self.bandwidth_X), neighbor_dists, neighbor_idxs,
                      self.y_log_densities, self.y_log_occupancy, Xy_densities))
         else:
-            logger.debug('The density estimate is being calculated for all points which may result in much slower computation')
+            self.logger.warning('The density estimate is being calculated for all points which may result in much slower computation')
             spawn_threads(self.n_jobs, X, _compiled_worker_all,
                 args=(X, X_train, np.atleast_1d(self.bandwidth_X),
                      self.y_log_densities, self.y_log_occupancy, Xy_densities))
