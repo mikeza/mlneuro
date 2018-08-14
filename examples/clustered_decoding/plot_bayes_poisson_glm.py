@@ -1,4 +1,7 @@
-"""Example docsstring
+"""
+=========================================================================
+Clustered decoding with naive bayes inversion of a statsmodels poisson GLM
+==========================================================================
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,10 +27,8 @@ STIMULUS_BINS = 16
 RESOLUTION = 0.05
 
 # Load data
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-data_path = os.path.join(dir_path, '../data/RestaurantRowExampleDay.pickle')
-data = load_array_dict(data_path)
+from mlneuro.datasets import load_restaurant_row
+data = load_restaurant_row()
 
 # Clean up stimulus data
 stimulus_times = data['full_stimulus_times']
@@ -97,17 +98,17 @@ y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 
 
 # Filter?
-filt = TransitionInformedBayesian(transition_obs=np.hstack([stimulus_times.reshape(-1, 1), stimulus_data]), bin_edges=pipeline.ybin_edges, transition_model='directional', recursive_update_prop=0.75)
-y_pred_filt = filt.fit(T_test, y_pred).predict()
-y_pred_filt /= np.sum(y_pred_filt, axis=1)[:, np.newaxis]
-y_predicted_filt = ybin_grid[np.argmax(y_pred_filt, axis=1)]
+# filt = TransitionInformedBayesian(transition_obs=np.hstack([stimulus_times.reshape(-1, 1), stimulus_data]), bin_edges=pipeline.ybin_edges, transition_model='directional', recursive_update_prop=0.75)
+# y_pred_filt = filt.fit(T_test, y_pred).predict()
+# y_pred_filt /= np.sum(y_pred_filt, axis=1)[:, np.newaxis]
+# y_predicted_filt = ybin_grid[np.argmax(y_pred_filt, axis=1)]
 
 if DISPLAY_PLOTS:
     fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1)
     for dim, ax in enumerate(axes):
         ax.plot(T_test, y_test[:, dim])
         ax.plot(T_test, y_predicted[:, dim])
-        ax.plot(T_test, y_predicted_filt[:, dim])
+        # ax.plot(T_test, y_predicted_filt[:, dim])
         ax.set_title('y test (blue) vs predicted (orange) dim={}'.format(dim))
 
     fig.show()

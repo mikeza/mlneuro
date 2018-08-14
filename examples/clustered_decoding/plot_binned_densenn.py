@@ -1,3 +1,8 @@
+"""
+=======================================================================
+Clustered decoding of binned probabilities with a dense neural network
+=======================================================================
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -17,10 +22,8 @@ SAVE_TO_FILE = 'example_test'
 STIMULUS_BINS = 32
 
 # Load data
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-data_path = os.path.join(dir_path, '../../data/RestaurantRowExampleDay.pickle')
-data = load_array_dict(data_path)
+from mlneuro.datasets import load_restaurant_row
+data = load_restaurant_row()s
 
 # Convert to a single signal
 # Ensure unique cell ids
@@ -39,7 +42,6 @@ y = stimulus_at_times(data['full_stimulus_times'], data['full_stimulus'], T)
 X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, test_size=0.25)
 
 # Fit and predict with the pipeline
-
 # Notice, we pass an sklearn pipeline formatted fit parameter such that
 #   validation_split=0.15 is passed to the DenseNNBinnedRegressor's fit function
 #   which will set part of the training data aside to give validation set scores

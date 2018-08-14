@@ -1,4 +1,7 @@
-"""Using sklearn's support gradient descent linear model to predict position from clustered data (firing rates)
+"""
+=======================================================================
+Clustered decoding with sklearn's support gradient descent linear model 
+========================================================================
 """
 import numpy as np
 
@@ -17,10 +20,8 @@ from mlneuro.utils.visuals import n_subplot_grid
 DISPLAY_PLOTS = True            # Plot the predicted value in each dimension
 
 # Load data
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-data_path = os.path.join(dir_path, '../data/RestaurantRowExampleDay.pickle')
-data = load_array_dict(data_path)
+from mlneuro.datasets import load_restaurant_row
+data = load_restaurant_row()
 
 # Convert to a single signal
 # Ensure unique cell ids

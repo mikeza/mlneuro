@@ -1,4 +1,7 @@
-"""Example docstring"
+"""
+=======================================================================
+Comparison of multiple regression techniques applied to clustered data
+=======================================================================
 """
 import numpy as np
 import sklearn.metrics
@@ -47,10 +50,8 @@ SCORERS = ['explained_variance', 'neg_mean_absolute_error']   # For bar plots
 METRICS = ['explained_variance_score', 'mean_absolute_error'] # For data plots
 
 # Load data
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-data_path = os.path.join(dir_path, '../data/RestaurantRowExampleDay.pickle')
-data = load_array_dict(data_path)
+from mlneuro.datasets import load_restaurant_row
+data = load_restaurant_row()
 
 # Clean up stimulus data
 stimulus_times = data['full_stimulus_times']
