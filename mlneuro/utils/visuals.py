@@ -13,7 +13,15 @@ except ImportError:
 
 def n_subplot_grid(n, max_horizontal=4, **kwargs):
     """Creates a grid of n_subplots using matplotlib, additional kwargs are passed to the subplots call
+    unless they are specifing left/right/bottom/top/wspace/hspace spacing which are passed to subplots adjust. If 
+    subplots_adjust=False, no call is made
     """
+
+    spacing_args = ['left', 'right', 'bottom', 'top', 'wspace', 'hspace']
+    spacing = {}
+    for k in spacing_args:
+        spacing[k] = kwargs.pop(k, None)
+
     if n <= 0:
         raise ValueError('Cannot create {} subplots'.format(n))
     if n == 1:
@@ -34,6 +42,8 @@ def n_subplot_grid(n, max_horizontal=4, **kwargs):
     nrows = -(-n // ncols) # Round up (one-liner)
     constrained = kwargs.pop('constrained_layout', True) # Constrained layout by default
     fig, axes = plt.subplots(nrows, ncols, constrained_layout=constrained, **kwargs)
+
+    fig.subplots_adjust(**spacing)
 
     axes = axes.flatten()
 
