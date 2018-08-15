@@ -1,10 +1,10 @@
 """
-===================================================================================================
-Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM
-===================================================================================================
+==================================================================================================
+Decoding binned probabilties from firing rates with naive bayes inversion of poisson tuning curves
+==================================================================================================
 
-A statsmodels GLM is used with a Poisson family model to create an expected firing rate across
-per neuron across the range of the stimulus data. This model is then inverted and compared
+Tuning curves are calculated per feature creating an expected firing rate across per neuron across
+the range of the stimulus data. This model is assumed to be poisson and then inverted and compared 
 to the true firing rate of the neuron in the test set to predict the stimulus.
 
 Preprocessing
@@ -17,13 +17,12 @@ which is not normalized to the cells firing rate to keep it as count data needed
 
 Estimation
 ----------
-1. Both quadratic and linear model Poisson GLMs are constructed for comparison
-2. Only one of the models is used for prediction
-3. Predictions are given as a probability over the range of the data at each time
+1. A poisson model is constructed
+2. Predictions are given as a probability over the range of the data at each time
 
 Plotting
 --------
-The tuning curves given by each model are compared with the actual firing rates across the bins. 
+The tuning curves given by the training data are displayed.
 The maximum-likelihood predictions given by the chosen model are compared to the true position.
 
 """
@@ -34,7 +33,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
-from mlneuro.regression import PoissonGLMBayesianRegressor
+from mlneuro.regression import PoissonBayesianRegressor
 from mlneuro.multisignal import multi_to_single_signal
 from mlneuro.preprocessing.signals import process_clustered_signal_data
 from mlneuro.preprocessing.stimulus import stimulus_at_times, smooth_stimulus
@@ -78,38 +77,24 @@ X = np.sum(X, axis=1)
 # spikes_second =  X.sum(axis=0) / (T.max() - T.min()) / 6
 # X = X[:, spikes_second < 200]
 
-pipeline_quadratic = PoissonGLMBayesianRegressor(ybins=STIMULUS_BINS, n_jobs=-1, encoding_model='quadratic', use_prior=False)
-pipeline_linear = PoissonGLMBayesianRegressor(ybins=STIMULUS_BINS, n_jobs=-1, encoding_model='linear')
+pipeline = PoissonBayesianRegressor(ybins=STIMULUS_BINS, n_jobs=-1, use_prior=False)
 
 y = stimulus_at_times(stimulus_times, stimulus_data, T)
 
 # Split the data, not shuffling so that the displayed plot will be over a small range
 X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, test_size=0.15, shuffle=False)
 
-pipeline_quadratic.fit(X_train, y_train)
-pipeline_linear.fit(X_train, y_train)
+# Fit the model
+pipeline.fit(X_train, y_train)
 
 if DISPLAY_TUNING_CURVES:
-    # Calculate ground truth firing rates / bin
-    ground_truth_tc = np.zeros((X.shape[1], pipeline_quadratic.ybin_grid.shape[0]))
-    bin_positions = binned_data(y, pipeline_quadratic.ybin_edges)
-    for i in range(X.shape[1]):
-        for b in range(ground_truth_tc.shape[1]):
-            ground_truth_tc[i, b] = np.sum(X[bin_positions == b, i])
-
-    fig, axes = n_subplot_grid(30, max_horizontal=3, hspace=0.01, wspace=0.01)
-    for i in range(0, 30, 3):
-        axes[i].imshow(pipeline_quadratic.tuning_curves[i].reshape(STIMULUS_BINS, STIMULUS_BINS))
-        axes[i].set_title('Quadratic')
-        axes[i + 1].imshow(pipeline_linear.tuning_curves[i].reshape(STIMULUS_BINS, STIMULUS_BINS))
-        axes[i + 1].set_title('Linear')
-        axes[i + 2].imshow(ground_truth_tc[i].reshape(STIMULUS_BINS, STIMULUS_BINS))
-        axes[i + 2].set_title('Ground truth')
+    fig, axes = n_subplot_grid(X.shape[1])
+    for i, ax in enumerate(axes):
+        axes[i].imshow(pipeline.tuning_curves[i].reshape(STIMULUS_BINS, STIMULUS_BINS))
+        axes[i].set_title('Example TC {}'.format(i))
     fig.show()
 
-# Select a pipeline to use for prediction
-pipeline = pipeline_quadratic
-
+# Predict probabilities
 y_pred = pipeline.predict_proba(X_test)
 
 # Already single signal but this will sort the arrays quickly

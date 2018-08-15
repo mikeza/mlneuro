@@ -1,7 +1,21 @@
 """
-=======================================================================
-Clusterless decoding with cluster information for additional performance
-========================================================================
+======================================================================
+Decoding position from spike features and cluster information with kde
+======================================================================
+
+BivariateKDE is used to estimate the probability of the stimulus given
+each spike of multisignal data reduced to an apparant single signal 
+by combing the signals but separating the data in feature-space by
+adding a constant that's a multiple of the signal #.Additionally, cluster
+information is added as another feature to provide more information.
+
+
+Including this many spikes (noise included) is very memory intensive and
+therefore a small section of time is included in the train/test sets,
+few bins are used, and a subset of features are used. This example
+should be expanded to do cross-validation manually so that each fold
+can be saved separately resulting in lower memory consumption.
+
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,21 +38,21 @@ from mlneuro.common.bins import bin_edges_from_data, bin_centers_from_edges, lin
 # Temporal resolution to filter at, in seconds
 RESOLUTION = 0.05          
 # Number of stimulus bins per dimension
-STIMULUS_BINS = 16
+STIMULUS_BINS = 24
 # Number of cross-validation folds
 N_FOLDS = 3
 # Plot the maximum predicted value in each dimension                     
 DISPLAY_PLOTS = True
 # The time range to show in the plot (None for auto)
 # default is a small range for example plots in documentation            
-PLOT_X_RANGE = [1200,1400]
+PLOT_X_RANGE = [1700,2000]
 # Save the prediction results to a file for later use
 # e.g. example_results.mat 
 SAVE_TO_FILE = None 
 # Use a GPU for the KDE?
 GPU = False
 # A subset of a features to use? (list of indices), None uses all
-FEATURE_SUBSET = [0,1,2,3]
+FEATURE_SUBSET = None
 # Reduce the amount of time decoded to allow for low-memory systems (use 0, np.inf to not limit)
 TIME_START = 1500
 TIME_END = 3000
@@ -87,7 +101,9 @@ estimator = BivariateKernelDensity(n_neighbors=30, bandwidth_X=0.13, bandwidth_y
 cv = generate_crossvalidator(estimator, X, y, training_mask=y_train_mask, n_splits=N_FOLDS, limit_training_size=0.35)
 
 # Run the prediction cross-validated and get probabilties
-y_pred = cross_val_predict(estimator, X, y, cv=cv, n_jobs=1, method='predict_proba')
+# Notice, `pickle_predictions` is set which will write predictions to disk each fold to make space in memory
+#   for computations
+y_pred = cross_val_predict(estimator, X, y, cv=cv, n_jobs=1, method='predict_proba', pickle_predictions=True)
 
 # Filter the data
 filt = TemporalSmoothedFilter(bandwidth_T=2.5*RESOLUTION, std_deviation=10, n_jobs=8)
@@ -103,13 +119,19 @@ y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 
 # Output
 if DISPLAY_PLOTS:
-    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1)
+    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1, figsize=(10,8))
     for dim, ax in enumerate(axes):
         ax.plot(T_pred, y_test[:, dim])
         ax.plot(T_pred, y_predicted[:, dim])
+        if PLOT_X_RANGE is not None: ax.set_xlim(PLOT_X_RANGE)
         ax.set_title('y test (blue) vs predicted (orange) dim={}'.format(dim))
 
     fig.show()
+
+    plt.figure()
+    plt.imshow(y_pred[50,:].reshape(STIMULUS_BINS, STIMULUS_BINS))
+    plt.title('Example binned probability estimate')
+    plt.show()
 
 if SAVE_TO_FILE is not None:
     from mlneuro.utils.io import save_array_dict

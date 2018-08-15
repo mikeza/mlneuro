@@ -1,15 +1,16 @@
 """
-=============================================================
-Clusterless decoding with bivariate kernel density estimation
-=============================================================
+===================================================================
+Decoding position from spike features with a quasi-multisignal kde
+===================================================================
 
 BivariateKDE is used to estimate the probability of the stimulus given
-each spike of multisignal data reduced to a single signal and separated
-in feature-space by adding a constant that's a multiple of the signal #.
+each spike of multisignal data reduced to an apparant single signal 
+by combing the signals but separating the data in feature-space by
+adding a constant that's a multiple of the signal #.
 
 
 Preprocessing
-------------
+-------------
 1. Stimulus data is smoothed slightly to remove jitter
 2. Unlabeled (noise) spikes are dropped
 3. The features are separated across signals by adding a constant (larger per signal)
@@ -17,7 +18,7 @@ Preprocessing
 5. A training mask is created when the rat is running via a stimulus gradient mask
 
 Estimation
----------
+----------
 1. The stimulus data is binned so the cross-validation fits the same bins each fold
 2. A BivariatKernelDensity estimator is setup with reasonable bandwidths
 3. A cross-validation object is built which will use the training mask
@@ -87,6 +88,7 @@ ys = spike_stimulus(Ts, stimulus_times, stimulus_data)
 Ts, _, (Xs, ys) = remove_unlabeled_spikes(Ts, data['signal_cellids'], Xs, ys)
 
 # Separate signal features
+# Note, this function will scale the data by default before adding the constant
 Xs = separate_signal_features(Xs)
 
 # Drop to a single signal
@@ -124,7 +126,7 @@ y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 
 # Output
 if DISPLAY_PLOTS:
-    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1)
+    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1, figsize=(10,8))
     for dim, ax in enumerate(axes):
         ax.plot(T_pred, y_test[:, dim])
         ax.plot(T_pred, y_predicted[:, dim])
@@ -132,6 +134,11 @@ if DISPLAY_PLOTS:
         ax.set_title('y test (blue) vs predicted (orange) dim={}'.format(dim))
 
     fig.show()
+
+    plt.figure()
+    plt.imshow(y_pred[50,:].reshape(STIMULUS_BINS, STIMULUS_BINS))
+    plt.title('Example binned probability estimate')
+    plt.show()
 
 if SAVE_TO_FILE is not None:
     from mlneuro.utils.io import save_array_dict

@@ -90,7 +90,7 @@ y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 # Output
 
 if DISPLAY_PLOTS:
-    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1)
+    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1, figsize=(10,8))
     for dim, ax in enumerate(axes):
         ax.plot(T_pred, y_test[:, dim])
         ax.plot(T_pred, y_predicted[:, dim])

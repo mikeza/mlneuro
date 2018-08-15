@@ -1,19 +1,19 @@
 """
-===================================================
-Clusterless decoding with multisignal kde pipeline
-===================================================
+=====================================================================
+Decoding position from spike features with a multisignal kde pipeline
+=====================================================================
 
 A pipeline with min-max scaling and BivariateKDE is used to estimate the probability
 of the stimulus given each spike of multisignal data. 
 
 
 Preprocessing
-------------
+--------------
 1. Unlabeled (noise) spikes are dropped
 2. Xs, ys, and Ts are divided into training and test sets
 
 Estimation
----------
+------------
 1. The stimulus data is binned so the cross-validation fits the same bins each fold
 2. A pipeline is made with a min-max scaler and KDE
 3. The pipeline is wrapped with a Multisignal meta-estimator and filter for reducing the signals
@@ -53,7 +53,7 @@ N_FOLDS = 3
 DISPLAY_PLOTS = True
 # The time range to show in the plot (None for auto)
 # default is a small range for example plots in documentation            
-PLOT_X_RANGE = [1200,1400]
+PLOT_X_RANGE = None
 # Save the prediction results to a file for later use
 # e.g. example_results.mat 
 SAVE_TO_FILE = None 
@@ -104,14 +104,19 @@ y_predicted = ybin_grid[np.argmax(y_pred, axis=1)]
 # Output
 
 if DISPLAY_PLOTS:
-    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1)
+    fig, axes = n_subplot_grid(y_predicted.shape[1], max_horizontal=1, figsize=(10,8))
     for dim, ax in enumerate(axes):
         ax.plot(T_pred, y_test[:, dim])
         ax.plot(T_pred, y_predicted[:, dim])
         if PLOT_X_RANGE is not None: ax.set_xlim(PLOT_X_RANGE)
-        ax.set_title('ys test (blue) vs predicted (orange) dim={}'.format(dim))
+        ax.set_title('y test (blue) vs predicted (orange) dim={}'.format(dim))
 
     fig.show()
+
+    plt.figure()
+    plt.imshow(y_pred[50,:].reshape(STIMULUS_BINS, STIMULUS_BINS))
+    plt.title('Example binned probability estimate')
+    plt.show()
 
 if SAVE_TO_FILE is not None:
     from mlneuro.utils.io import save_array_dict
