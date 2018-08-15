@@ -39,8 +39,8 @@ class CachingPickler(object):
         self.mykey_ = str(self.keygen_fn(self))
         self.save_location_ = self.save_location
         if self.save_location_ is None:
-            self.save_location_ = environ.get('SCIKIT_LEARN_NEURO',
-                            join('~', '.scikit_learn_neuro/pickled_items/', self.mykey_))
+            self.save_location_ = environ.get('MLNEURO_TMP',
+                            join('~', '.mlneuro/pickled_items/'))
         self.save_location_ = expanduser(join(self.save_location_, self.mykey_))
         if not exists(self.save_location_):
             makedirs(self.save_location_)
