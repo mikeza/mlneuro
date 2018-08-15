@@ -42,6 +42,7 @@ from sklearn.model_selection._validation import _check_is_permutation, _score
 from sklearn.model_selection import train_test_split
 
 from .base import MultisignalMixin, make_multisignal_fn
+from ..utils.memory import CachingPickler
 
 import logging
 logger = logging.getLogger(__name__)
