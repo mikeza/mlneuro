@@ -18,7 +18,7 @@ from ..utils.arrayfuncs import atleast_2d
 from ..utils.parallel import available_cpu_count, spawn_threads
 from ..utils.logging import LoggingMixin
 from ..common.math import gaussian_log_pdf, gaussian_log_pdf_norm, gaussian_pdf, logdotexp, tiny_epsilon
-from ..common.bins import bin_distances, occupancy
+from ..common.bins import bin_distances, occupancy, binned_data
 
 import logging
 logger = logging.getLogger(__name__)
@@ -31,9 +31,167 @@ except ImportError as e:
     logger.warning("Statsmodels is not installed. You will be unable to use the GLM Bayesian estimators {}".format(e))
 
 
-__all__ = ['PoissonBayesBinnedRegressor']
+__all__ = ['PoissonBayesianRegressor', 'PoissonGLMBayesianRegressor']
 
-class PoissonBayesBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
+
+class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
+    """Estimates the conditional probability of y given X (as count data) assuming X follows a poisson distribution.
+
+    The model is fit by calculating an expected X over a grid of possible y values. The prediction then follows
+    a naive bayesian inversion of the poisson.
+
+    X must have an integer dtype such as obtained from :func:`mlneuro.preprocessing.signals.firing_rates_history` with
+    `normalize=False`
+
+    Parameters
+    ---------
+    ybins : array-like, optional (default = 32)
+        If a scalar, the number of bins in each y dimension resulting in ybins ** ndims bins.
+
+        If an array, expected to be a (n_bins + 1, n_dims) description of bin edges
+    encoding_model : string, optional (default = 'quadratic')
+        'linear' or 'quadratic' specifying if the y values should be expanded to allow the glm to fit y^2 
+    model_type : string, optional (default = 'glm')
+        'glm', 'zeroinflated', or 'generalized' specifying the underlying statsmodel Poisson model to be used.
+        The results with anything but 'glm' are thusfar poor and not recommended.
+    use_prior : boolean, optional (default=False)
+        Multply estimates by the prior estimate of where y will be, based on the occupancy
+    nan_unvisited : boolean, optional (default=False)
+        If `use_prior` is True, then should bins visisted under a small threshold be set to nan in all estimates
+    n_jobs : int, optional (default=-1)
+        The number of threads to use for prediction. -1 uses all available cpus.
+
+    """
+
+    def __init__(self, ybins=32, n_jobs=-1, use_prior=False, nan_unvisited=False):
+        self.ybins = ybins
+        self.n_jobs = n_jobs
+        self.use_prior = use_prior
+        self.nan_unvisited = nan_unvisited
+
+    def _init_ybins_from_param(self, y, bin_param):
+        if np.isscalar(bin_param): # bin count
+            self._init_ybins(y_data=y, ybin_count=bin_param)
+        else:                  # bin edges
+            if len(bin_param) != y.shape[1]:
+                raise ValueError('If NaiveBayes.bin_param is not a scalar, the number of rows must'
+                                 'be equal to the number y dimensions')
+            self.ybin_edges = bin_param
+            self._init_ybins(y_data=None, ybin_auto=False)
+
+    def fit(self, X, y):
+        """Fit the model by calculating tuning curves for each feature
+
+        Parameters
+        ----------
+        X : array-like, shape = [n_samples, n_features]
+            The training input samples. Features are assumed to be independent e.g. neurons w/ firing rates
+        y : array-like, shape = [n_samples, n_dims]
+            The target values. Will be binned according to `self.ybins`.
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+
+        X, y = check_X_y(X, y, multi_output=True, y_numeric=True, warn_on_dtype=True)
+
+        # Generate bins for y
+        self._init_ybins_from_param(y, self.ybins)
+
+        # Calculate occupancy
+        self.occ = occupancy(y, self.ybin_edges, unvisited_mode='nan' if self.nan_unvisited else 'uniform').flatten()
+
+        # Generate tuning curves for each feature (neuron)
+        self.tuning_curves = np.zeros((X.shape[1], self.ybin_grid.shape[0]))
+        bin_positions = binned_data(y, self.ybin_edges)
+        for i in range(X.shape[1]):
+            for b in range(self.ybin_grid.shape[0]):
+                self.tuning_curves[i, b] = np.nansum(X[bin_positions == b, i])
+
+        # Normalize by occupancy
+        self.tuning_curves /= self.occ
+
+        return self
+
+
+    def predict(self, X):
+        """ Predict values of y given X
+
+        Parameters
+        ----------
+        X : array-like of shape = [n_samples, n_features]
+            The input samples.
+
+        Returns
+        -------
+        y : array of shape = [n_samples, n_dims]
+            The center of the highest probability bin for each sample
+        """
+        return self.ybin_grid[np.argmax(self.predict_proba(X), axis=1)]
+
+    def predict_proba(self, X):
+        """ Predict the probability of each y bin given X
+
+        Parameters
+        ----------
+        X : array-like of shape = [n_samples, n_features]
+            The input samples.
+
+        Returns
+        -------
+        p(y|X) : array of shape = [n_samples, n_bins]
+            The conditional probability distribution over the y bins given a sample X
+        """
+        py_x = self.predict_log_proba(X)
+        py_x = np.exp(py_x - np.nanmax(py_x, axis=1)[:, np.newaxis])
+        py_x /= np.nansum(py_x, axis=1)[:, np.newaxis]
+        return py_x
+
+    def predict_log_proba(self, X):
+        """ Predict the log-probability of each y bin given X
+
+        Parameters
+        ----------
+        X : array-like of shape = [n_samples, n_features]
+            The input samples.
+
+        Returns
+        -------
+        log(p(y|X)) : array of shape = [n_samples, n_bins]
+            The log conditional probability distribution over the y bins given a sample X
+        """
+        y_predicted = np.ones((X.shape[0], self.ybin_grid.shape[0]))
+
+        @jit(nogil=True) # Can't use nopython because gammaln is not supported by numba
+        def _compiled_worker(y_predicted, X, tuning_curves, occ, i_start, i_end):
+
+            for i in range(i_start, i_end):
+                # A vectorized computation is over all X.shape[1] neurons at once
+                spikes_expect = tuning_curves
+                spikes_actual = X[i, :].reshape(-1, 1)
+
+                # Probability of the given neuron's spike count given tuning curve (assuming poisson distribution)
+                # Note: gammaln is used to approximate the factorial (and thus requires n + 1)
+                p = -spikes_expect + np.log(np.nan_to_num(spikes_expect ** spikes_actual)) - gammaln(spikes_actual + 1)
+
+                # Note: log is used from the python math module to avoid integer overflows in numpy
+                # p = np.log(np.exp(-spikes_expect) * (spikes_expect ** spikes_actual)) - log(factorial(spikes_actual))
+
+                # Update py assuming neurons are independent
+                y_predicted[i, :] += np.nansum(p, axis=0)
+                
+                # Use occupancy as a prior
+                if occ is not None:
+                    y_predicted[i, :] += occ
+
+        spawn_threads(self.n_jobs, X, _compiled_worker,
+                args=(y_predicted, X, self.tuning_curves, self.occ if self.use_prior else None))  
+
+        return y_predicted
+
+
+class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
     """Estimates the conditional probability of y given X (as count data) assuming X follows a poisson distribution.
 
     The model is fit by calculating an expected X over a grid of possible y values. The prediction then follows
