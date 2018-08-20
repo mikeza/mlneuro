@@ -6,6 +6,7 @@ from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.base import is_classifier
 
 from .multisignal import MultisignalSplit
+from .utils.memory import CachingPickler
 
 import logging
 logger = logging.getLogger(__name__)
@@ -17,10 +18,38 @@ def generate_crossvalidator(estimator, X, y=None, n_splits=3, base=None, trainin
     available in sklearn.
 
     Output crossvalidators:
-        KFold or StratifiedKFold if regression or classification is being done respectively
-        TrainOnSubsetCV if the training size is to be reduced for each fold
-        MaskedTrainingCV if the training set has noise in it that shouldn't be used
-        MultisignalCV if X is a list or tuple and needs each list-item to be split separately
+    - KFold or StratifiedKFold if regression or classification is being done respectively
+    - TrainOnSubsetCV if the training size is to be reduced for each fold
+    - MaskedTrainingCV if the training set has noise in it that shouldn't be used
+    - MultisignalCV if X is a list or tuple and needs each list-item to be split separately
+
+    Parameters
+    ---------
+    estimator : BaseEstimator
+        The estimator, used to check for classifciation, multisignal
+    X : array-like
+        X data, used t check for multisignal data
+    y : array-like
+        y data, used to check for classification
+    n_splits : int
+        The number of cross-validation folds
+    base : object/type
+        The base cross-validator type (likely from sklearn). If None and estimator is a classifier,
+        `StratifiedKFold` is used, otherwise `KFold` is used.
+    training_mask : array-like
+        A boolean mask for X indiciating which data is safe for use in the training set. If X is multisignal,
+        should be a list of masks.
+    limt_training_size : float
+        A limit for the size of the training set to reduce computation times / overfitting.
+        If greater than 1, a literal maximum size for the training set. If less than 1, a fractional
+        amount of the training set to select at random. May also be passed as a tuple of form
+        (fractional_size, max_size) or (fractional_size, min_size, max_size) which will apply
+        the fractional size then ensure it is still within the specified bounds
+
+    Returns
+    -------
+    cross_validator 
+        An initialized cross-validation object
 
     """
     if isinstance(X, list) or isinstance(X, tuple):
@@ -50,7 +79,7 @@ def generate_crossvalidator(estimator, X, y=None, n_splits=3, base=None, trainin
             if len(limit_training_size) == 2:
                 kwargs = dict(train_size=limit_training_size[0], 
                     max_size=limit_training_size[1])
-            elif len(limit_training_size) == 2:
+            elif len(limit_training_size) == 3:
                 kwargs = dict(train_size=limit_training_size[0], 
                     max_size=limit_training_size[2],
                     min_size=limit_training_size[1])
@@ -179,11 +208,14 @@ import scipy.sparse as sp
 
 def cross_val_predict(estimator, X, y=None, groups=None, cv=None, n_jobs=1,
                       verbose=0, fit_params=None, pre_dispatch='2*n_jobs',
-                      method='predict'):
+                      method='predict', pickle_predictions=False, **pickler_kwargs):
     """Please see sklearn for documenation
     This has only been modified so binned regressors can return probabilites
+    and predictions can be cached during computation
     """
     X, y, groups = indexable(X, y, groups)
+
+    pickler = CachingPickler(**pickler_kwargs) if pickle_predictions else None
 
     cv = check_cv(cv, y, classifier=is_classifier(estimator))
 
@@ -196,13 +228,16 @@ def cross_val_predict(estimator, X, y=None, groups=None, cv=None, n_jobs=1,
     parallel = Parallel(n_jobs=n_jobs, verbose=verbose,
                         pre_dispatch=pre_dispatch)
     prediction_blocks = parallel(delayed(_fit_and_predict)(
-        clone(estimator), X, y, train, test, verbose, fit_params, method)
+        clone(estimator), X, y, train, test, verbose, fit_params, method, pickler)
         for train, test in cv.split(X, y, groups))
 
     # Concatenate the predictions
-    predictions = [pred_block_i for pred_block_i, _ in prediction_blocks]
-    test_indices = np.concatenate([indices_i
-                                   for _, indices_i in prediction_blocks])
+    if pickle_predictions:
+        predictions = [pickler.unpickle_data(pred_block_i) for pred_block_i, _ in prediction_blocks]
+    else:
+        predictions = [pred_block_i for pred_block_i, _ in prediction_blocks]
+
+    test_indices = np.concatenate([indices_i for _, indices_i in prediction_blocks])
 
     if not _check_is_permutation(test_indices, _num_samples(X)):
         raise ValueError('cross_val_predict only works for partitions')
@@ -219,9 +254,10 @@ def cross_val_predict(estimator, X, y=None, groups=None, cv=None, n_jobs=1,
 
 
 def _fit_and_predict(estimator, X, y, train, test, verbose, fit_params,
-                     method):
+                     method, pickler=None):
     """Please see sklearn for documenation
     This has only been modified so binned regressors can return probabilites
+    and predictions can be pickled
     """
     # Adjust length of sample weights
     fit_params = fit_params if fit_params is not None else {}
@@ -282,4 +318,8 @@ def _fit_and_predict(estimator, X, y, train, test, verbose, fit_params,
                                                   default_values[method])
             predictions_for_all_classes[:, estimator.classes_] = predictions
             predictions = predictions_for_all_classes
+
+    if pickler is not None:
+        predictions = pickler.pickle_data(predictions)
+
     return predictions, test
