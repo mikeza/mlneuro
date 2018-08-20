@@ -7,7 +7,8 @@ mlneuro
 
 	guide
 	api
-	generated/examples/index
+	generated/examples/clusterless/index
+	generated/examples/clustered/index
 
 This package aims to extend the sklearn_ model to decoding neural data. This is by no means a complete pipeline for
 processing neural data and purposefully does not implement low-level processing such as signal filtering, spike detection,
