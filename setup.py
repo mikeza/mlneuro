@@ -5,8 +5,8 @@ from setuptools import setup, find_packages
 
 INSTALL_REQUIRES = ['numba', 'scikit-learn']
 
-EXTRA_REQUIRES = {'neuralnets': ['keras']
-				  'bayes': ['statsmodels']
+EXTRA_REQUIRES = {'neuralnets': ['keras'],
+				  'bayes': ['statsmodels'],
 				  'visuals': ['matplotlib']}
 setup(
         name='mlneuro',
