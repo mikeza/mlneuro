@@ -12,6 +12,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+__all__ = ['generate_crossvalidator', 'MaskedTrainingCV', 'TrainOnSubsetCV', 'cross_val_predict']
+
+
 def generate_crossvalidator(estimator, X, y=None, n_splits=3, base=None, training_mask=None, limit_training_size=None):
     """Create a cross-validation object which splits data into training and test sets. This is a general
     function which simplifies the chaining of several cross-validator objects to extend the base cross-validators

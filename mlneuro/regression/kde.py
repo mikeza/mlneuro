@@ -91,7 +91,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
     y_log_occupancy : array-like, shape = [n_bins]
         The summed occupancy for each bin in y-space
-    
+
     See Also
     --------
     :class:`mlneuro.regression.base.BinnedRegressionMixin` : Information about bin attributes

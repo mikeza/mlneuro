@@ -1,8 +1,4 @@
-"""Bayesian based regressors that invert a model 
-
-.. autosummary::
-    :toctree: _autosummary
-
+"""Bayesian based regressors that invert a model
 """
 import numpy as np
 

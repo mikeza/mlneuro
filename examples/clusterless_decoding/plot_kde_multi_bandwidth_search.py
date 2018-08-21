@@ -1,4 +1,8 @@
-"""Placeholder docstring
+"""
+======================================================
+Multisignal parameter grid search with a KDE pipeline
+======================================================
+
 """
 import numpy as np
 import matplotlib.pyplot as plt

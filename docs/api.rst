@@ -193,8 +193,68 @@ Classes
    :template: class.rst
 
 
-   regression.kde.BivariateKernelDensity
+   regression.BivariateKernelDensity
    regression.LSTMRegressor
    regression.DenseNNRegressor
    regression.DenseNNBinnedRegressor
-   regression.PoissonBayesBinnedRegressor
+   regression.PoissonGLMBayesianRegressor
+   regression.PoissonBayesianRegressor
+
+.. _crossvalidation_ref:
+
+:mod:`mlneuro.crossvalidation`: Classes and functions for crossvalidation 
+=========================================================================
+
+.. automodule:: mlneuro.crossvalidation
+    :no-members:
+    :no-inherited-members:
+
+
+Classes
+-------
+.. currentmodule:: mlneuro
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+
+   crossvalidation.MaskedTrainingCV
+   crossvalidation.TrainOnSubsetCV
+
+Functions
+---------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+   crossvalidation.generate_crossvalidator
+   crossvalidation.cross_val_predict
+
+
+:mod:`mlneuro.metrics`: Performance measurement
+=============================================
+
+.. automodule:: mlneuro.metrics
+    :no-members:
+    :no-inherited-members:
+
+Functions
+---------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+   metrics.entropy
+   metrics.KL_divergence
+   metrics.JS_divergence
+   metrics.Hellinger_distance
+   metrics.binned_error
+   metrics.weighted_binned_error
+   metrics.metric_at_times

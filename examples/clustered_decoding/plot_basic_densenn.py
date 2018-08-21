@@ -8,6 +8,7 @@ neural firing rates.
 
 Preprocessing
 -------------
+
 1. Time is binned over the range of the data
 2. Spike times and associated cell-ids are used to construct a firing-rate matrix
 which is normalized to the maximum firing rate of the cell and includes several
@@ -17,11 +18,13 @@ bins before and after the current bin
 
 Estimation
 ----------
+
 1. A pipeline is constructed with a StandardScaler and DenseNNRegressor with default settings
 2. A single value is estimated for each sample (per dimension)
 
 Plotting
 --------
+
 The predicted value and true value are compared
 """
 import numpy as np

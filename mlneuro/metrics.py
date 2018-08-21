@@ -7,13 +7,13 @@ import scipy.stats
 from scipy.spatial.distance import euclidean, norm
 from numba import jit
 
-from .bins import linearized_bin_grid, bin_distances
+from .common.bins import linearized_bin_grid, bin_distances
 from .common.math import tiny_epsilon
 from .utils.arrayfuncs import find_nearest_indices, atleast_2d
 
 _SQRT2 = np.sqrt(2)
 
-
+__all__ = ['entropy', 'KL_divergence', 'JS_divergence', 'Hellinger_distance', ]
 def entropy(p):
     """Calculate the relative entropy of a discrete probability distribution shape (n_bins)
     or set of probability distributions shape (n_samples, n_bins)

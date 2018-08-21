@@ -50,11 +50,27 @@ extensions = [
     'sphinx_gallery.gen_gallery'
 ]
 
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/{.major}'.format(
+        sys.version_info), None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'sklearn': ('http://scikit-learn.org/stable/', None)
+}
+
 sphinx_gallery_conf = {
     # path to examples scripts
     'examples_dirs' : ['../examples/clusterless_decoding/', '../examples/clustered_decoding/'],
     # path where to save gallery generated examples
-    'gallery_dirs'  : ['generated/examples/clusterless', 'generated/examples/clustered']}
+    'gallery_dirs'  : ['generated/examples/clusterless', 'generated/examples/clustered'],
+    # directory where function granular galleries are stored
+    'backreferences_dir'  : 'generated/gallery_backreferences',
+    # Modules for which function level galleries are created. 
+    'doc_module'          : 'mlneuro',
+    'reference_url': {
+        'mlneuro': None}
+}
 
 autosummary_generate = True 
 napoleon_use_rtype = False
@@ -66,7 +82,7 @@ templates_path = ['_templates', '_templates/autosummary']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = '.rst'
 # source_suffix = '.md'
 
 # The master toctree document.

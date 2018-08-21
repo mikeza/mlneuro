@@ -62,7 +62,7 @@ Estimators are the base object of both sklearn and mlneuro. An estimator is fit,
 Data splitting
 ^^^^^^^^^^^^^^
 
-If an estimator is trained with the same data it is tested with, it should easily produce the matching values of y (depending on the model behind the estimator this will vary). However, the goal is typically to produce an estimator that *generalizes* and does not *over-fit* the data. Consequently, the data is split into non-overlapping training and test sets. sklearn provides the function ``train_test_split`` for this purpose and mlneuro provides a multisignal version :func:`~mlneuro.multisignal.train_test_split_multisignal` for list-formed data. For predicting over the whole range of the data but avoiding the tautology of overlapping training and test sets see crossvalidation_. The following examples will be for single signal data
+If an estimator is trained with the same data it is tested with, it should easily produce the matching values of y (depending on the model behind the estimator this will vary). However, the goal is typically to produce an estimator that *generalizes* and does not *over-fit* the data. Consequently, the data is split into non-overlapping training and test sets. sklearn provides the function :func:`~sklearn.model_selection.train_test_split` for this purpose and mlneuro provides a multisignal version :func:`~mlneuro.multisignal.train_test_split_multisignal` for list-formed data. For predicting over the whole range of the data but avoiding the tautology of overlapping training and test sets see crossvalidation_. The following examples will be for single signal data
 
 >>> from sklearn.model_selection import train_test_split
 >>>
@@ -178,8 +178,8 @@ Functions
 
 sklearn provides several functions for cross-validation:
 
-- ``cross_val_predict`` : return predictions over the full range of a dataset
-- ``cross_val_score`` : score the predictions of a dataset using a metric (scorer)
+- :func:`~sklearn.model_selection.cross_val_predict` : return predictions over the full range of a dataset
+- :func:`~sklearn.model_selection.cross_val_score` : score the predictions of a dataset using a metric (scorer)
 
 additionally, mlneuro provides:
 
@@ -191,7 +191,7 @@ scoring cross-validation is not yet implemented in mlneuro.
 Cross-validators
 ^^^^^^^^^^^^^^^^^
 
-sklearn provides several classes that split the data for cross-validation. The two that must be mentioned are ``KFold`` and ``StratifiedKFold`` which function on regression and classification data respectively. K-fold refers to, as described above, splitting the data into k same-size sections. Stratified k-fold refers to the division of the data such that each class is evenly represented.
+sklearn provides several classes that split the data for cross-validation. The two that must be mentioned are :class:`~sklearn.model_selection.KFold` and :class:`~sklearn.model_selection.StratifiedKFold` which function on regression and classification data respectively. K-fold refers to, as described above, splitting the data into k same-size sections. Stratified k-fold refers to the division of the data such that each class is evenly represented.
 
 mlneuro provides additional cross-validators that wrap these base classes to provide additional functionality
 
@@ -209,3 +209,33 @@ to simplify the selection of a cross-validator, :func:`~mlneuro.crossvalidation.
 Parameter selection and tuning
 ------------------------------
 
+Many estimators' performance can be greatly effected by parameter selection and, consequently, a search of viable parameters is highly recommended. sklearn provides :class:`~sklearn.model_selection.GridSearchCV` and :class:`~sklearn.model_selection.RandomizedSearchCV` which search a grid of parameters or random samples over a distribution respectively and calculate a cross-validated score for each parameter combination. Additionally, mlneuro provides :class:`~mlneuro.multisignal.GridSearchCVMultisignal` and :class:`~mlneuro.multisignal.RandomizedSearchCVMultisignal` which provide the same functionality for multisignal estimators. All of the mentioned classes wrap an estimator (or pipeline) to create a new grid-searching estimator. On fit, the best parameters are found and selected allowing prediction using the best scoring parameters.
+
+Here is an excerpt of the grid search example over a single parameter
+
+>>> # Construct a basic pipeline for one signal
+>>> signal_pipeline = make_pipeline(
+                          MinMaxScaler(),
+                          BivariateKernelDensity(n_neighbors=-1, bandwidth_X=0.13, bandwidth_y=18, ybins=ybin_edges, 
+                               tree_backend='auto' if GPU else 'ball', n_jobs=4))
+>>> 
+>>> # Convert the pipeline to support multiple signals
+>>> estimator = MultisignalEstimator(signal_pipeline)
+>>> 
+>>> # Create a cross-validator object that
+>>> #   Limits the training set to a subset of the full data
+>>> #   Splits the data into K "folds"
+>>> cv = generate_crossvalidator(estimator, Xs, ys, training_mask=y_train_masks, n_splits=N_FOLDS)
+>>> 
+>>> # Create a search grid, accessing the KDE parameter in the pipeline by sklearn conventions
+>>> grid = [{'base_estimator__bivariatekerneldensity__bandwidth_X': np.linspace(0.01, 0.2, 5)}]
+>>>
+>>> # Construct two scorers that reduce the score of multisignal data to the mean across signals
+>>> scoring = {'mse': MultisignalScorer(neg_mean_absolute_error_scorer, aggr_method='mean'), 
+          'exp_var': MultisignalScorer(explained_variance_scorer, aggr_method='mean')}
+>>>
+>>> search = GridSearchCVMultisignal(estimator, scoring=scoring, cv=cv, param_grid=grid,
+                                 return_train_score=True, refit=False)
+>>> # Run the search on cross-validated folds
+>>> search.fit(Xs, ys)
+>>> results = search.cv_results_
