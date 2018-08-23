@@ -123,9 +123,32 @@ A pipeline can be used to create a single estimator from a chain of estimators. 
 Multisignal
 ^^^^^^^^^^^
 
-Since neural data frequently is recorded from multiple signals, it is useful to provide a construct to fit and predict from signals independently then combine the results. For this, several meta-classes were constructed that mirror sklearn objects but allow multisignal data to be processed and can be found in the :class:`mlneuro.multisignal` module. The :class:`~mlneuro.multisignal.MultisignalEstimator` wraps an estimator, allowing it to accept multisignal data. It generates a clone of the base estimator for each signal and calls the asked function. If passed timestamps, it will reduce the multisignal predictions into a single sorted array. Otherwise, the predictions will be returned in list form with a set of predictions per signal.
+Since neural data frequently is recorded from multiple signals, it is useful to provide a construct to fit and predict from signals independently then combine the results. For this, several meta-classes were constructed that mirror sklearn objects but allow multisignal data to be processed and can be found in the :class:`mlneuro.multisignal` module. The :class:`~mlneuro.multisignal.MultisignalEstimator` wraps an estimator, allowing it to accept multisignal data. It generates a clone of the base estimator for each signal and calls the asked function. Without using its extra features (timestamp based reduction / sorting, estimator pickling, fit and predict) it functions equivalent to the following:
 
+>>> from sklearn.dummy import DummyRegressor
 >>> from mlneuro.multisignal import MultisignalEstimator
+>>>
+>>> Xs = signal_data
+>>> ys = signal_stimulus
+>>> estimator = DummyRegressor()
+>>> multi_estimator = MultisignalEstimator(estimator)
+>>>
+>>> # Fit
+>>> fit_estimators = []
+>>> for (X, y) in zip(Xs, ys):
+        est = clone(estimator)
+        est.fit(X, y)
+        fit_estimators = []
+>>> # equivalent to multi_estimator.fit(Xs, ys) with fit_estimators returned
+>>>
+>>> # Predict
+>>> predictions = []
+>>> for (X_test, fit_est) in zip(Xs, fit_estimators):
+        predictions.append(fit_est.predict(X_test))
+>>> # equivalent to multi_estimator.predict(Xs, ys) with predictions returned
+
+If passed timestamps, it will reduce the multisignal predictions into a single sorted array. Otherwise, the predictions will be returned in list form with a set of predictions per signal.
+
 >>> multi_pipeline =  MultisignalEstimator(pipeline)
 >>> multi_pipeline.fit(Xs_train, ys_train)
 >>>
@@ -134,6 +157,8 @@ Since neural data frequently is recorded from multiple signals, it is useful to 
 >>>
 >>> # Provided timestamps, predictions are reduced and sorted
 >>> T_pred, y_pred = multi_pipeline.predict(Xs_test, Ts=signal_times)
+
+For performance, the estimators can be written to disk instead of being kept in memory as used. This will slow the computations but use less RAM. Additioanlly, :meth:`~mneuro.multisignal.MultsignalEstimator.fit_predict` is available if the fit estimators do not need to be kept, predicting as they are fit then discarding the estimator.
 
 Here it is important to note that often, **multisignal data can be reduced to a single signal**. This can have dramatic effects on computation speed and memory use in either positive or negative directions.. To visualize the reduction, imagine a cloud of training points in n-dimensional space. If the relationship of a test point is highly dependent on the separation between it and the training points such that a sufficiently large distance will cause the influence of the training point to be null, the multisignal data can be placed into a single space but each signal (cloud) can be separated by a large distance making their influence on each other negligable. This separation is provided by :func:`~mlneuro.preprocessing.signals.separate_signal_features`.
 
