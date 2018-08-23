@@ -93,7 +93,12 @@ def save_dict_hdf5(file_name, dict, mode='w'):
 
 
 def subdirectories(d):
-    """ https://stackoverflow.com/questions/800197/how-to-get-all-of-the-immediate-subdirectories-in-python """
+    """Get all immediate subdirectores.
+
+    Notes
+    -----
+    https://stackoverflow.com/questions/800197/how-to-get-all-of-the-immediate-subdirectories-in-python
+    """
     return list(map(os.path.abspath, filter(os.path.isdir, [os.path.join(d,f) for f in os.listdir(d)])))
 
 

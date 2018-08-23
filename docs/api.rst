@@ -258,3 +258,79 @@ Functions
    metrics.binned_error
    metrics.weighted_binned_error
    metrics.metric_at_times
+
+:mod:`mlneuro.utils`: Programming utilities
+=============================================
+
+.. automodule:: mlneuro.utils
+    :no-members:
+    :no-inherited-members:
+
+Array functions
+---------------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+    :toctree: generated/
+    :template: function.rst
+
+    utils.arrayfuncs.atleast_2d
+    utils.arrayfuncs.getsizeof
+    utils.arrayfuncs.find_nearest_indices
+
+
+IO functions
+------------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+    :toctree: generated/
+    :template: function.rst
+
+    utils.io.save_array_dict
+    utils.io.load_array_dict
+    utils.io.save_dict_hdf5
+    utils.io.subdirectories
+    utils.io.recursive_subdirectories
+
+Logging
+-------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    utils.logging.LoggingMixin
+
+Performance
+-----------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    utils.memory.CachingPickler
+
+.. autosummary::
+    :toctree: generated/
+    :template: function.rst
+
+    utils.parallel.available_cpu_count
+    utils.parallel.spawn_threads
+
+Visualization
+-------------
+
+.. currentmodule:: mlneuro
+
+.. autosummary::
+    :toctree: generated/
+    :template: function.rst
+
+    utils.visuals.n_subplot_grid

@@ -13,7 +13,9 @@ from .utils.arrayfuncs import find_nearest_indices, atleast_2d
 
 _SQRT2 = np.sqrt(2)
 
-__all__ = ['entropy', 'KL_divergence', 'JS_divergence', 'Hellinger_distance', ]
+__all__ = ['entropy', 'KL_divergence', 'JS_divergence', 'Hellinger_distance', 'binned_error', 'weighted_binned_error', 'metric_at_times']
+
+
 def entropy(p):
     """Calculate the relative entropy of a discrete probability distribution shape (n_bins)
     or set of probability distributions shape (n_samples, n_bins)

@@ -5,9 +5,26 @@ import sys
 
 
 def atleast_2d(arr):
+    """Same as np.atleast_2d but keeps the first dimension the same length same
+    ensuring that n_samples remains the first dimension.
+
+    >>> from mlneuro.utils.arrayfuncs import atleast_2d
+    >>> import numpy as np
+    >>> x = np.ones((100,))
+    >>> atleast_2d(x).shape
+    Out: (100, 1)
+    >>> np.atleast_2d(x).shape
+    Out: (1, 100)
+    """
     a = np.atleast_2d(arr)
     if a.shape[0] != arr.shape[0]:
-        a = a.transpose()
+        # This should only occur when arr is 1d and moved up to 2d
+        # so a simple transpose should work, but this is certain to
+        # error of the dimension with the proper number of samples
+        # cannot be found and will work on arrays with more than
+        # two dimensions
+        swap_dim = np.where(np.array(a.shape) == arr.shape[0])[0][0]
+        a = np.swapaxes(a, swap_dim, 0)
     return a
 
 

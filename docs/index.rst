@@ -7,8 +7,7 @@ mlneuro
 
 	guide
 	api
-	generated/examples/clusterless/index
-	generated/examples/clustered/index
+	generated/examples/
 
 This package aims to extend the sklearn_ model to decoding neural data. This is by no means a complete pipeline for
 processing neural data and purposefully does not implement low-level processing such as signal filtering, spike detection,
@@ -24,8 +23,8 @@ labs have their own established methods. However, this package does aim to:
 
 For a quick start to understanding how to use the package view the :ref:`user_guide`
 
-To see examples of the package in use, view the :doc:`generated/examples/index.rst`
-
 To view a summary of all the submodules, classes, and functions, view the :ref:`api`
+
+Examples are provided for decoding from clustered and unclustered spike data from rats in the Redish lab.
 
 .. _sklearn: http://scikit-learn.org/

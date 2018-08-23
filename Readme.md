@@ -30,3 +30,22 @@ Additional optional dependencies for full-functionality include
 - keras (neural network based estimators)
 - statsmodels (poisson GLM estimator)
 
+Optional dependencies will not be auto-installed but can be found using ``pip``
+
+# Building documentation
+
+Documentation building requires ``sphinx``, ``sphinx-gallery``, and ``matplotlib``
+
+## Linux
+
+In the head directory, ``make docs`` will build the documentation in
+``docs/build``. Building documentation with the examples may take a long time, to generate documentation without example plots run ``make docs-no-plot``
+
+## Windows
+
+Windows does not support ``make`` or making without plots (yet), but sphinx generates a batch file for basic building which can be found in the docs folder.
+
+```
+cd docs
+./make.bat
+```

@@ -1,4 +1,9 @@
 """Utilties for data visualization
+
+Notes
+----
+May be expanded to its own submodule in the future and have 
+helpful plotting for decoding / neural data
 """
 import math
 
