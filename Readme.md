@@ -12,10 +12,12 @@ An extension of scikit-learn with a focus on:
 # Installation
 
 ```
-git clone ...
+git clone https://github.umn.edu/RedishLab/mlneuro.git
 cd mlneuro
 pip install -e .
 ```
+
+Note Python must be installed.
 
 ## Dependencies
 
