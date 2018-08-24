@@ -67,6 +67,24 @@ class TemporalSmoothedFilter(BaseEstimator):
         results = [self._predict(T, data_array) for data_array in self.data_arrays]
         return results[0] if len(results) == 1 else results
 
+    def predict_proba(self, T):
+        """Filter at the given times treating the data array as probabilties
+        which will yield the same results as predict but normalized by sample
+
+        T : array-like, shape = [n_samples_new,]
+            Times to sample filter at
+
+        Returns
+        -------
+        filtered_arrays : array-like, shape = [n_samples_new, n_dims] or list of such
+            The row-normalized filtered data_arrays
+        """
+        self._validate_std_deviation()
+        results = [self._predict(T, data_array) for data_array in self.data_arrays]
+        # Normalize
+        results = [r /= np.sum(r, axis=1)[:, np.newaxis] for r in results]
+        return results[0] if len(results) == 1 else results
+
     def _predict(self, T, y):
 
         # Move class variables to local for numba

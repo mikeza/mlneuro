@@ -77,6 +77,7 @@ Classes
 
    filtering.TemporalSmoothedFilter
    filtering.TransitionInformedBayesian
+   filtering.BinningFilter
 
 Functions
 ---------

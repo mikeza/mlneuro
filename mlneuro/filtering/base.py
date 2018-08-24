@@ -1,10 +1,42 @@
 import numpy as np
 
 
-def filter_at(filt, predict_times, fit_times, *filter_arrs):
+def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict'):
+    """A shortcut for filter fit and predict with additional parsing for sample times
+    
+    Equivalent to:
+    ```
+    filt.fit(fit_times, *filter_arrs)
+    filt.predict(predict_times)
+    ```
+    
+    Parameters
+    ----------
+    filt : object
+        an initialized filter
+    predict_times : array-like 
+        The times to filter at.
+        - If a scalar, taken as resolution and generated over the fit times range
+        - If a length 3 vector, taken as (start, end range, resolution)
+        - If a > length 3 vector, taken as literal times to sample at and passed through
+    fit_times : array-like shape [n_samples,]
+        The timestamps for the `filter_arrs`
+    filter_arrs : array-like shape [n_samples, n_dims]
+        Additional arguments are arrays to filter. Must be aligned to the given timestamps
+    method : string
+        The filt method to call  for predictions
+
+    Returns
+    -------
+    predict_times, (predictions)
+        The times that were predicted at and the filtered prediction at that time.
+        Where predictions is a list of arrays shape =[n_samples_new, n_dims] for each array to filter
+    """
     predict_times = _parse_sample_time(fit_times, predict_times)
     filt.fit(fit_times, *filter_arrs)
-    return predict_times, filt.predict(predict_times)
+    func = getattr(filt, method)
+    return predict_times, func(predict_times)
+
 
 
 def _parse_sample_time(all_times, sample_times):
