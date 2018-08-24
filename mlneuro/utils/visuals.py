@@ -19,8 +19,7 @@ except ImportError:
 
 def n_subplot_grid(n, max_horizontal=4, **kwargs):
     """Creates a grid of n_subplots using matplotlib, additional kwargs are passed to the subplots call
-    unless they are specifing left/right/bottom/top/wspace/hspace spacing which are passed to subplots adjust. If 
-    subplots_adjust=False, no call is made
+    unless they are specifing left/right/bottom/top/wspace/hspace spacing which are passed to subplots adjust. 
     """
 
     spacing_args = ['left', 'right', 'bottom', 'top', 'wspace', 'hspace']

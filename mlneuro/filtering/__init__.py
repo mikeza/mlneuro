@@ -7,4 +7,4 @@ from .smoothed import TemporalSmoothedFilter
 from .bayesian import TransitionInformedBayesian
 from .binned import BinningFilter
 
-__all__ = ['filter_at', 'TemporalSmoothedFilter', 'TransitionInformedBayesian', 'BinnedFilter']
+__all__ = ['filter_at', 'TemporalSmoothedFilter', 'TransitionInformedBayesian', 'BinningFilter']

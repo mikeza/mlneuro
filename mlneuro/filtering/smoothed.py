@@ -82,7 +82,7 @@ class TemporalSmoothedFilter(BaseEstimator):
         self._validate_std_deviation()
         results = [self._predict(T, data_array) for data_array in self.data_arrays]
         # Normalize
-        results = [r /= np.sum(r, axis=1)[:, np.newaxis] for r in results]
+        results = [r / np.sum(r, axis=1)[:, np.newaxis] for r in results]
         return results[0] if len(results) == 1 else results
 
     def _predict(self, T, y):
@@ -107,7 +107,7 @@ class TemporalSmoothedFilter(BaseEstimator):
         start_idx = np.searchsorted(T_train, T - window[0], side='left')
         end_idx = np.searchsorted(T_train, T + window[1], side='right')
 
-        @jit(nopython=True, nogil=True)
+        # @jit(nopython=True, nogil=True)
         def _compiled_worker(Ty, window_start, window_end, i_start, i_end):
             for i in range(i_start, i_end):
                 diffs = T_train[window_start[i]:window_end[i]] - T[i]
@@ -140,8 +140,6 @@ class TemporalSmoothedFilter(BaseEstimator):
         else:
             if len(self.std_deviation) != 2:
                 raise ValueError('Given standard deviation must be a scalar or tuple length of two')
-            if not np.isnumeric(self.std_deviation):
-                raise ValueError('Given standard deviation must be numeric')
 
             self.std_deviation_ = np.array(self.std_deviation)
 

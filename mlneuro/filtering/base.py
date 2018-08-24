@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict'):
+def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict', **kwargs):
     """A shortcut for filter fit and predict with additional parsing for sample times
     
     Equivalent to:
@@ -25,6 +25,8 @@ def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict'):
         Additional arguments are arrays to filter. Must be aligned to the given timestamps
     method : string
         The filt method to call  for predictions
+    kwargs : 
+        Additional keyword args are passed to the fit function
 
     Returns
     -------
@@ -33,7 +35,7 @@ def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict'):
         Where predictions is a list of arrays shape =[n_samples_new, n_dims] for each array to filter
     """
     predict_times = _parse_sample_time(fit_times, predict_times)
-    filt.fit(fit_times, *filter_arrs)
+    filt.fit(fit_times, *filter_arrs, **kwargs)
     func = getattr(filt, method)
     return predict_times, func(predict_times)
 

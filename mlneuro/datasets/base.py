@@ -17,6 +17,13 @@ def load_restaurant_row():
 	return load_array_dict(os.path.join(data_path(), RR_FILE))
 
 
+def load_restaurant_row_spikekde():
+	"""Load an example day of Restaurant Row data from the Redish lab
+	"""
+	RR_FILE = 'RestaurantRowExampleKDEResults.pickle'
+	return load_array_dict(os.path.join(data_path(), RR_FILE))
+
+
 def load_restaurant_row_time_out(which='rr'):
 	"""Load an example day with Restaurant Row and Time Out data from the Redish lab
 	"""
