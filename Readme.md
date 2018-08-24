@@ -32,9 +32,14 @@ Additional optional dependencies for full-functionality include
 
 Optional dependencies will not be auto-installed but can be found using ``pip``
 
+## Downloading example datasets
+
+Example datasets require git large file support which is not enabled on the UofM github instance yet. The data folder will be available in the Redish lab team drive and 
+must be placed in ``mlneuro/mlneuro/datasets/`` for example loading to work.
+
 # Building documentation
 
-Documentation building requires ``sphinx``, ``sphinx-gallery``, and ``matplotlib``
+Documentation building requires ``sphinx``, ``sphinx-gallery``, ``sphinx_rtd_theme`` and ``matplotlib``
 
 ## Linux
 

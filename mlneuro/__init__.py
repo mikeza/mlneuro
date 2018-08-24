@@ -1,6 +1,6 @@
 """Machine learning with a focus on neuroscience applications
 """
-from . import classification, filtering, common, utils, preprocessing, regression, datasets
+from . import classification, filtering, common, utils, preprocessing, regression, datasets, crossvalidation, metrics
 
 import logging
 import sys

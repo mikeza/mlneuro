@@ -73,7 +73,7 @@ Ts, _, (Xs, ys) = remove_unlabeled_spikes(Ts, data['signal_cellids'], Xs, ys)
 
 # Calculate bin edges independent of signal
 # so they are the same for all estimators
-ybin_edges, ybin_counts = bin_edges_from_data(data['full_stimulus'], 32)
+ybin_edges, ybin_counts = bin_edges_from_data(data['full_stimulus'], STIMULUS_BINS)
 
 # Construct a basic pipeline
 pipeline =  MultisignalEstimator(

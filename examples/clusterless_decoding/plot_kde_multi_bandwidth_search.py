@@ -65,7 +65,7 @@ ybin_edges, ybin_counts = bin_edges_from_data(stimulus_data, STIMULUS_BINS)
 # Construct a basic pipeline for one signal
 signal_pipeline = make_pipeline(
                           MinMaxScaler(),
-                          BivariateKernelDensity(n_neighbors=-1, bandwidth_X=0.13, bandwidth_y=18, ybins=ybin_edges, 
+                          BivariateKernelDensity(n_neighbors=10, bandwidth_X=0.13, bandwidth_y=18, ybins=ybin_edges, 
                                tree_backend='auto' if GPU else 'ball', n_jobs=4))
 
 # Convert the pipeline to support multiple signals

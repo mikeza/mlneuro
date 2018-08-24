@@ -310,6 +310,21 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
 
         return self
 
+    def predict(self, X):
+        """ Predict values of y given X
+
+        Parameters
+        ----------
+        X : array-like of shape = [n_samples, n_features]
+            The input samples.
+
+        Returns
+        -------
+        y : array of shape = [n_samples, n_dims]
+            The center of the highest probability bin for each sample
+        """
+        return self.ybin_grid[np.argmax(self.predict_proba(X), axis=1)]
+
     def predict_proba(self, X):
 
         """

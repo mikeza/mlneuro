@@ -7,7 +7,7 @@ mlneuro
 
 	guide
 	api
-	generated/examples/
+	examples_head
 
 This package aims to extend the sklearn_ model to decoding neural data. This is by no means a complete pipeline for
 processing neural data and purposefully does not implement low-level processing such as signal filtering, spike detection,
@@ -25,6 +25,6 @@ For a quick start to understanding how to use the package view the :ref:`user_gu
 
 To view a summary of all the submodules, classes, and functions, view the :ref:`api`
 
-Examples are provided for decoding from clustered and unclustered spike data from rats in the Redish lab.
+:ref:`examples` are provided for decoding from clustered and unclustered spike data from rats in the Redish lab.
 
 .. _sklearn: http://scikit-learn.org/
