@@ -21,6 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 from ..common.bins import bin_centers_from_edges, paired_bin_edges, idxs_in_bins, bin_edges_from_data_bysize
 from ..multisignal.base import make_multisignal_fn, _enforce_multisignal_iterable
 from ..multisignal.meta import MultisignalEstimator
+from ..utils.arrayfuncs import atleast_2d
 from .stimulus import stimulus_at_times
 
 import logging
@@ -81,20 +82,37 @@ def spike_stimulus(signal_times, stimulus_times, stimulus_data):
     return [stimulus_at_times(stimulus_times, stimulus_data, times) for times in _enforce_multisignal_iterable(signal_times)]
 
 
-def process_clustered_signal_data(signal_times, signal_cellids, temporal_bin_size=0.25, normalize_firing=True, 
-                                    center_firing=False, **firing_rates_with_history_kwargs):
+def process_clustered_signal_data(signal_times, signal_cellids, temporal_bin_size=0.25, normalize_by_max_rate=True, 
+                                    normalize_by_bin_size=True, center_firing=False, **firing_rates_with_history_kwargs):
     """Generate temporal bin edges and firing rates with history from labeled signal data
     """
     signal_times = _enforce_multisignal_iterable(signal_times)
     signal_cellids = _enforce_multisignal_iterable(signal_cellids)
 
     spike_times, spike_cellids = multi_to_single_unit_signal_cellids(signal_times, signal_cellids)
-    bin_edges, bin_count = bin_edges_from_data_bysize(spike_times, temporal_bin_size)
-    bin_centers = bin_centers_from_edges(bin_edges)[0]
-    cell_firing_rates = firing_rates(spike_times, spike_cellids, bin_edges, normalize=normalize_firing, center=center_firing)
+    if np.isscalar(temporal_bin_size):
+        bin_edges, bin_count = bin_edges_from_data_bysize(spike_times, temporal_bin_size)
+        temporal_paired_bin_edges = paired_bin_edges(bin_edges[0])
+        temporal_bin_centers = bin_centers_from_edges(bin_edges)[0]
+    else:
+        temporal_bin_edges = atleast_2d(temporal_bin_size)
+        if temporal_bin_edges.shape[1] == 2: # Given paired bin edges
+            temporal_paired_bin_edges = temporal_bin_edges
+            # Find the centers
+            temporal_bin_centers = np.sum(temporal_bin_edges, axis=1) / 2
+        elif temporal_bin_edges.shape[1] == 1: # Given normal edges
+            temporal_paired_bin_edges = paired_bin_edges(temporal_bin_edges.T)
+            temporal_bin_centers = bin_centers_from_edges(temporal_bin_edges.T)[0]
+        else:
+            raise ValueError('Unknown shape {} for `temporal_bin_size'.format(temporal_bin_size.shape))
+        if not normalize_by_bin_size:
+            logger.critical('If defining custom bin edges that are not a consistent size, `normalize_by_bin_size` should be True and is currently False')
+    
+    cell_firing_rates = firing_rates(spike_times, spike_cellids, temporal_paired_bin_edges, normalize_by_max=normalize_by_max_rate,
+                                     normalize_by_time=normalize_by_bin_size, center=center_firing)
     cell_firing_rates_history = firing_rates_with_history(cell_firing_rates, **firing_rates_with_history_kwargs)
 
-    return bin_centers, cell_firing_rates_history
+    return temporal_bin_centers, cell_firing_rates_history
 
 
 def multi_to_single_unit_signal_cellids(signal_times, signal_cellids, copy=True):
@@ -169,7 +187,7 @@ def separate_signal_features(signal_data, separation=100, scaler=MinMaxScaler):
     return signal_data
 
 
-def firing_rates(spike_times, spike_cellids, temporal_bin_edges, normalize=True, center=False):
+def firing_rates(spike_times, spike_cellids, temporal_paired_bin_edges, normalize_by_max=True, normalize_by_time=True, center=False):
     """Calculate the firing rates in temporal bins given edges and spike times/cell ids
 
     Note, here the prefix `spike_` is used instead of `signal_` because the multisignal data should
@@ -180,16 +198,21 @@ def firing_rates(spike_times, spike_cellids, temporal_bin_edges, normalize=True,
     firing_rates : array shape [n_temporal_bins, n_cells]
     """
 
-    binned_idxs = idxs_in_bins(spike_times, paired_bin_edges(temporal_bin_edges)[0])
-    firing_rates = np.zeros((len(temporal_bin_edges[0]) - 1, np.max(spike_cellids) + 1))
+    binned_idxs = idxs_in_bins(spike_times, temporal_paired_bin_edges)
+    firing_rates = np.zeros((len(temporal_paired_bin_edges), np.max(spike_cellids) + 1))
+
     for bin_id, bin_idxs in enumerate(binned_idxs):
         bin_cellids, bin_spikecounts = np.unique(
             spike_cellids[bin_idxs], return_counts=True)
         firing_rates[bin_id, bin_cellids] = bin_spikecounts
+
+    if normalize_by_time:
+        firing_rates /= np.diff(temporal_paired_bin_edges)
     if center:
         firing_rates -= np.mean(firing_rates, axis=0)
-    if normalize:
+    if normalize_by_max:
         firing_rates /= np.max(firing_rates, axis=0)
+
     return firing_rates
 
 
@@ -233,6 +256,7 @@ def firing_rates_with_history(firing_rates, bins_before=2, bins_after=2, include
     indexer[indexer < 0] = 0
     indexer[indexer >= n_bins] = n_bins - 1
 
-    firing_rates_history = firing_rates[indexer, :]
+    firing_rates_history = firing_rates[indexer, :].squeeze()
 
     return firing_rates_history if not flatten_history else firing_rates_history.reshape(n_bins, n_bins_history * n_cells)
+
