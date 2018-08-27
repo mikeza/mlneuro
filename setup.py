@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-INSTALL_REQUIRES = ['numba', 'scikit-learn']
+INSTALL_REQUIRES = ['numba', 'scikit-learn>=0.19.1']
 
 EXTRA_REQUIRES = {'neuralnets': ['keras'],
 				  'bayes': ['statsmodels'],
