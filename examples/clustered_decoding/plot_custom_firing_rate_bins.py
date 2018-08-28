@@ -1,31 +1,12 @@
 """
 ========================================================================================
-Decoding position from firing rates with sklearn's support gradient descent linear model 
+Decoding position from firing rates where bins are different sizes and non-contiguous
 ========================================================================================
 
-A sklearn support gradient descent pipeline is constructed to correlate firing rates
-with position and used to estimate both x and y locations.
+Non-contiguous firing rate bins are constructed and decoded using support-gradient descent.
 
-Preprocessing
--------------
-1. Time is binned over the range of the data
-2. Spike times and associated cell-ids are used to construct a firing-rate matrix
-which is normalized to the maximum firing rate of the cell and includes several
-bins before and after the current bin
-3. Stimulus values are retrieved at the spike times
-4. Variables are split into independent training and test sets
-
-Estimation
-----------
-1. A pipeline is constructed with a StandardScaler for firing rates and an SGD
-for estimation of position.
-2. The SGD is wrapped in a MultiOutputRegressor meta-class to independently
-predict each dimension of the position
-3. A single value is estimated for each sample (per dimension)
-
-Plotting
---------
-The predicted value and true value are compared
+This is trivial demonstration of different bin sizes working in process_clustered_signal_data.
+Real uses should involve many more bins.
 
 """
 import numpy as np
@@ -53,6 +34,8 @@ PLOT_X_RANGE = None
 from mlneuro.datasets import load_restaurant_row
 data = load_restaurant_row()
 
+# A sloppy example of different length bins 
+# for calculating firing rates in
 temporal_bin_edges = [
                       [3000, 3010],
                       [3050, 3100],
@@ -67,11 +50,14 @@ temporal_bin_edges = np.array(temporal_bin_edges)
 
 # Convert to a single signal
 # Ensure unique cell ids
-# Bin time, get firing rates with history in previous bins
+# Bin time, get firing rates
+# Make sure there are no bins before and after since they are non-sequential
+# Make sure that the firing rate is normalzied by bin size (default=True) to account for different length bins
 T, X = process_clustered_signal_data(data['signal_times'], data['signal_cellids'],
                                     temporal_bin_size=temporal_bin_edges,
                                     bins_before=0,
-                                    bins_after=0)
+                                    bins_after=0,
+                                    normalize_by_bin_size=True)
 
 # Get the stimulus value at the spike times
 y = stimulus_at_times(data['full_stimulus_times'], data['full_stimulus'], T)
