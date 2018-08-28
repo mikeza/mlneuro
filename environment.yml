@@ -1,0 +1,8 @@
+name: mlneuro
+dependencies:
+  python
+  pip
+  numpy
+  scipy
+  numba
+  scikit-learn>=0.19.1
