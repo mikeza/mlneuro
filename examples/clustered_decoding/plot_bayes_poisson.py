@@ -66,9 +66,10 @@ stimulus_data = smooth_stimulus(stimulus_times, stimulus_data)
 T, X = process_clustered_signal_data(data['signal_times'], data['signal_cellids'],
                                     temporal_bin_size=RESOLUTION,
                                     bins_before=5,
-                                    bins_after=1,
+                                    bins_after=5,
                                     flatten_history=False,
-                                    normalize_firing=False)
+                                    normalize_by_max_rate=False,
+                                    normalize_by_bin_size=True)
 
 # Sum over the history to get a per neuron spike count over that whole time range
 X = np.sum(X, axis=1)
@@ -88,7 +89,7 @@ X_train, X_test, T_train, T_test, y_train, y_test = train_test_split(X, T, y, te
 pipeline.fit(X_train, y_train)
 
 if DISPLAY_TUNING_CURVES:
-    fig, axes = n_subplot_grid(X.shape[1])
+    fig, axes = n_subplot_grid(min(X.shape[1], 10))
     for i, ax in enumerate(axes):
         axes[i].imshow(pipeline.tuning_curves[i].reshape(STIMULUS_BINS, STIMULUS_BINS))
         axes[i].set_title('Example TC {}'.format(i))
@@ -118,7 +119,7 @@ if DISPLAY_PLOTS:
     fig.show()
 
     plt.figure()
-    plt.imshow(y_pred[50,:].reshape(STIMULUS_BINS, STIMULUS_BINS))
+    plt.imshow(y_pred[55,:].reshape(STIMULUS_BINS, STIMULUS_BINS))
     plt.title('Example binned probability estimate')
     plt.show()
 
