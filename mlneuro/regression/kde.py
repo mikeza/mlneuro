@@ -2,6 +2,7 @@
 """
 
 import numpy as np
+import scipy    # For cKDTree
 
 from numba import jit
 from scipy.special import logsumexp
@@ -63,8 +64,9 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         via init and a query function.
 
         Or a string, specifying:
-        * 'ball': Uses the BallTree from sklearn
+        * 'ball': Uses the BallTree from sklearn (good for high dimensionality data)
         * 'kd':   Uses the KDTree from sklearn
+        * 'scipykd': Uses the scipy cKDTree which supports multiple jobs
         * 'gpu':  Uses the GPU enabled BufferKDTree 
         * 'auto': Selects the best option based on data dimensionality and size
 
@@ -165,16 +167,23 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                     if data_shape[0] > 30000:
                         self.tree_backend_ = BufferKDTreeWrapper
                     else:
-                        if data_shape[1] > 3:
+                        if data_shape[1] > 15:
                             self.tree_backend_ = BallTree
                         else:
-                            self.tree_backend_ = KDTree
+                            if self.n_jobs > 1 or self.n_jobs < 0:
+                                self.tree_backend_ = ScipyKDTreeWrapper
+                                self.tree_build_args['default_n_jobs'] = self.n_jobs
+                            else:
+                                self.tree_backend_ = KDTree
             elif self.tree_backend.lower() == 'kd':
                 self.tree_backend_ = KDTree
             elif self.tree_backend.lower() == 'ball':
                 self.tree_backend_ = BallTree
             elif self.tree_backend.lower() == 'gpu':
                 self.tree_backend_ = BufferKDTreeWrapper
+            elif self.tree_backend.lower() == 'scipykd':
+                self.tree_backend_ = ScipyKDTreeWrapper
+                self.tree_build_args['default_n_jobs'] = self.n_jobs
             else:
                 raise ValueError('Unknown tree backend setting {}'.format(self.tree_backend))
         else:
@@ -208,13 +217,8 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
         self._correct_ybin_occupancy()
 
-        if self.limit_memory_use and self.tree_backend_ == BufferKDTreeWrapper:
-            # Don't fit the tree now since the bufferkdtree is not pickleable
-            self.X_train = X
-            self.logger.debug('Attempting to save memory by not fitting the tree until predict')
-        else:
-            self.logger.debug('Fitting nearest neighbor tree of type {}'.format(self.tree_backend))
-            self.X_train_tree = self.tree_backend_(X, **self.tree_build_args)
+        self.logger.debug('Fitting nearest neighbor tree of type {}'.format(self.tree_backend))
+        self.X_train_tree = self.tree_backend_(X, **self.tree_build_args)
 
         return self
 
@@ -268,10 +272,6 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
             the relationship of the binned output to the original input
         """
 
-        if self.limit_memory_use and self.tree_backend_ == BufferKDTreeWrapper:
-            # Now fit the training tree when limiting memory use
-            self.X_train_tree = self.tree_backend_(self.X_train, **self.tree_build_args)
-
         check_is_fitted(self, ['y_log_densities', 'y_log_occupancy'])
         X = check_array(X)
         X_train = self.X_train_tree.get_arrays()[0]
@@ -286,16 +286,20 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                               'size {} with dualtree={}'.format(k, X.shape[0], X_train.shape[0], use_dual))
             neighbor_dists, neighbor_idxs = self.X_train_tree.query(X, k=k, dualtree=use_dual)
 
-        Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_))
+        # Allocate a result array (reduce type if)
+        Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_), dtype=X.dtype if not limit_memory_use else np.float32)
 
-        if self.limit_memory_use and self.tree_backend_ == BufferKDTreeWrapper:
-            # And... discard the tree when limiting memory use
-            self.X_train_tree = None
+
+        # Define compiled functions
+        # for fast and multithread capable internal computation of density
+
+        # Assign class variables to locals so numba includes them as read-only shared
+        # arrays in compiled functions
+        y_log_densities, y_train_log_occupancy = self.y_log_densities, self.y_log_occupancy
 
         @jit(nopython=True, nogil=True)
-        def _compiled_worker_neighbors(X, X_train, bandwidth_X, neighbor_dists, neighbor_idxs,
-                             y_log_densities, y_train_log_occupancy,
-                             Xy_densities, i_start, i_end):
+        def _compiled_worker_neighbors(X, bandwidth_X, neighbor_dists, neighbor_idxs,
+                                       Xy_densities, i_start, i_end):
 
             n_dims = len(bandwidth_X)
             pdf_norm = gaussian_log_pdf_norm(n_dims, bandwidth_X)
@@ -307,9 +311,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                 Xy_densities[i, :] = Xy_density - y_train_log_occupancy
 
         @jit(nopython=True, nogil=True)
-        def _compiled_worker_all(X, X_train, bandwidth_X,
-                             y_log_densities, y_train_log_occupancy,
-                             Xy_densities, i_start, i_end):
+        def _compiled_worker_all(X, bandwidth_X, Xy_densities, i_start, i_end):
 
             n_dims = len(bandwidth_X)
             pdf_norm = gaussian_log_pdf_norm(n_dims, bandwidth_X)
@@ -320,18 +322,17 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                 Xy_density = logdotexp(y_log_densities, X_density)
                 Xy_densities[i, :] = Xy_density - y_train_log_occupancy
 
+
         # Launch the specified number of threads with the worker thread for k-nearest
         #   or all points estimation
         self.logger.debug('Calculating bivariate density over {} bins for {} points'.format(self.ybin_grid.shape[0], X.shape[0]))
         if self.n_neighbors > 0 and self.n_neighbors < X_train.shape[0]:
             spawn_threads(self.n_jobs, X, _compiled_worker_neighbors,
-                args=(X, X_train, np.atleast_1d(self.bandwidth_X), neighbor_dists, neighbor_idxs,
-                     self.y_log_densities, self.y_log_occupancy, Xy_densities))
+                args=(X, np.atleast_1d(self.bandwidth_X), neighbor_dists, neighbor_idxs, Xy_densities))
         else:
             self.logger.warning('The density estimate is being calculated for all points which may result in much slower computation')
             spawn_threads(self.n_jobs, X, _compiled_worker_all,
-                args=(X, X_train, np.atleast_1d(self.bandwidth_X),
-                     self.y_log_densities, self.y_log_occupancy, Xy_densities))
+                args=(X, np.atleast_1d(self.bandwidth_X), Xy_densities))
 
         return Xy_densities
 
@@ -369,6 +370,22 @@ class BufferKDTreeWrapper(object):
 
     def query(self, x_test, k, **kwargs):
         return self.tree.kneighbors(x_test, n_neighbors=k)
+
+    def get_arrays(self):
+        return [self.x]
+
+
+class ScipyKDTreeWrapper(object):
+    """A wrapper for the scipy cKDTree class for multithreaded tree queries
+    """
+
+    def __init__(self, x, default_n_jobs=-1, **kwargs):
+        self.tree = scipy.spatial.cKDTree(x)
+        self.x = x
+        self.default_n_jobs = default_n_jobs
+
+    def query(self, x_test, k, **kwargs):
+        return self.tree.query(x_test, k=k, n_jobs=kwargs.pop('n_jobs', self.n_jobs))
 
     def get_arrays(self):
         return [self.x]
