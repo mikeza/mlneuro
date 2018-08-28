@@ -107,6 +107,7 @@ class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
         # Normalize by occupancy
         self.tuning_curves /= self.occ
+        self.tuning_curves *= np.nanmean(self.occ)
 
         return self
 
