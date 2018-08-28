@@ -8,42 +8,71 @@ from sklearn.preprocessing import normalize
 
 from ..utils.arrayfuncs import atleast_2d
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 __all__ = ['linearized_bin_grid', 'bin_edges_from_centers', 'bin_centers_from_edges', 'bin_edges_from_data',
            'bin_edges_from_data_bysize', 'paired_bin_edges', 'bin_counts', 'bin_distances', 'reshape_flat',
            'reshape_binned', 'binned_data', 'binned_data_onehot', 'binned_data_gaussian', 'occupancy',
            'binned_indices_to_masks', 'idxs_in_bins']
 
 
+def _enforce_bin_shape(bin_desc):
+    """Ensures that a description of bins (bin edges or bin centers) is th
+    proper shape and will alert if a 1d bin descriptor is given
+    """
+    is_1d = False
+    if not (isinstance(bin_desc, tuple) or isinstance(bin_desc, list)):
+        if isinstance(bin_desc, np.ndarray):
+            if bin_desc.n_dims == 1:
+                bin_desc = [bin_desc]
+                is_1d = True
+            elif bin_desc.ndims == 2 and bin_desc.shape[1] < bin_desc.shape[2]:
+                logger.warning('Given bins of shape {} which may be in reverse order. Shape should be (`n_dims`, `n_bins_dim`)'.format(bin_desc.shape))
+            elif bin_desc.ndims > 2:
+                logger.error('Given 3-dimensional bins of shape {} which will likely return bad results or error. Shape should be 2-dimensional (`n_dims`, `n_bins_dim`)'.format(bin_desc.shape))
+        else:
+            raise ValueError('Unknown type for bin description of {}'.format(type(bin_desc)))
+    else:
+        if len(bin_desc) == 1:
+            is_1d = True
+
+    return bin_desc, is_1d
+
+
 def linearized_bin_grid(bin_centers):
     """Given the centers of bins as a n_dims length list of arrays of shape (n_bins_dim,)
     find their n-d intersections as a grid of shape (prod(n_bins_dim), n_dims)
     """
-    if type(bin_centers) is not list:
-        bin_centers = np.atleast_2d(bin_centers)
+    bin_centers, is_1d = _enforce_bin_shape(bin_centers)
     grid_bin = np.meshgrid(*bin_centers)
     return np.vstack([np.ravel(a) for a in grid_bin]).transpose()
 
 
-def bin_centers_from_edges(bin_edges):
+def bin_centers_from_edges(bin_edges, force_2d=False):
     """Given the edges of bins as a n_dims length list of arrays of shape (n_bins_dim + 1,)
     find their centers as a list of arrays of shape (n_bins_dim,)
     """
-    return [dim_edges[:-1] + np.diff(dim_edges) / 2 for dim_edges in bin_edges]
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
+    ret = [dim_edges[:-1] + np.diff(dim_edges) / 2 for dim_edges in bin_edges]
+    return ret[0] if is_1d and not force_2d else ret
 
 
-def bin_edges_from_centers(bin_centers):
+def bin_edges_from_centers(bin_centers, force_2d=False):
     """Given the centers of bins as a n_dims length list of arrays of shape (n_bins_dim,)
     find their edges as a list of arrays of shape (n_bins_dim + 1,)
 
     Should handle non-uniform bin distances
     """
-    if type(bin_centers) is not list:
-        bin_centers = np.atleast_2d(bin_centers)
+    bin_centers, is_1d = _enforce_bin_shape(bin_centers)
+    if isinstance(bin_centers, np.ndarray):
         ds = np.split(np.diff(bin_centers / 2).flatten(), len(bin_centers))
     else:
         ds = [np.diff(np.array(bins) / 2).flatten() for bins in bin_centers]
     x = [(dim[0] - d[0], dim[0:-1] + d, dim[-1] + d[-1]) for dim, d in zip(bin_centers, ds)]
-    return [np.concatenate([np.array([s]), m, np.array([e])]) for (s, m, e) in x]
+    ret = [np.concatenate([np.array([s]), m, np.array([e])]) for (s, m, e) in x]
+    return ret[0] if is_1d and not force_2d else ret
 
 
 def bin_edges_from_data(data, bin_count):
@@ -107,19 +136,21 @@ def bin_edges_from_data_bysize(data, bin_size):
     return bin_edges, bin_count - 1
 
 
-def paired_bin_edges(bin_edges):
+def paired_bin_edges(bin_edges, force_2d=False):
     """Generate a set of edge pairs such that the limits of each bin is described
     e.g. for one dimensional bin edges `[(1,2,3,4)]` the paired bin edges are `[[(1,2), (2,3), (3,4)]]`
     """
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
     paired_edges = []
     for d in range(len(bin_edges)):
         paired_edges.append([])
         for i in range(len(bin_edges[d]) - 1):
             paired_edges[d].append((bin_edges[d][i], bin_edges[d][i + 1]))
-    return paired_edges
+    return paired_edges[0] if is_1d and not force_2d else paired_edges
 
 
 def bin_counts(bin_centers):
+    bin_centers, is_1d = _enforce_bin_shape(bin_centers)
     return tuple([dim_centers.shape[0] for dim_centers in bin_centers])
 
 
@@ -161,6 +192,7 @@ def reshape_flat(x, bin_counts=None):
 def reshape_binned(x, bin_counts, reflect=False):
     """Reshape an array of `(n_samples, prod(n_bins_dim))` into `(n_samples, n_bins_dim0, n_bins_dim1, ...)`
     """
+    bin_counts, _ =  _enforce_bin_shape(bin_counts)
     x = x.reshape(-1, *bin_counts)
     ndims = len(bin_counts)
     if reflect:
@@ -189,9 +221,9 @@ def _euclidean_dist_to_bin_dist(bin_edges, dist):
     -------
     bin_sigma : array_like, (n_dims,) an equivalent sigma in bin count distance
     """
-
     # Spatial sigma needs to be converted to n_bins rather than true distance
     #   for the gaussian filter
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
     dist_per_bin = np.array([np.diff(bin_edges_dim).mean()
                              for bin_edges_dim in bin_edges])
     return dist / dist_per_bin
@@ -201,6 +233,7 @@ def _sanitize_sigma(bin_edges, sigma=None, default_percent=0.05):
     """Sanitizes sigma for gaussian blurs by extrapolating to the
     proper amount of dimensions or filling with a percent of the range
     """
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
     bin_ranges = np.array([(bin_edges_dim.max() - bin_edges_dim.min()) for bin_edges_dim in bin_edges])
     if sigma is None:
         sigma = bin_ranges * default_percent
@@ -240,6 +273,8 @@ def binned_data_gaussian(data, bin_edges, spatial_sigma=None,
     Additional arguments are passed to the scipy gaussian filter function
 
     """
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
+
     spatial_sigma = _sanitize_sigma(bin_edges, spatial_sigma)
     spatial_sigma = _euclidean_dist_to_bin_dist(bin_edges, spatial_sigma)
 
@@ -266,6 +301,8 @@ def binned_data_onehot(data, bin_edges, flat=True):
     one-hot matrix of the occupied bin for values at each time step.
 
     Returns arr of shape of shape (n_times, prod(n_bins_dim)) """
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
+
     n_bins_dim = tuple([dim_edges.shape[0] - 1 for dim_edges in bin_edges])
     n_bins = np.prod(n_bins_dim)
 
@@ -287,6 +324,7 @@ def binned_data(data, bin_edges, flat=True):
     Note: np.digitize may be useful.
     """
     data = atleast_2d(data)
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
 
     n_bins_dim = tuple([dim_edges.shape[0] - 1 for dim_edges in bin_edges])
     n_bins = np.prod(n_bins_dim)
@@ -330,6 +368,7 @@ def occupancy(data, bin_edges, smooth=True, spatial_sigma=None, normalize=True,
         of times a bin is occupied. If given a value [0,1) it is the percent time
         spent in the bin relative to a uniform distribution
     """
+    bin_edges, is_1d = _enforce_bin_shape(bin_edges)
 
     # If the threshold for unvisted is < 1, it is a percentage and we
     #   want a normalized histogram to threshold at

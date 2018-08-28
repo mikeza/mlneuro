@@ -92,8 +92,8 @@ def process_clustered_signal_data(signal_times, signal_cellids, temporal_bin_siz
     spike_times, spike_cellids = multi_to_single_unit_signal_cellids(signal_times, signal_cellids)
     if np.isscalar(temporal_bin_size):
         bin_edges, bin_count = bin_edges_from_data_bysize(spike_times, temporal_bin_size)
-        temporal_paired_bin_edges = paired_bin_edges(bin_edges[0])
-        temporal_bin_centers = bin_centers_from_edges(bin_edges)[0]
+        temporal_paired_bin_edges = paired_bin_edges(bin_edges)
+        temporal_bin_centers = bin_centers_from_edges(bin_edges)
     else:
         temporal_bin_edges = atleast_2d(temporal_bin_size)
         if temporal_bin_edges.shape[1] == 2: # Given paired bin edges
