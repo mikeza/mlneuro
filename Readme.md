@@ -11,6 +11,8 @@ An extension of scikit-learn with a focus on:
 
 # Installation
 
+Please note, Python 2 is not supported and Python 3 is required.
+
 Installation can be done easily via pip
 ```
 git clone https://github.umn.edu/RedishLab/mlneuro.git
@@ -24,7 +26,7 @@ git clone https://github.umn.edu/RedishLab/mlneuro.git
 cd mlneuro
 conda env create -n mlneuro -f environment.yml
 ```
-The mlneuro environment may then be launched with ``activate mlneuro``
+The mlneuro environment may then be launched with ``activate mlneuro``. If all optional dependencies are desired, specify the ``environment_full.yml`` file instead
 
 ## Dependencies
 
@@ -35,15 +37,21 @@ Dependencies should be installed by pip by default, but core dependencies includ
 
 Additional optional dependencies for full-functionality include
 
-- bufferkdtree (GPU powered KDE with k-nearest neighbors)
+- bufferkdtree** (GPU powered KDE with k-nearest neighbors)
 - keras (neural network based estimators)
 - statsmodels (poisson GLM estimator)
 - h5py (saving/loading from hdf5 files)
 - matplotlib (visuals and example plots)
 
-Optional dependencies will not be auto-installed but can be found using ``pip`` (within the conda environment if used)
+Optional dependencies will not be auto-installed but can be found using ``pip`` or added via
 
-Note, Python 2 is not supported.
+```
+conda env update -n mlneuro -f environment_full.yml
+```
+
+** The bufferkdtree requires POSIX-C headers, OpenCL, GPU Drivers, and Swig and
+is not easily installed by conda and is consequently not included in ``environment_full.yml``.
+See the documentatino for the package if more details on installation are needed.
 
 ## Downloading example datasets
 

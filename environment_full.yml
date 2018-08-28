@@ -10,5 +10,3 @@ dependencies:
 - h5py
 - keras
 - statsmodels
-- pip:
-  - bufferkdtree
