@@ -11,13 +11,20 @@ An extension of scikit-learn with a focus on:
 
 # Installation
 
+Installation can be done easily via pip
 ```
 git clone https://github.umn.edu/RedishLab/mlneuro.git
 cd mlneuro
 pip install -e .
 ```
 
-Note Python must be installed.
+On Windows, if MiniConda/Anaconda is installed, an environment file is included
+```
+git clone https://github.umn.edu/RedishLab/mlneuro.git
+cd mlneuro
+conda env create -n mlneuro -f environment.yml
+```
+The mlneuro environment may then be launched with ``activate mlneuro``
 
 ## Dependencies
 
@@ -31,8 +38,12 @@ Additional optional dependencies for full-functionality include
 - bufferkdtree (GPU powered KDE with k-nearest neighbors)
 - keras (neural network based estimators)
 - statsmodels (poisson GLM estimator)
+- h5py (saving/loading from hdf5 files)
+- matplotlib (visuals and example plots)
 
-Optional dependencies will not be auto-installed but can be found using ``pip``
+Optional dependencies will not be auto-installed but can be found using ``pip`` (within the conda environment if used)
+
+Note, Python 2 is not supported.
 
 ## Downloading example datasets
 
