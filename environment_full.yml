@@ -5,8 +5,9 @@ dependencies:
 - numpy
 - scipy
 - numba
-- scikit-learn=0.19.1
 - matplotlib
 - h5py
 - keras
 - statsmodels
+- pip:
+  - scikit-learn>=0.19.1
