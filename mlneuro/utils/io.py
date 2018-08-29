@@ -64,7 +64,11 @@ def load_array_dict(filename, read_type=None):
         return h5py.File(filename, mode='r')
 
     elif read_type == 'mat':
-        return loadmat(filename)
+        try:
+            return loadmat(filename)
+        except NotImplementedError:
+            # MAT v7.3 HDF5
+            return load_array_dict(filename, read_type='h5')
 
     elif read_type == 'npy':    # Saves into multiple files
         arr_dict = {}
