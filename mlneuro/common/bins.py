@@ -25,12 +25,12 @@ def _enforce_bin_shape(bin_desc):
     is_1d = False
     if not (isinstance(bin_desc, tuple) or isinstance(bin_desc, list)):
         if isinstance(bin_desc, np.ndarray):
-            if bin_desc.n_dims == 1:
+            if bin_desc.ndim == 1:
                 bin_desc = [bin_desc]
                 is_1d = True
-            elif bin_desc.ndims == 2 and bin_desc.shape[1] < bin_desc.shape[2]:
+            elif bin_desc.ndim == 2 and bin_desc.shape[1] < bin_desc.shape[2]:
                 logger.warning('Given bins of shape {} which may be in reverse order. Shape should be (`n_dims`, `n_bins_dim`)'.format(bin_desc.shape))
-            elif bin_desc.ndims > 2:
+            elif bin_desc.ndim > 2:
                 logger.error('Given 3-dimensional bins of shape {} which will likely return bad results or error. Shape should be 2-dimensional (`n_dims`, `n_bins_dim`)'.format(bin_desc.shape))
         else:
             raise ValueError('Unknown type for bin description of {}'.format(type(bin_desc)))
@@ -192,7 +192,6 @@ def reshape_flat(x, bin_counts=None):
 def reshape_binned(x, bin_counts, reflect=False):
     """Reshape an array of `(n_samples, prod(n_bins_dim))` into `(n_samples, n_bins_dim0, n_bins_dim1, ...)`
     """
-    bin_counts, _ =  _enforce_bin_shape(bin_counts)
     x = x.reshape(-1, *bin_counts)
     ndims = len(bin_counts)
     if reflect:
