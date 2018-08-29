@@ -287,7 +287,8 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
             neighbor_dists, neighbor_idxs = self.X_train_tree.query(X, k=k, dualtree=use_dual)
 
         # Allocate a result array (reduce type if)
-        Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_), dtype=X.dtype if not limit_memory_use else np.float32)
+        Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_), 
+            dtype=X.dtype if not self.limit_memory_use else np.float32)
 
 
         # Define compiled functions
