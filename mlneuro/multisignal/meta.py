@@ -285,7 +285,7 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
         transform_results = []
         for i, (X, y) in enumerate(zip(Xs, ys)):
             estimator = self._make_estimator()
-            logger.info('Fitting and transforming on signal {}/{} with data size'.format(i + 1, len(Xs), X.shape[0]))
+            logger.info('Fitting and transforming on signal {}/{} with data size {}'.format(i + 1, len(Xs), X.shape[0]))
             estimator.fit(X, y)
             transform_results.append(estimator.transform(X))
 
