@@ -69,7 +69,8 @@ T, X = process_clustered_signal_data(data['signal_times'], data['signal_cellids'
                                     bins_before=5,
                                     bins_after=1,
                                     flatten_history=False,
-                                    normalize_by_max_rate=False)
+                                    normalize_by_max_rate=False,
+                                    normalize_by_bin_size=False)
 
 # Sum over the history to get a per neuron spike count over that whole time range
 X = np.sum(X, axis=1)

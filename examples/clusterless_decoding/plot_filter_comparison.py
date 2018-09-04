@@ -1,3 +1,10 @@
+"""
+============================================================
+A comparison of the temporal filters applied to KDE decoding
+============================================================
+
+A brief comparison of predictions from several filtering methods
+"""
 from mlneuro.datasets import load_restaurant_row_spikekde
 from mlneuro.filtering import *
 from mlneuro.common.bins import reshape_flat, linearized_bin_grid, bin_edges_from_centers, bin_centers_from_edges
@@ -47,7 +54,7 @@ for filt in FILTERS:
 		y_pred_filt = y_pred
 
 	if isinstance(filt, BinningFilter):
-		T_filt = bin_centers_from_edges([T_filt])[0]
+		T_filt = bin_centers_from_edges([T_filt])
 
 	filtered_times.append(T_filt)
 	filtered_predictions.append(y_pred_filt)

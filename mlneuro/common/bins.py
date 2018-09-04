@@ -28,7 +28,7 @@ def _enforce_bin_shape(bin_desc):
             if bin_desc.ndim == 1:
                 bin_desc = [bin_desc]
                 is_1d = True
-            elif bin_desc.ndim == 2 and bin_desc.shape[1] < bin_desc.shape[2]:
+            elif bin_desc.ndim == 2 and bin_desc.shape[1] < bin_desc.shape[0]:
                 logger.warning('Given bins of shape {} which may be in reverse order. Shape should be (`n_dims`, `n_bins_dim`)'.format(bin_desc.shape))
             elif bin_desc.ndim > 2:
                 logger.error('Given 3-dimensional bins of shape {} which will likely return bad results or error. Shape should be 2-dimensional (`n_dims`, `n_bins_dim`)'.format(bin_desc.shape))
