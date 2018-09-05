@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Comparison of multiple regression techniques applied to clustered data &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM" href="plot_bayes_poisson_glm.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../examples_head.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../clusterless/index.html">Clusterless decoding examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Clustered spike decoding examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_basic_densenn.html">Decoding single valued position from firing rates with a dense neural network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_recurrent_lstm.html">Decoding position from firing rates with a LSTM recurrent neural network from Keras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sgd_multioutput.html">Decoding position from firing rates with sklearn’s support gradient descent linear model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_custom_firing_rate_bins.html">Decoding position from firing rates where bins are different sizes and non-contiguous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_binned_densenn.html">Decoding binned position probabilities from firing rates with a dense neural network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bayes_poisson.html">Decoding binned probabilties from firing rates with naive bayes inversion of poisson tuning curves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bayes_poisson_glm.html">Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Comparison of multiple regression techniques applied to clustered data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../examples_head.html">Examples</a> &raquo;</li>
+        
+          <li><a href="index.html">Clustered spike decoding examples</a> &raquo;</li>
+        
+      <li>Comparison of multiple regression techniques applied to clustered data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/generated/examples/clustered/plot_regressor_comparison.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-generated-examples-clustered-plot-regressor-comparison-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="comparison-of-multiple-regression-techniques-applied-to-clustered-data">
+<span id="sphx-glr-generated-examples-clustered-plot-regressor-comparison-py"></span><h1>Comparison of multiple regression techniques applied to clustered data<a class="headerlink" href="#comparison-of-multiple-regression-techniques-applied-to-clustered-data" title="Permalink to this headline">¶</a></h1>
+<p>Firing rates are used as an input to a set of single-value regressors to
+compare their performance on estimating position. Performance is measured with
+explained variance and mean absolute error.</p>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../../_images/sphx_glr_plot_regressor_comparison_001.png" class="sphx-glr-multi-img first" src="../../../_images/sphx_glr_plot_regressor_comparison_001.png" />
+</li>
+<li><img alt="../../../_images/sphx_glr_plot_regressor_comparison_002.png" class="sphx-glr-multi-img first" src="../../../_images/sphx_glr_plot_regressor_comparison_002.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[SGD] Starting...
+[SGD] Fit time 0.579 +- 0.018 | Score time 0.01085 +- 0.00011
+[SGD] explained_variance: Test score 0.6922 +- 0.048 | Train score 0.7841 +- 0.009
+[SGD] neg_mean_absolute_error: Test score -66.76 +- 6.6 | Train score -52.86 +- 2.3
+[DenseNN] Starting...
+[DenseNN] Fit time 8.445 +- 0.12 | Score time 0.2342 +- 0.017
+[DenseNN] explained_variance: Test score 0.8505 +- 0.031 | Train score 0.9474 +- 0.0028
+[DenseNN] neg_mean_absolute_error: Test score -42.47 +- 3.9 | Train score -28.08 +- 2.4
+[SVR] Starting...
+[SVR] Fit time 10.21 +- 0.058 | Score time 9.598 +- 0.046
+[SVR] explained_variance: Test score 0.7876 +- 0.042 | Train score 0.8902 +- 0.0022
+[SVR] neg_mean_absolute_error: Test score -51.31 +- 7.4 | Train score -31.39 +- 0.61
+[Linear] Starting...
+[Linear] Fit time 0.365 +- 0.00096 | Score time 0.009981 +- 0.00011
+[Linear] explained_variance: Test score 0.7105 +- 0.038 | Train score 0.8024 +- 0.012
+[Linear] neg_mean_absolute_error: Test score -66.31 +- 5.8 | Train score -53.62 +- 2.2
+[Extra Trees Ensemble] Starting...
+[Extra Trees Ensemble] Fit time 7.684 +- 0.047 | Score time 0.07261 +- 0.00062
+[Extra Trees Ensemble] explained_variance: Test score 0.6787 +- 0.047 | Train score 0.7644 +- 0.0095
+[Extra Trees Ensemble] neg_mean_absolute_error: Test score -71.61 +- 5.8 | Train score -61.16 +- 1.7
+[Decision Trees Ensemble] Starting...
+[Decision Trees Ensemble] Fit time 0.02919 +- 0.00036 | Score time 0.009265 +- 0.00015
+[Decision Trees Ensemble] explained_variance: Test score 0.4613 +- 0.074 | Train score 0.6376 +- 0.029
+[Decision Trees Ensemble] neg_mean_absolute_error: Test score -74.06 +- 7.7 | Train score -58.32 +- 4.4
+[Gradient Boosting] Starting...
+[Gradient Boosting] Fit time 17.92 +- 0.12 | Score time 0.036 +- 7.6e-05
+[Gradient Boosting] explained_variance: Test score 0.8324 +- 0.027 | Train score 0.9552 +- 0.0024
+[Gradient Boosting] neg_mean_absolute_error: Test score -45.79 +- 4.5 | Train score -24.59 +- 0.73
+[SGD] Starting...
+[DenseNN] Starting...
+[SVR] Starting...
+[Linear] Starting...
+[Extra Trees Ensemble] Starting...
+[Decision Trees Ensemble] Starting...
+[Gradient Boosting] Starting...
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sklearn.metrics</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html#sklearn.svm.SVR" title="View documentation for sklearn.svm.SVR"><span class="n">SVR</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html#sklearn.linear_model.SGDRegressor" title="View documentation for sklearn.linear_model.SGDRegressor"><span class="n">SGDRegressor</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html#sklearn.ensemble.ExtraTreesRegressor" title="View documentation for sklearn.ensemble.ExtraTreesRegressor"><span class="n">ExtraTreesRegressor</span></a><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html#sklearn.ensemble.GradientBoostingRegressor" title="View documentation for sklearn.ensemble.GradientBoostingRegressor"><span class="n">GradientBoostingRegressor</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.multioutput</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="View documentation for sklearn.multioutput.MultiOutputRegressor"><span class="n">MultiOutputRegressor</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">WhiteKernel</span><span class="p">,</span> <span class="n">RBF</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html#sklearn.tree.DecisionTreeRegressor" title="View documentation for sklearn.tree.DecisionTreeRegressor"><span class="n">DecisionTreeRegressor</span></a>
+
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="View documentation for sklearn.preprocessing.StandardScaler"><span class="n">StandardScaler</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="View documentation for sklearn.model_selection.cross_validate"><span class="n">cross_validate</span></a><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_predict.html#sklearn.model_selection.cross_val_predict" title="View documentation for sklearn.model_selection.cross_val_predict"><span class="n">cross_val_predict</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.scorer</span> <span class="kn">import</span> <span class="n">_BaseScorer</span>
+
+<span class="kn">from</span> <span class="nn">mlneuro.regression</span> <span class="kn">import</span> <a href="../../mlneuro.regression.DenseNNRegressor.html#mlneuro.regression.DenseNNRegressor" title="View documentation for mlneuro.regression.DenseNNRegressor"><span class="n">DenseNNRegressor</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.multisignal</span> <span class="kn">import</span> <span class="n">multi_to_single_signal</span>
+<span class="kn">from</span> <span class="nn">mlneuro.preprocessing.signals</span> <span class="kn">import</span> <a href="../../mlneuro.preprocessing.signals.process_clustered_signal_data.html#mlneuro.preprocessing.signals.process_clustered_signal_data" title="View documentation for mlneuro.preprocessing.signals.process_clustered_signal_data"><span class="n">process_clustered_signal_data</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.preprocessing.stimulus</span> <span class="kn">import</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_at_times.html#mlneuro.preprocessing.stimulus.stimulus_at_times" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_at_times"><span class="n">stimulus_at_times</span></a><span class="p">,</span> <a href="../../mlneuro.preprocessing.stimulus.smooth_stimulus.html#mlneuro.preprocessing.stimulus.smooth_stimulus" title="View documentation for mlneuro.preprocessing.stimulus.smooth_stimulus"><span class="n">smooth_stimulus</span></a><span class="p">,</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_gradient_mask.html#mlneuro.preprocessing.stimulus.stimulus_gradient_mask" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_gradient_mask"><span class="n">stimulus_gradient_mask</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.utils.io</span> <span class="kn">import</span> <span class="n">load_array_dict</span>
+<span class="kn">from</span> <span class="nn">mlneuro.utils.visuals</span> <span class="kn">import</span> <a href="../../mlneuro.utils.visuals.n_subplot_grid.html#mlneuro.utils.visuals.n_subplot_grid" title="View documentation for mlneuro.utils.visuals.n_subplot_grid"><span class="n">n_subplot_grid</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.crossvalidation</span> <span class="kn">import</span> <a href="../../mlneuro.crossvalidation.generate_crossvalidator.html#mlneuro.crossvalidation.generate_crossvalidator" title="View documentation for mlneuro.crossvalidation.generate_crossvalidator"><span class="n">generate_crossvalidator</span></a>
+
+<span class="c1"># Plot bars of metrics comparing regressors</span>
+<span class="n">DISPLAY_BAR_PLOTS</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="c1"># Plot the predicted value in each dimension</span>
+<span class="n">DISPLAY_DATA_PLOTS</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="c1"># The time range to show in the plot (None for auto)</span>
+<span class="c1"># default is a small range for example plots in documentation</span>
+<span class="n">PLOT_X_RANGE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1200</span><span class="p">,</span><span class="mi">1400</span><span class="p">]</span>
+<span class="c1"># Predicted data dimension to show</span>
+<span class="n">SHOW_DATA_DIM</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># Number of cross-validated folds</span>
+<span class="n">N_FOLDS</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># A set of estimators to test</span>
+<span class="n">ESTIMATORS</span> <span class="o">=</span>   <span class="p">{</span><span class="s1">&#39;SGD&#39;</span><span class="p">:</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="View documentation for sklearn.multioutput.MultiOutputRegressor"><span class="n">MultiOutputRegressor</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html#sklearn.linear_model.SGDRegressor" title="View documentation for sklearn.linear_model.SGDRegressor"><span class="n">SGDRegressor</span></a><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;huber&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">5</span><span class="p">)),</span>
+                <span class="s1">&#39;DenseNN&#39;</span><span class="p">:</span> <a href="../../mlneuro.regression.DenseNNRegressor.html#mlneuro.regression.DenseNNRegressor" title="View documentation for mlneuro.regression.DenseNNRegressor"><span class="n">DenseNNRegressor</span></a><span class="p">(</span><span class="n">dropout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s1">&#39;SVR&#39;</span><span class="p">:</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="View documentation for sklearn.multioutput.MultiOutputRegressor"><span class="n">MultiOutputRegressor</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html#sklearn.svm.SVR" title="View documentation for sklearn.svm.SVR"><span class="n">SVR</span></a><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">5</span><span class="p">)),</span>
+                <span class="s1">&#39;Linear&#39;</span><span class="p">:</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(),</span>
+                <span class="s1">&#39;Extra Trees Ensemble&#39;</span><span class="p">:</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html#sklearn.ensemble.ExtraTreesRegressor" title="View documentation for sklearn.ensemble.ExtraTreesRegressor"><span class="n">ExtraTreesRegressor</span></a><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="mf">0.02</span><span class="p">),</span>
+                <span class="c1"># &#39;Gaussian Process&#39;: GaussianProcessRegressor(kernel=(RBF() + WhiteKernel()), alpha=1e-5, n_restarts_optimizer=2, normalize_y=True),</span>
+                <span class="s1">&#39;Decision Trees Ensemble&#39;</span><span class="p">:</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html#sklearn.tree.DecisionTreeRegressor" title="View documentation for sklearn.tree.DecisionTreeRegressor"><span class="n">DecisionTreeRegressor</span></a><span class="p">(</span><span class="n">min_samples_leaf</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="s1">&#39;sqrt&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;Gradient Boosting&#39;</span><span class="p">:</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="View documentation for sklearn.multioutput.MultiOutputRegressor"><span class="n">MultiOutputRegressor</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html#sklearn.ensemble.GradientBoostingRegressor" title="View documentation for sklearn.ensemble.GradientBoostingRegressor"><span class="n">GradientBoostingRegressor</span></a><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                    <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;ls&#39;</span><span class="p">))</span>
+                <span class="p">}</span>
+
+<span class="n">SCORERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;explained_variance&#39;</span><span class="p">,</span> <span class="s1">&#39;neg_mean_absolute_error&#39;</span><span class="p">]</span>   <span class="c1"># For bar plots</span>
+<span class="n">METRICS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;explained_variance_score&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_absolute_error&#39;</span><span class="p">]</span> <span class="c1"># For data plots</span>
+
+<span class="c1"># Load data</span>
+<span class="kn">from</span> <span class="nn">mlneuro.datasets</span> <span class="kn">import</span> <span class="n">load_restaurant_row</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">load_restaurant_row</span><span class="p">()</span>
+
+<span class="c1"># Clean up stimulus data</span>
+<span class="n">stimulus_times</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;full_stimulus_times&#39;</span><span class="p">]</span>
+<span class="n">stimulus_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;full_stimulus&#39;</span><span class="p">]</span>
+<span class="n">stimulus_data</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.stimulus.smooth_stimulus.html#mlneuro.preprocessing.stimulus.smooth_stimulus" title="View documentation for mlneuro.preprocessing.stimulus.smooth_stimulus"><span class="n">smooth_stimulus</span></a><span class="p">(</span><span class="n">stimulus_times</span><span class="p">,</span> <span class="n">stimulus_data</span><span class="p">)</span>
+<span class="n">y_train_mask</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_gradient_mask.html#mlneuro.preprocessing.stimulus.stimulus_gradient_mask" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_gradient_mask"><span class="n">stimulus_gradient_mask</span></a><span class="p">(</span><span class="n">stimulus_times</span><span class="p">,</span> <span class="n">stimulus_data</span><span class="p">,</span> <span class="n">min_g</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">max_g</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+<span class="c1"># Convert to a single signal</span>
+<span class="c1"># Ensure unique cell ids</span>
+<span class="c1"># Bin time, get firing rates with history in previous bins</span>
+<span class="n">T</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.signals.process_clustered_signal_data.html#mlneuro.preprocessing.signals.process_clustered_signal_data" title="View documentation for mlneuro.preprocessing.signals.process_clustered_signal_data"><span class="n">process_clustered_signal_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_times&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_cellids&#39;</span><span class="p">],</span>
+                                        <span class="n">temporal_bin_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                        <span class="n">bins_before</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                        <span class="n">bins_after</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                        <span class="n">flatten_history</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># Get stimulusv alues at spike times</span>
+<span class="n">y</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_at_times.html#mlneuro.preprocessing.stimulus.stimulus_at_times" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_at_times"><span class="n">stimulus_at_times</span></a><span class="p">(</span><span class="n">stimulus_times</span><span class="p">,</span> <span class="n">stimulus_data</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Get scores and display for each estimator</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">estimator</span> <span class="ow">in</span> <span class="n">ESTIMATORS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[{}] Starting...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="View documentation for sklearn.preprocessing.StandardScaler"><span class="n">StandardScaler</span></a><span class="p">(),</span> <span class="n">estimator</span><span class="p">)</span>
+
+    <span class="n">cv</span> <span class="o">=</span> <a href="../../mlneuro.crossvalidation.generate_crossvalidator.html#mlneuro.crossvalidation.generate_crossvalidator" title="View documentation for mlneuro.crossvalidation.generate_crossvalidator"><span class="n">generate_crossvalidator</span></a><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">training_mask</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n_splits</span><span class="o">=</span><span class="n">N_FOLDS</span><span class="p">)</span>
+
+    <span class="c1"># Use the convenient cross_validate function to score</span>
+    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="View documentation for sklearn.model_selection.cross_validate"><span class="n">cross_validate</span></a><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">SCORERS</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">return_train_score</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">fit_time</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;fit_time&#39;</span><span class="p">]</span>
+    <span class="n">score_time</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;score_time&#39;</span><span class="p">]</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[{}] Fit time {:.4} +- {:.2} | Score time {:.4} +- {:.2}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+        <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">fit_time</span><span class="p">),</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">fit_time</span><span class="p">),</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">score_time</span><span class="p">),</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">score_time</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">scorer</span> <span class="ow">in</span> <span class="n">SCORERS</span><span class="p">:</span>
+        <span class="n">test_score</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;test_&#39;</span> <span class="o">+</span> <span class="n">scorer</span><span class="p">]</span>
+        <span class="n">train_score</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;train_&#39;</span> <span class="o">+</span> <span class="n">scorer</span><span class="p">]</span>
+        <span class="k">print</span> <span class="p">(</span><span class="s1">&#39;[{}] {}: Test score {:.4} +- {:.2} | Train score {:.4} +- {:.2}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">scorer</span><span class="p">,</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">test_score</span><span class="p">),</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">test_score</span><span class="p">),</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">train_score</span><span class="p">),</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">train_score</span><span class="p">)))</span>
+
+<span class="c1"># Display bar plots comparing the scores per estimator</span>
+<span class="k">if</span> <span class="n">DISPLAY_BAR_PLOTS</span><span class="p">:</span>
+    <span class="n">results_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="c1"># Make room on the right side of the plot for</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="../../mlneuro.utils.visuals.n_subplot_grid.html#mlneuro.utils.visuals.n_subplot_grid" title="View documentation for mlneuro.utils.visuals.n_subplot_grid"><span class="n">n_subplot_grid</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results_keys</span><span class="p">),</span> <span class="n">max_horizontal</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">cm</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.patches.Patch.html#matplotlib.patches.Patch" title="View documentation for matplotlib.patches.Patch"><span class="n">Patch</span></a>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">rainbow</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html#numpy.linspace" title="View documentation for numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
+
+    <span class="n">key_axes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">results_keys</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+        <span class="n">bars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">metric_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">est_key</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">metric_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">est_key</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="n">metric_results</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">metric_results</span><span class="p">)</span>
+        <span class="n">inds</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.arange.html#numpy.arange" title="View documentation for numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="n">metric_results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="n">means</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">metric_results</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">stds</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">metric_results</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">stds</span><span class="p">)</span>
+
+        <span class="n">key_axes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="c1"># Code to plot separate bars instead of mean/std error</span>
+        <span class="c1"># for metric_fold in range(metric_results.shape[1]):</span>
+        <span class="c1">#     ax.bar(inds + width * metric_fold, metric_results[:, metric_fold], width, color=colors)</span>
+        <span class="c1"># ax.set_xticks(inds + width / metric_results.shape[1])</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">key_axes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">key</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test_&#39;</span><span class="p">:</span>
+            <span class="n">train_ax</span> <span class="o">=</span> <span class="n">key_axes</span><span class="p">[</span><span class="s1">&#39;train_&#39;</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">:]]</span>
+            <span class="n">test_ax</span> <span class="o">=</span> <span class="n">key_axes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="n">ylims</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">train_ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">(),</span> <span class="n">test_ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()])</span>
+            <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylims</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ylims</span><span class="p">)]</span>
+            <span class="n">train_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+            <span class="n">test_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+
+    <span class="n">patches</span> <span class="o">=</span> <span class="p">[</span><a href="https://matplotlib.org/api/_as_gen/matplotlib.patches.Patch.html#matplotlib.patches.Patch" title="View documentation for matplotlib.patches.Patch"><span class="n">Patch</span></a><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">patches</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">DISPLAY_DATA_PLOTS</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">estimator</span> <span class="ow">in</span> <span class="n">ESTIMATORS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[{}] Starting...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="View documentation for sklearn.preprocessing.StandardScaler"><span class="n">StandardScaler</span></a><span class="p">(),</span> <span class="n">estimator</span><span class="p">)</span>
+
+        <span class="n">cv</span> <span class="o">=</span> <a href="../../mlneuro.crossvalidation.generate_crossvalidator.html#mlneuro.crossvalidation.generate_crossvalidator" title="View documentation for mlneuro.crossvalidation.generate_crossvalidator"><span class="n">generate_crossvalidator</span></a><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">training_mask</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n_splits</span><span class="o">=</span><span class="n">N_FOLDS</span><span class="p">)</span>
+
+        <span class="n">y_pred</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_predict.html#sklearn.model_selection.cross_val_predict" title="View documentation for sklearn.model_selection.cross_val_predict"><span class="n">cross_val_predict</span></a><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_pred</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="../../mlneuro.utils.visuals.n_subplot_grid.html#mlneuro.utils.visuals.n_subplot_grid" title="View documentation for mlneuro.utils.visuals.n_subplot_grid"><span class="n">n_subplot_grid</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ESTIMATORS</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">[:,</span> <span class="n">SHOW_DATA_DIM</span><span class="p">],</span> <span class="n">T</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">SHOW_DATA_DIM</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">PLOT_X_RANGE</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">PLOT_X_RANGE</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 6 minutes  18.622 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-examples-clustered-plot-regressor-comparison-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/plot_regressor_comparison.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_regressor_comparison.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/plot_regressor_comparison.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_regressor_comparison.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="plot_bayes_poisson_glm.html" class="btn btn-neutral" title="Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.preprocessing.signals.firing_rates_with_history &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mlneuro.preprocessing.stimulus.stimulus_at_times" href="mlneuro.preprocessing.stimulus.stimulus_at_times.html" />
+    <link rel="prev" title="mlneuro.preprocessing.signals.firing_rates" href="mlneuro.preprocessing.signals.firing_rates.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.common"><code class="docutils literal notranslate"><span class="pre">mlneuro.common</span></code>: Common math, pdf, and discretizing functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.filtering"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>: Estimators that filter noisy predictions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.multisignal"><code class="docutils literal notranslate"><span class="pre">mlneuro.multisignal</span></code>: Metaclasses and functions for multisignal estimation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-mlneuro.preprocessing"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing</span></code>: Functions for preprocessing data</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#signal-functions">Signal Functions</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.limit_time_range.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.limit_time_range</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.remove_unlabeled_spikes.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.remove_unlabeled_spikes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.spike_stimulus.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.spike_stimulus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.process_clustered_signal_data.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.process_clustered_signal_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.multi_to_single_unit_signal_cellids.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.multi_to_single_unit_signal_cellids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.separate_signal_features.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.separate_signal_features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.signals.firing_rates.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.firing_rates</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.firing_rates_with_history</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api.html#stimulus-functions">Stimulus Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.regression"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>: Classes for regression estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.crossvalidation"><code class="docutils literal notranslate"><span class="pre">mlneuro.crossvalidation</span></code>: Classes and functions for crossvalidation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#mlneuro-metrics-performance-measurement"><code class="docutils literal notranslate"><span class="pre">mlneuro.metrics</span></code>: Performance measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.utils"><code class="docutils literal notranslate"><span class="pre">mlneuro.utils</span></code>: Programming utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples_head.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.firing_rates_with_history</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/mlneuro.preprocessing.signals.firing_rates_with_history.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mlneuro-preprocessing-signals-firing-rates-with-history">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlneuro.preprocessing.signals</span></code>.firing_rates_with_history<a class="headerlink" href="#mlneuro-preprocessing-signals-firing-rates-with-history" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mlneuro.preprocessing.signals.firing_rates_with_history">
+<code class="descclassname">mlneuro.preprocessing.signals.</code><code class="descname">firing_rates_with_history</code><span class="sig-paren">(</span><em>firing_rates</em>, <em>bins_before=2</em>, <em>bins_after=2</em>, <em>include_concurrent=True</em>, <em>flatten_history=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/signals.html#firing_rates_with_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.signals.firing_rates_with_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert firing rates to include the firing rates of bins before and after each temporal bin</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>firing_rates</strong> (<em>array-like shape</em><em> [</em><em>n_temporal_bins</em><em>, </em><em>n_cells</em><em>]</em>) – </li>
+<li><strong>bins_before</strong> (<em>integer</em><em> (</em><em>optional=2</em><em>)</em>) – The number of bins before each temporal bin to include</li>
+<li><strong>bins_after</strong> (<em>integer</em><em> (</em><em>optional=2</em><em>)</em>) – The number of bins after each temporal bin to include</li>
+<li><strong>include_concurrent</strong> (<em>boolean</em><em> (</em><em>optional=True</em><em>)</em>) – Include the current temporal bin’s firing rates</li>
+<li><strong>flatten_history</strong> (<em>boolean</em><em> (</em><em>optional=False</em><em>)</em>) – If set, return a two dimensional array shape [n_temporal_bins, n_cells * n_bins_included]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>firing_rates_history</strong> (<em>array-like</em>) – A three dimensional array, shape [n_temporal_bins, n_bins_history, n_cells]
+(see flatten_history for shape change)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="clearer"></div></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mlneuro.preprocessing.stimulus.stimulus_at_times.html" class="btn btn-neutral float-right" title="mlneuro.preprocessing.stimulus.stimulus_at_times" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mlneuro.preprocessing.signals.firing_rates.html" class="btn btn-neutral" title="mlneuro.preprocessing.signals.firing_rates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

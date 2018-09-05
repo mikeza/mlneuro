@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Multisignal parameter grid search with a KDE pipeline &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Decoding binned position probabilities from spike features with a dense Keras neural network" href="plot_binned_densenn_clusterless.html" />
+    <link rel="prev" title="Decoding position from spike features and cluster information with kde" href="plot_kde_mixed_decoding.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../examples_head.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Clusterless decoding examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_filter_comparison.html">A comparison of the temporal filters applied to KDE decoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_kde_multi_signal.html">Decoding position from spike features with a multisignal kde pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_kde_multi_as_single.html">Decoding position from spike features with a quasi-multisignal kde</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_kde_mixed_decoding.html">Decoding position from spike features and cluster information with kde</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Multisignal parameter grid search with a KDE pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_binned_densenn_clusterless.html">Decoding binned position probabilities from spike features with a dense Keras neural network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../clustered/index.html">Clustered spike decoding examples</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../examples_head.html">Examples</a> &raquo;</li>
+        
+          <li><a href="index.html">Clusterless decoding examples</a> &raquo;</li>
+        
+      <li>Multisignal parameter grid search with a KDE pipeline</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/generated/examples/clusterless/plot_kde_multi_bandwidth_search.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-generated-examples-clusterless-plot-kde-multi-bandwidth-search-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="multisignal-parameter-grid-search-with-a-kde-pipeline">
+<span id="sphx-glr-generated-examples-clusterless-plot-kde-multi-bandwidth-search-py"></span><h1>Multisignal parameter grid search with a KDE pipeline<a class="headerlink" href="#multisignal-parameter-grid-search-with-a-kde-pipeline" title="Permalink to this headline">¶</a></h1>
+<img alt="../../../_images/sphx_glr_plot_kde_multi_bandwidth_search_001.png" class="sphx-glr-single-img" src="../../../_images/sphx_glr_plot_kde_multi_bandwidth_search_001.png" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler" title="View documentation for sklearn.preprocessing.MinMaxScaler"><span class="n">MinMaxScaler</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.scorer</span> <span class="kn">import</span> <span class="n">neg_mean_absolute_error_scorer</span><span class="p">,</span> <span class="n">explained_variance_scorer</span>
+
+<span class="kn">from</span> <span class="nn">mlneuro.regression</span> <span class="kn">import</span> <a href="../../mlneuro.regression.BivariateKernelDensity.html#mlneuro.regression.BivariateKernelDensity" title="View documentation for mlneuro.regression.BivariateKernelDensity"><span class="n">BivariateKernelDensity</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.multisignal</span> <span class="kn">import</span> <a href="../../mlneuro.multisignal.MultisignalEstimator.html#mlneuro.multisignal.MultisignalEstimator" title="View documentation for mlneuro.multisignal.MultisignalEstimator"><span class="n">MultisignalEstimator</span></a><span class="p">,</span> <span class="n">train_test_split_multisignal</span><span class="p">,</span> \
+    <span class="n">cross_val_predict_multisignal</span><span class="p">,</span> <a href="../../mlneuro.multisignal.make_multisignal_fn.html#mlneuro.multisignal.make_multisignal_fn" title="View documentation for mlneuro.multisignal.make_multisignal_fn"><span class="n">make_multisignal_fn</span></a><span class="p">,</span> <span class="n">multi_to_single_signal</span><span class="p">,</span> <a href="../../mlneuro.multisignal.GridSearchCVMultisignal.html#mlneuro.multisignal.GridSearchCVMultisignal" title="View documentation for mlneuro.multisignal.GridSearchCVMultisignal"><span class="n">GridSearchCVMultisignal</span></a><span class="p">,</span> \
+    <a href="../../mlneuro.multisignal.MultisignalScorer.html#mlneuro.multisignal.MultisignalScorer" title="View documentation for mlneuro.multisignal.MultisignalScorer"><span class="n">MultisignalScorer</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.preprocessing.signals</span> <span class="kn">import</span> <a href="../../mlneuro.preprocessing.signals.limit_time_range.html#mlneuro.preprocessing.signals.limit_time_range" title="View documentation for mlneuro.preprocessing.signals.limit_time_range"><span class="n">limit_time_range</span></a><span class="p">,</span> <a href="../../mlneuro.preprocessing.signals.remove_unlabeled_spikes.html#mlneuro.preprocessing.signals.remove_unlabeled_spikes" title="View documentation for mlneuro.preprocessing.signals.remove_unlabeled_spikes"><span class="n">remove_unlabeled_spikes</span></a><span class="p">,</span> <a href="../../mlneuro.preprocessing.signals.spike_stimulus.html#mlneuro.preprocessing.signals.spike_stimulus" title="View documentation for mlneuro.preprocessing.signals.spike_stimulus"><span class="n">spike_stimulus</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.preprocessing.stimulus</span> <span class="kn">import</span> <a href="../../mlneuro.preprocessing.stimulus.smooth_stimulus.html#mlneuro.preprocessing.stimulus.smooth_stimulus" title="View documentation for mlneuro.preprocessing.stimulus.smooth_stimulus"><span class="n">smooth_stimulus</span></a><span class="p">,</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_gradient_mask.html#mlneuro.preprocessing.stimulus.stimulus_gradient_mask" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_gradient_mask"><span class="n">stimulus_gradient_mask</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.filtering</span> <span class="kn">import</span> <span class="n">filter_at</span><span class="p">,</span> <span class="n">TemporalSmoothedFilter</span>
+<span class="kn">from</span> <span class="nn">mlneuro.common.bins</span> <span class="kn">import</span> <a href="../../mlneuro.common.bins.bin_edges_from_data.html#mlneuro.common.bins.bin_edges_from_data" title="View documentation for mlneuro.common.bins.bin_edges_from_data"><span class="n">bin_edges_from_data</span></a><span class="p">,</span> <span class="n">bin_centers_from_edges</span><span class="p">,</span> <span class="n">linearized_bin_grid</span>
+<span class="kn">from</span> <span class="nn">mlneuro.utils.visuals</span> <span class="kn">import</span> <span class="n">n_subplot_grid</span>
+<span class="kn">from</span> <span class="nn">mlneuro.utils.io</span> <span class="kn">import</span> <span class="n">load_array_dict</span>
+<span class="kn">from</span> <span class="nn">mlneuro.crossvalidation</span> <span class="kn">import</span> <a href="../../mlneuro.crossvalidation.generate_crossvalidator.html#mlneuro.crossvalidation.generate_crossvalidator" title="View documentation for mlneuro.crossvalidation.generate_crossvalidator"><span class="n">generate_crossvalidator</span></a>
+
+<span class="c1"># Options</span>
+
+<span class="n">RESOLUTION</span> <span class="o">=</span> <span class="mf">0.05</span>                <span class="c1"># Temporal resolution to filter at, in seconds</span>
+
+<span class="n">N_FOLDS</span> <span class="o">=</span> <span class="mi">3</span>                     <span class="c1"># Number of cross-validation folds</span>
+<span class="n">DISPLAY_PLOTS</span> <span class="o">=</span> <span class="bp">True</span>            <span class="c1"># Plot the maximum predicted value in each dimension</span>
+<span class="n">SAVE_TO_FILE</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># &#39;example_test&#39;     # A file to export the results to</span>
+<span class="n">GPU</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">STIMULUS_BINS</span> <span class="o">=</span> <span class="mi">24</span>
+
+<span class="c1"># Load data</span>
+<span class="kn">from</span> <span class="nn">mlneuro.datasets</span> <span class="kn">import</span> <span class="n">load_restaurant_row</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">load_restaurant_row</span><span class="p">()</span>
+
+<span class="c1"># Clean up stimulus data</span>
+<span class="n">stimulus_times</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;full_stimulus_times&#39;</span><span class="p">]</span>
+<span class="n">stimulus_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;full_stimulus&#39;</span><span class="p">]</span>
+<span class="n">stimulus_data</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.stimulus.smooth_stimulus.html#mlneuro.preprocessing.stimulus.smooth_stimulus" title="View documentation for mlneuro.preprocessing.stimulus.smooth_stimulus"><span class="n">smooth_stimulus</span></a><span class="p">(</span><span class="n">stimulus_times</span><span class="p">,</span> <span class="n">stimulus_data</span><span class="p">)</span>
+
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_times&#39;</span><span class="p">]</span>
+<span class="n">Xs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_marks&#39;</span><span class="p">]</span>
+<span class="n">ys</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.signals.spike_stimulus.html#mlneuro.preprocessing.signals.spike_stimulus" title="View documentation for mlneuro.preprocessing.signals.spike_stimulus"><span class="n">spike_stimulus</span></a><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">stimulus_times</span><span class="p">,</span> <span class="n">stimulus_data</span><span class="p">)</span>
+
+<span class="c1"># Remove bad spikes</span>
+<span class="n">Ts</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.signals.remove_unlabeled_spikes.html#mlneuro.preprocessing.signals.remove_unlabeled_spikes" title="View documentation for mlneuro.preprocessing.signals.remove_unlabeled_spikes"><span class="n">remove_unlabeled_spikes</span></a><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_cellids&#39;</span><span class="p">],</span> <span class="n">Xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+
+<span class="c1"># Reduce data?</span>
+<span class="n">TIME_START</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="n">TIME_END</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">Ts</span><span class="p">,</span> <span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.signals.limit_time_range.html#mlneuro.preprocessing.signals.limit_time_range" title="View documentation for mlneuro.preprocessing.signals.limit_time_range"><span class="n">limit_time_range</span></a><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">Xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">time_start</span><span class="o">=</span><span class="n">TIME_START</span><span class="p">,</span> <span class="n">time_end</span><span class="o">=</span><span class="n">TIME_END</span><span class="p">)</span>
+
+<span class="c1"># Create a mask for the training subset when the stimulus is moving quickly (running)</span>
+<span class="n">stimulus_gradient_mask_multisignal</span> <span class="o">=</span> <a href="../../mlneuro.multisignal.make_multisignal_fn.html#mlneuro.multisignal.make_multisignal_fn" title="View documentation for mlneuro.multisignal.make_multisignal_fn"><span class="n">make_multisignal_fn</span></a><span class="p">(</span><a href="../../mlneuro.preprocessing.stimulus.stimulus_gradient_mask.html#mlneuro.preprocessing.stimulus.stimulus_gradient_mask" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_gradient_mask"><span class="n">stimulus_gradient_mask</span></a><span class="p">)</span>
+<span class="n">y_train_masks</span> <span class="o">=</span> <span class="n">stimulus_gradient_mask_multisignal</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">min_g</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Calculate bin edges independent of signal2</span>
+<span class="c1"># so they are the same for all estimators</span>
+<span class="n">ybin_edges</span><span class="p">,</span> <span class="n">ybin_counts</span> <span class="o">=</span> <a href="../../mlneuro.common.bins.bin_edges_from_data.html#mlneuro.common.bins.bin_edges_from_data" title="View documentation for mlneuro.common.bins.bin_edges_from_data"><span class="n">bin_edges_from_data</span></a><span class="p">(</span><span class="n">stimulus_data</span><span class="p">,</span> <span class="n">STIMULUS_BINS</span><span class="p">)</span>
+
+<span class="c1"># Construct a basic pipeline for one signal</span>
+<span class="n">signal_pipeline</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span>
+                          <a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler" title="View documentation for sklearn.preprocessing.MinMaxScaler"><span class="n">MinMaxScaler</span></a><span class="p">(),</span>
+                          <a href="../../mlneuro.regression.BivariateKernelDensity.html#mlneuro.regression.BivariateKernelDensity" title="View documentation for mlneuro.regression.BivariateKernelDensity"><span class="n">BivariateKernelDensity</span></a><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">bandwidth_X</span><span class="o">=</span><span class="mf">0.13</span><span class="p">,</span> <span class="n">bandwidth_y</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">ybins</span><span class="o">=</span><span class="n">ybin_edges</span><span class="p">,</span>
+                               <span class="n">tree_backend</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span> <span class="k">if</span> <span class="n">GPU</span> <span class="k">else</span> <span class="s1">&#39;ball&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="c1"># Convert the pipeline to support multiple signals</span>
+<span class="n">estimator</span> <span class="o">=</span> <a href="../../mlneuro.multisignal.MultisignalEstimator.html#mlneuro.multisignal.MultisignalEstimator" title="View documentation for mlneuro.multisignal.MultisignalEstimator"><span class="n">MultisignalEstimator</span></a><span class="p">(</span><span class="n">signal_pipeline</span><span class="p">)</span>
+
+<span class="c1"># Create a cross-validator object that</span>
+<span class="c1">#   Limits the training set to a subset of the full data</span>
+<span class="c1">#   Splits the data into K &quot;folds&quot;</span>
+<span class="n">cv</span> <span class="o">=</span> <a href="../../mlneuro.crossvalidation.generate_crossvalidator.html#mlneuro.crossvalidation.generate_crossvalidator" title="View documentation for mlneuro.crossvalidation.generate_crossvalidator"><span class="n">generate_crossvalidator</span></a><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">Xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">training_mask</span><span class="o">=</span><span class="n">y_train_masks</span><span class="p">,</span> <span class="n">n_splits</span><span class="o">=</span><span class="n">N_FOLDS</span><span class="p">)</span>
+
+<span class="c1"># Create a search</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;base_estimator__bivariatekerneldensity__bandwidth_X&#39;</span><span class="p">:</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html#numpy.linspace" title="View documentation for numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)}]</span>
+<span class="n">scoring</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mse&#39;</span><span class="p">:</span> <a href="../../mlneuro.multisignal.MultisignalScorer.html#mlneuro.multisignal.MultisignalScorer" title="View documentation for mlneuro.multisignal.MultisignalScorer"><span class="n">MultisignalScorer</span></a><span class="p">(</span><span class="n">neg_mean_absolute_error_scorer</span><span class="p">,</span> <span class="n">aggr_method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">),</span>
+          <span class="s1">&#39;exp_var&#39;</span><span class="p">:</span> <a href="../../mlneuro.multisignal.MultisignalScorer.html#mlneuro.multisignal.MultisignalScorer" title="View documentation for mlneuro.multisignal.MultisignalScorer"><span class="n">MultisignalScorer</span></a><span class="p">(</span><span class="n">explained_variance_scorer</span><span class="p">,</span> <span class="n">aggr_method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)}</span>
+<span class="n">search</span> <span class="o">=</span> <a href="../../mlneuro.multisignal.GridSearchCVMultisignal.html#mlneuro.multisignal.GridSearchCVMultisignal" title="View documentation for mlneuro.multisignal.GridSearchCVMultisignal"><span class="n">GridSearchCVMultisignal</span></a><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">param_grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+                                 <span class="n">return_train_score</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">refit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c1"># Run the search on cross-validated folds</span>
+<span class="n">search</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">cv_results_</span>
+
+<span class="c1"># Output</span>
+
+<span class="k">if</span> <span class="n">DISPLAY_PLOTS</span><span class="p">:</span>
+    <span class="n">fig</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="View documentation for matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">))</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="View documentation for matplotlib.pyplot.title"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="s2">&quot;GridSearchCV evaluating BivariateKernelDensity bandwidth with multiple signals and scorers&quot;</span><span class="p">,</span>
+              <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.xlabel.html#matplotlib.pyplot.xlabel" title="View documentation for matplotlib.pyplot.xlabel"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span></a><span class="p">(</span><span class="s2">&quot;min_samples_split&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.ylabel.html#matplotlib.pyplot.ylabel" title="View documentation for matplotlib.pyplot.ylabel"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span></a><span class="p">(</span><span class="s2">&quot;Score&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.grid.html#matplotlib.pyplot.grid" title="View documentation for matplotlib.pyplot.grid"><span class="n">plt</span><span class="o">.</span><span class="n">grid</span></a><span class="p">()</span>
+
+    <span class="c1"># Build axes for each scorer</span>
+    <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.axes.html#matplotlib.pyplot.axes" title="View documentation for matplotlib.pyplot.axes"><span class="n">plt</span><span class="o">.</span><span class="n">axes</span></a><span class="p">()</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scoring</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">twinx</span><span class="p">())</span>
+
+    <span class="c1"># Get the regular numpy array from the MaskedArray</span>
+    <span class="n">X_axis</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;param_base_estimator__bivariatekerneldensity__bandwidth_X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">scorer</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">scoring</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">axes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">sample</span><span class="p">,</span> <span class="n">style</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)):</span>
+            <span class="n">sample_score_mean</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mean_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">scorer</span><span class="p">)]</span>
+            <span class="n">sample_score_std</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;std_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">scorer</span><span class="p">)]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X_axis</span><span class="p">,</span> <span class="n">sample_score_mean</span> <span class="o">-</span> <span class="n">sample_score_std</span><span class="p">,</span>
+                            <span class="n">sample_score_mean</span> <span class="o">+</span> <span class="n">sample_score_std</span><span class="p">,</span>
+                            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span> <span class="k">if</span> <span class="n">sample</span> <span class="o">==</span> <span class="s1">&#39;test&#39;</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X_axis</span><span class="p">,</span> <span class="n">sample_score_mean</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="n">sample</span> <span class="o">==</span> <span class="s1">&#39;test&#39;</span> <span class="k">else</span> <span class="mf">0.7</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scorer</span><span class="p">,</span> <span class="n">sample</span><span class="p">))</span>
+
+        <span class="n">best_index</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.nonzero.html#numpy.nonzero" title="View documentation for numpy.nonzero"><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span></a><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;rank_test_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">scorer</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">best_score</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mean_test_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">scorer</span><span class="p">][</span><span class="n">best_index</span><span class="p">]</span>
+
+        <span class="c1"># Plot a dotted vertical line at the best score for that scorer marked by x</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">X_axis</span><span class="p">[</span><span class="n">best_index</span><span class="p">],</span> <span class="p">],</span> <span class="p">[</span><span class="n">best_score</span><span class="p">],</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">markeredgewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="c1"># Annotate the best score for that scorer</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%0.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">best_score</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">X_axis</span><span class="p">[</span><span class="n">best_index</span><span class="p">],</span> <span class="n">best_score</span><span class="p">))</span>
+
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.grid.html#matplotlib.pyplot.grid" title="View documentation for matplotlib.pyplot.grid"><span class="n">plt</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 13 minutes  6.823 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-examples-clusterless-plot-kde-multi-bandwidth-search-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/plot_kde_multi_bandwidth_search.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_kde_multi_bandwidth_search.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/plot_kde_multi_bandwidth_search.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_kde_multi_bandwidth_search.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_binned_densenn_clusterless.html" class="btn btn-neutral float-right" title="Decoding binned position probabilities from spike features with a dense Keras neural network" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plot_kde_mixed_decoding.html" class="btn btn-neutral" title="Decoding position from spike features and cluster information with kde" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

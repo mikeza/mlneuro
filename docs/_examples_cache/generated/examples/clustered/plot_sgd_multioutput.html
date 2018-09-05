@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Decoding position from firing rates with sklearn’s support gradient descent linear model &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Decoding position from firing rates where bins are different sizes and non-contiguous" href="plot_custom_firing_rate_bins.html" />
+    <link rel="prev" title="Decoding position from firing rates with a LSTM recurrent neural network from Keras" href="plot_recurrent_lstm.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../examples_head.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../clusterless/index.html">Clusterless decoding examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Clustered spike decoding examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_basic_densenn.html">Decoding single valued position from firing rates with a dense neural network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_recurrent_lstm.html">Decoding position from firing rates with a LSTM recurrent neural network from Keras</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Decoding position from firing rates with sklearn’s support gradient descent linear model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#estimation">Estimation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_custom_firing_rate_bins.html">Decoding position from firing rates where bins are different sizes and non-contiguous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_binned_densenn.html">Decoding binned position probabilities from firing rates with a dense neural network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bayes_poisson.html">Decoding binned probabilties from firing rates with naive bayes inversion of poisson tuning curves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bayes_poisson_glm.html">Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_regressor_comparison.html">Comparison of multiple regression techniques applied to clustered data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../examples_head.html">Examples</a> &raquo;</li>
+        
+          <li><a href="index.html">Clustered spike decoding examples</a> &raquo;</li>
+        
+      <li>Decoding position from firing rates with sklearn’s support gradient descent linear model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/generated/examples/clustered/plot_sgd_multioutput.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-generated-examples-clustered-plot-sgd-multioutput-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="decoding-position-from-firing-rates-with-sklearn-s-support-gradient-descent-linear-model">
+<span id="sphx-glr-generated-examples-clustered-plot-sgd-multioutput-py"></span><h1>Decoding position from firing rates with sklearn’s support gradient descent linear model<a class="headerlink" href="#decoding-position-from-firing-rates-with-sklearn-s-support-gradient-descent-linear-model" title="Permalink to this headline">¶</a></h1>
+<p>A sklearn support gradient descent pipeline is constructed to correlate firing rates
+with position and used to estimate both x and y locations.</p>
+<div class="section" id="preprocessing">
+<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Time is binned over the range of the data</li>
+</ol>
+<p>2. Spike times and associated cell-ids are used to construct a firing-rate matrix
+which is normalized to the maximum firing rate of the cell and includes several
+bins before and after the current bin
+3. Stimulus values are retrieved at the spike times
+4. Variables are split into independent training and test sets</p>
+</div>
+<div class="section" id="estimation">
+<h2>Estimation<a class="headerlink" href="#estimation" title="Permalink to this headline">¶</a></h2>
+<p>1. A pipeline is constructed with a StandardScaler for firing rates and an SGD
+for estimation of position.
+2. The SGD is wrapped in a MultiOutputRegressor meta-class to independently
+predict each dimension of the position
+3. A single value is estimated for each sample (per dimension)</p>
+</div>
+<div class="section" id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h2>
+<p>The predicted value and true value are compared</p>
+<img alt="../../../_images/sphx_glr_plot_sgd_multioutput_001.png" class="sphx-glr-single-img" src="../../../_images/sphx_glr_plot_sgd_multioutput_001.png" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="View documentation for sklearn.preprocessing.StandardScaler"><span class="n">StandardScaler</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="View documentation for sklearn.model_selection.train_test_split"><span class="n">train_test_split</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html#sklearn.linear_model.SGDRegressor" title="View documentation for sklearn.linear_model.SGDRegressor"><span class="n">SGDRegressor</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.multioutput</span> <span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="View documentation for sklearn.multioutput.MultiOutputRegressor"><span class="n">MultiOutputRegressor</span></a>
+
+<span class="kn">from</span> <span class="nn">mlneuro.multisignal</span> <span class="kn">import</span> <a href="../../mlneuro.multisignal.multi_to_single_signal.html#mlneuro.multisignal.multi_to_single_signal" title="View documentation for mlneuro.multisignal.multi_to_single_signal"><span class="n">multi_to_single_signal</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.preprocessing.signals</span> <span class="kn">import</span> <a href="../../mlneuro.preprocessing.signals.process_clustered_signal_data.html#mlneuro.preprocessing.signals.process_clustered_signal_data" title="View documentation for mlneuro.preprocessing.signals.process_clustered_signal_data"><span class="n">process_clustered_signal_data</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.preprocessing.stimulus</span> <span class="kn">import</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_at_times.html#mlneuro.preprocessing.stimulus.stimulus_at_times" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_at_times"><span class="n">stimulus_at_times</span></a>
+<span class="kn">from</span> <span class="nn">mlneuro.utils.io</span> <span class="kn">import</span> <span class="n">load_array_dict</span>
+<span class="kn">from</span> <span class="nn">mlneuro.utils.visuals</span> <span class="kn">import</span> <a href="../../mlneuro.utils.visuals.n_subplot_grid.html#mlneuro.utils.visuals.n_subplot_grid" title="View documentation for mlneuro.utils.visuals.n_subplot_grid"><span class="n">n_subplot_grid</span></a>
+
+<span class="c1"># Plot the maximum predicted value in each dimension</span>
+<span class="n">DISPLAY_PLOTS</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="c1"># The time range to show in the plot (None for auto)</span>
+<span class="c1"># default is a small range for example plots in documentation</span>
+<span class="n">PLOT_X_RANGE</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="c1"># Load data</span>
+<span class="kn">from</span> <span class="nn">mlneuro.datasets</span> <span class="kn">import</span> <span class="n">load_restaurant_row</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">load_restaurant_row</span><span class="p">()</span>
+
+<span class="c1"># Convert to a single signal</span>
+<span class="c1"># Ensure unique cell ids</span>
+<span class="c1"># Bin time, get firing rates with history in previous bins</span>
+<span class="n">T</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.signals.process_clustered_signal_data.html#mlneuro.preprocessing.signals.process_clustered_signal_data" title="View documentation for mlneuro.preprocessing.signals.process_clustered_signal_data"><span class="n">process_clustered_signal_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_times&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;signal_cellids&#39;</span><span class="p">],</span>
+                                    <span class="n">temporal_bin_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                    <span class="n">bins_before</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                    <span class="n">bins_after</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                    <span class="n">flatten_history</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># Get the stimulus value at the spike times</span>
+<span class="n">y</span> <span class="o">=</span> <a href="../../mlneuro.preprocessing.stimulus.stimulus_at_times.html#mlneuro.preprocessing.stimulus.stimulus_at_times" title="View documentation for mlneuro.preprocessing.stimulus.stimulus_at_times"><span class="n">stimulus_at_times</span></a><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;full_stimulus_times&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;full_stimulus&#39;</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Split the data, not shuffling so that the displayed plot will be over a small range</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">T_train</span><span class="p">,</span> <span class="n">T_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="View documentation for sklearn.model_selection.train_test_split"><span class="n">train_test_split</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c1"># Build a basic pipeline</span>
+<span class="c1"># Notice, the SGDRegressor only supports single dimensional outputs so it is wrapped</span>
+<span class="c1"># in a `MultiOutputRegressor` meta-class which fits an `SGDRegressor` per output dimension</span>
+<span class="n">pipeline</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="View documentation for sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="View documentation for sklearn.preprocessing.StandardScaler"><span class="n">StandardScaler</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html#sklearn.multioutput.MultiOutputRegressor" title="View documentation for sklearn.multioutput.MultiOutputRegressor"><span class="n">MultiOutputRegressor</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html#sklearn.linear_model.SGDRegressor" title="View documentation for sklearn.linear_model.SGDRegressor"><span class="n">SGDRegressor</span></a><span class="p">()))</span>
+
+<span class="c1"># Fit and predict on the pipeline</span>
+<span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">y_predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="c1"># Already single signal but this will sort the arrays quickly</span>
+<span class="n">T_test</span><span class="p">,</span> <span class="p">(</span><span class="n">y_predicted</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <a href="../../mlneuro.multisignal.multi_to_single_signal.html#mlneuro.multisignal.multi_to_single_signal" title="View documentation for mlneuro.multisignal.multi_to_single_signal"><span class="n">multi_to_single_signal</span></a><span class="p">([</span><span class="n">T_test</span><span class="p">],</span> <span class="p">[</span><span class="n">y_predicted</span><span class="p">],</span> <span class="p">[</span><span class="n">y_test</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="n">DISPLAY_PLOTS</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="../../mlneuro.utils.visuals.n_subplot_grid.html#mlneuro.utils.visuals.n_subplot_grid" title="View documentation for mlneuro.utils.visuals.n_subplot_grid"><span class="n">n_subplot_grid</span></a><span class="p">(</span><span class="n">y_predicted</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">max_horizontal</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">[:,</span> <span class="n">dim</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T_test</span><span class="p">,</span> <span class="n">y_predicted</span><span class="p">[:,</span> <span class="n">dim</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">PLOT_X_RANGE</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">PLOT_X_RANGE</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;y test (blue) vs predicted (orange) dim={}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  2.505 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-generated-examples-clustered-plot-sgd-multioutput-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/plot_sgd_multioutput.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sgd_multioutput.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/plot_sgd_multioutput.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_sgd_multioutput.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_custom_firing_rate_bins.html" class="btn btn-neutral float-right" title="Decoding position from firing rates where bins are different sizes and non-contiguous" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plot_recurrent_lstm.html" class="btn btn-neutral" title="Decoding position from firing rates with a LSTM recurrent neural network from Keras" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

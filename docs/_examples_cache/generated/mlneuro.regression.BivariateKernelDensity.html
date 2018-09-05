@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.regression.BivariateKernelDensity &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mlneuro.regression.LSTMRegressor" href="mlneuro.regression.LSTMRegressor.html" />
+    <link rel="prev" title="mlneuro.preprocessing.stimulus.smooth_stimulus" href="mlneuro.preprocessing.stimulus.smooth_stimulus.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.common"><code class="docutils literal notranslate"><span class="pre">mlneuro.common</span></code>: Common math, pdf, and discretizing functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.filtering"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>: Estimators that filter noisy predictions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.multisignal"><code class="docutils literal notranslate"><span class="pre">mlneuro.multisignal</span></code>: Metaclasses and functions for multisignal estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.preprocessing"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing</span></code>: Functions for preprocessing data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-mlneuro.regression"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>: Classes for regression estimators</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#id3">Classes</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.BivariateKernelDensity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.regression.LSTMRegressor.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.LSTMRegressor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.regression.DenseNNRegressor.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.DenseNNRegressor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.regression.DenseNNBinnedRegressor.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.DenseNNBinnedRegressor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.regression.PoissonGLMBayesianRegressor.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.PoissonGLMBayesianRegressor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.regression.PoissonBayesianRegressor.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.PoissonBayesianRegressor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.crossvalidation"><code class="docutils literal notranslate"><span class="pre">mlneuro.crossvalidation</span></code>: Classes and functions for crossvalidation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#mlneuro-metrics-performance-measurement"><code class="docutils literal notranslate"><span class="pre">mlneuro.metrics</span></code>: Performance measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.utils"><code class="docutils literal notranslate"><span class="pre">mlneuro.utils</span></code>: Programming utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples_head.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>.BivariateKernelDensity</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/mlneuro.regression.BivariateKernelDensity.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mlneuro-regression-bivariatekerneldensity">
+<h1><a class="reference internal" href="../api.html#module-mlneuro.regression" title="mlneuro.regression"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlneuro.regression</span></code></a>.BivariateKernelDensity<a class="headerlink" href="#mlneuro-regression-bivariatekerneldensity" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="mlneuro.regression.BivariateKernelDensity">
+<em class="property">class </em><code class="descclassname">mlneuro.regression.</code><code class="descname">BivariateKernelDensity</code><span class="sig-paren">(</span><em>n_neighbors=30</em>, <em>bandwidth_X=1</em>, <em>bandwidth_y=1</em>, <em>ybins=32</em>, <em>unoccupied_std_from_mean=0.2</em>, <em>unoccupied_weight=0.55</em>, <em>tree_backend='ball'</em>, <em>tree_build_args={}</em>, <em>n_jobs=1</em>, <em>limit_memory_use=False</em>, <em>logger_level='notset'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/kde.html#BivariateKernelDensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the conditional probability of y given X by kernel density estimation
+using the k-nearest neighbors for efficiency. Please note, bandwidth selection can
+have large effects on performance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em><em> (</em><em>default = 30</em><em>)</em>) – The number of training neighbors to use for each test point</li>
+<li><strong>bandwidth_X</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em><em> (</em><em>default = 1</em><em>)</em>) – The bandwidth of the kernel in the X space</li>
+<li><strong>bandwidth_y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em><em> (</em><em>default = 1</em><em>)</em>) – The bandwidth of the kernel in the y space</li>
+<li><strong>ybins</strong> (<em>array-like</em><em>, </em><em>optional</em><em> (</em><em>default = 32</em><em>)</em>) – <p>If a scalar, the number of bins in each y dimension resulting in ybins ** ndims bins.</p>
+<p>If an array, expected to be a (n_bins + 1, n_dims) description of bin edges</p>
+</li>
+<li><strong>unoccupied_std_from_mean</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em><em> (</em><em>default = 0.25</em><em>)</em>) – The number of standard deviations below the mean to declare a y-bin unvisited.
+Unvisited bins are set to the mean occupancy to avoid strong density results
+in areas with nearly-zero occupancy
+A smaller value will result in more bins being labeled as unvisited.
+If None, the occupancy of the unvisited bins will not be changed</li>
+<li><strong>unoccupied_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em><em> (</em><em>default = 2</em><em>)</em>) – The multiplier for the mean when assigning value to unvisisted bins
+A higher value will result in unvisisted bins having a lower density estimate</li>
+<li><strong>tree_backend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a><em>, </em><em>string optional</em><em> (</em><em>default = 'cpu'</em><em>)</em>) – <p>A tree object for the nearest neighbor search. Must support fitting/creation
+via init and a query function.</p>
+<p>Or a string, specifying:
+* ‘ball’: Uses the BallTree from sklearn (good for high dimensionality data)
+* ‘kd’:   Uses the KDTree from sklearn
+* ‘scipykd’: Uses the scipy cKDTree which supports multiple jobs
+* ‘gpu’:  Uses the GPU enabled BufferKDTree
+* ‘auto’: Selects the best option based on data dimensionality and size</p>
+<p>Suggested tree objects:
+* <a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree" title="(in scikit-learn v0.19.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.neighbors.BallTree</span></code></a> : fast tree for high dimensional data
+* <a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KDTree.html#sklearn.neighbors.KDTree" title="(in scikit-learn v0.19.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.neighbors.KDTree</span></code></a> : fast tree for low dimensional data
+* <code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.regression.kde.BufferKDTreeWrapper</span></code>: supplied as a wrapper to the bufferkdtree package</p>
+<blockquote>
+<div>for GPU support</div></blockquote>
+</li>
+<li><strong>tree_build_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em><em> (</em><em>default = {}</em><em>)</em>) – Additional keyword arguments for the tree __init__ function</li>
+<li><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em><em> (</em><em>default = -1</em><em>)</em>) – The number of threads to use for density estimation.
+-1 uses all available cpus</li>
+<li><strong>limit_memory_use</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em><em> (</em><em>default = False</em><em>)</em>) – Will avoid… future</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="mlneuro.regression.BivariateKernelDensity.y_log_densities">
+<code class="descname">y_log_densities</code><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.y_log_densities" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>array-like, shape = [n_bins, n_training_samples]</em> – The y-space density estimate for each training samples</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mlneuro.regression.BivariateKernelDensity.y_log_occupancy">
+<code class="descname">y_log_occupancy</code><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.y_log_occupancy" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>array-like, shape = [n_bins]</em> – The summed occupancy for each bin in y-space</p>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">mlneuro.regression.base.BinnedRegressionMixin</span></code></dt>
+<dd>Information about bin attributes</dd>
+</dl>
+</div>
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>n_neighbors=30</em>, <em>bandwidth_X=1</em>, <em>bandwidth_y=1</em>, <em>ybins=32</em>, <em>unoccupied_std_from_mean=0.2</em>, <em>unoccupied_weight=0.55</em>, <em>tree_backend='ball'</em>, <em>tree_build_args={}</em>, <em>n_jobs=1</em>, <em>limit_memory_use=False</em>, <em>logger_level='notset'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/kde.html#BivariateKernelDensity.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/kde.html#BivariateKernelDensity.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the kernel density estimator by calculating y-space density
+for each X point and constructing the nearest-neighbor tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The training input samples.</li>
+<li><strong>y</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_dims</em><em>]</em>) – The target values. Will be binned according to self.ybins.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>self</strong> (<em>object</em>) – Returns self.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deep</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>params</strong> (<em>mapping of string to any</em>) – Parameter names mapped to their values.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/kde.html#BivariateKernelDensity.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict values of y given X</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like of shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The input samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>y</strong> (<em>array of shape = [n_samples, n_dims]</em>) – The center of the highest probability bin for each sample</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.predict_log_proba">
+<code class="descname">predict_log_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/kde.html#BivariateKernelDensity.predict_log_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.predict_log_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the log-probability of each y bin given X</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like of shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The input samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>Xy_densities</strong> (<em>array of shape = [n_samples, n_bins]</em>) – The conditional log-probability for each y bin given a sample X<p>See BinnedRegressionMixin.ybin_centers and ybin_grid for
+the relationship of the binned output to the original input</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/regression/kde.html#BivariateKernelDensity.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the probability of each y bin given X</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>array-like of shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_features</em><em>]</em>) – The input samples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>Xy_densities</strong> (<em>array of shape = [n_samples, n_bins]</em>) – The conditional probability distribution over the y bins given a sample X</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>sample_weight=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coefficient of determination R^2 of the prediction.</p>
+<p>The coefficient R^2 is defined as (1 - u/v), where u is the residual
+sum of squares ((y_true - y_pred) ** 2).sum() and v is the total
+sum of squares ((y_true - y_true.mean()) ** 2).sum().
+The best possible score is 1.0 and it can be negative (because the
+model can be arbitrarily worse). A constant model that always
+predicts the expected value of y, disregarding the input features,
+would get a R^2 score of 0.0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Test samples.</li>
+<li><strong>y</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> (</em><em>n_samples</em><em>) or </em><em>(</em><em>n_samples</em><em>, </em><em>n_outputs</em><em>)</em>) – True values for X.</li>
+<li><strong>sample_weight</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> [</em><em>n_samples</em><em>]</em><em>, </em><em>optional</em>) – Sample weights.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>score</strong> (<em>float</em>) – R^2 of self.predict(X) wrt. y.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.regression.BivariateKernelDensity.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#mlneuro.regression.BivariateKernelDensity.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>self</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="examples-using-mlneuro-regression-bivariatekerneldensity">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">mlneuro.regression.BivariateKernelDensity</span></code><a class="headerlink" href="#examples-using-mlneuro-regression-bivariatekerneldensity" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="A pipeline with min-max scaling and BivariateKDE is used to estimate the probability of the sti..."><div class="figure" id="id1">
+<img alt="../_images/sphx_glr_plot_kde_multi_signal_thumb.png" src="../_images/sphx_glr_plot_kde_multi_signal_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clusterless/plot_kde_multi_signal.html#sphx-glr-generated-examples-clusterless-plot-kde-multi-signal-py"><span class="std std-ref">Decoding position from spike features with a multisignal kde pipeline</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="BivariateKDE is used to estimate the probability of the stimulus given each spike of multisigna..."><div class="figure" id="id2">
+<img alt="../_images/sphx_glr_plot_kde_multi_as_single_thumb.png" src="../_images/sphx_glr_plot_kde_multi_as_single_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clusterless/plot_kde_multi_as_single.html#sphx-glr-generated-examples-clusterless-plot-kde-multi-as-single-py"><span class="std std-ref">Decoding position from spike features with a quasi-multisignal kde</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="BivariateKDE is used to estimate the probability of the stimulus given each spike of multisigna..."><div class="figure" id="id3">
+<img alt="../_images/sphx_glr_plot_kde_mixed_decoding_thumb.png" src="../_images/sphx_glr_plot_kde_mixed_decoding_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clusterless/plot_kde_mixed_decoding.html#sphx-glr-generated-examples-clusterless-plot-kde-mixed-decoding-py"><span class="std std-ref">Decoding position from spike features and cluster information with kde</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Multisignal parameter grid search with a KDE pipeline"><div class="figure" id="id4">
+<img alt="../_images/sphx_glr_plot_kde_multi_bandwidth_search_thumb.png" src="../_images/sphx_glr_plot_kde_multi_bandwidth_search_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clusterless/plot_kde_multi_bandwidth_search.html#sphx-glr-generated-examples-clusterless-plot-kde-multi-bandwidth-search-py"><span class="std std-ref">Multisignal parameter grid search with a KDE pipeline</span></a></span></p>
+</div>
+</div><div class="clearer"></div></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mlneuro.regression.LSTMRegressor.html" class="btn btn-neutral float-right" title="mlneuro.regression.LSTMRegressor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mlneuro.preprocessing.stimulus.smooth_stimulus.html" class="btn btn-neutral" title="mlneuro.preprocessing.stimulus.smooth_stimulus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

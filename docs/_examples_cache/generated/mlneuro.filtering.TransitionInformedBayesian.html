@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.filtering.TransitionInformedBayesian &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mlneuro.filtering.BinningFilter" href="mlneuro.filtering.BinningFilter.html" />
+    <link rel="prev" title="mlneuro.filtering.TemporalSmoothedFilter" href="mlneuro.filtering.TemporalSmoothedFilter.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.common"><code class="docutils literal notranslate"><span class="pre">mlneuro.common</span></code>: Common math, pdf, and discretizing functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-mlneuro.filtering"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>: Estimators that filter noisy predictions</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#classes">Classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.filtering.TemporalSmoothedFilter.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>.TemporalSmoothedFilter</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>.TransitionInformedBayesian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.filtering.BinningFilter.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>.BinningFilter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.multisignal"><code class="docutils literal notranslate"><span class="pre">mlneuro.multisignal</span></code>: Metaclasses and functions for multisignal estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.preprocessing"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing</span></code>: Functions for preprocessing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.regression"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>: Classes for regression estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.crossvalidation"><code class="docutils literal notranslate"><span class="pre">mlneuro.crossvalidation</span></code>: Classes and functions for crossvalidation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#mlneuro-metrics-performance-measurement"><code class="docutils literal notranslate"><span class="pre">mlneuro.metrics</span></code>: Performance measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.utils"><code class="docutils literal notranslate"><span class="pre">mlneuro.utils</span></code>: Programming utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples_head.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>.TransitionInformedBayesian</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/mlneuro.filtering.TransitionInformedBayesian.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mlneuro-filtering-transitioninformedbayesian">
+<h1><a class="reference internal" href="../api.html#module-mlneuro.filtering" title="mlneuro.filtering"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code></a>.TransitionInformedBayesian<a class="headerlink" href="#mlneuro-filtering-transitioninformedbayesian" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="mlneuro.filtering.TransitionInformedBayesian">
+<em class="property">class </em><code class="descclassname">mlneuro.filtering.</code><code class="descname">TransitionInformedBayesian</code><span class="sig-paren">(</span><em>transition_obs</em>, <em>bin_edges</em>, <em>recursive_update_prop=0</em>, <em>transition_model='indiscriminate'</em>, <em>propogation_factor=1</em>, <em>n_jobs=-1</em>, <em>transition_model_func=None</em>, <em>**transition_model_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.TransitionInformedBayesian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter a binned regressor probability array by recursively applying a transition matrix generated
+by the observed transition of bin to bin</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>transition_obs</strong> (<em>array-like shape=</em><em>[</em><em>n_times</em><em>, </em><em>n_dims</em><em>]</em>) – Timestamped observations for the transition matrix creation</li>
+<li><strong>bin_edges</strong> (<em>array-like shape</em><em> [</em><em>n_dims</em><em>, </em><em>n_bins_dim</em><em>]</em>) – <dl class="docutils">
+<dt>Defines bin edges for each dimension of the estimate. Used to map observations into estimate bins.</dt>
+<dd>Additionally, a callable function can be passed instead if bin edges are defined at filter
+construction time.</dd>
+</dl>
+</li>
+<li><strong>transition_model</strong> (<em>string</em><em> (</em><em>optional='indiscriminate'</em><em>)</em>) – <dl class="docutils">
+<dt>The transition model to use for constructing a transition matrix:</dt>
+<dd>’indiscriminate’: a kernel based spread based on mean velocity
+‘directional’: bin transition based in the forward direction
+‘bidirectional’: bin transition based in the sum of forward and backward directions
+‘custom’: must define transition_model_func, allows a custom matrix function</dd>
+</dl>
+</li>
+<li><strong>float range</strong><strong> [</strong><strong>0</strong><strong>,</strong><strong>1</strong><strong>] </strong><strong>(</strong><strong>optional=1</strong><strong>)</strong> (<em>propogation_factor</em><em>,</em>) – The power to raise the transition matrix to. <em>Speeds</em> up time.</li>
+<li><strong>transition_model_func</strong> (<em>function</em><em> (</em><em>optional=None</em><em>)</em>) – Function that takes the observations and bin edges and returns a transition matrix</li>
+<li><strong>**transition_model_kwargs</strong> – Additional keyword arguments are passed to the transition model function</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Not thoroughly tested yet. Do not use for sensitive data without additional verification.</p>
+<dl class="method">
+<dt id="mlneuro.filtering.TransitionInformedBayesian.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>transition_obs</em>, <em>bin_edges</em>, <em>recursive_update_prop=0</em>, <em>transition_model='indiscriminate'</em>, <em>propogation_factor=1</em>, <em>n_jobs=-1</em>, <em>transition_model_func=None</em>, <em>**transition_model_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.TransitionInformedBayesian.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.filtering.TransitionInformedBayesian.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>T</em>, <em>y_proba</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.TransitionInformedBayesian.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the filter by storing the time-stamped probability array
+and generating a transition-matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>T</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> [</em><em>n_samples</em><em>,</em><em>]</em>) – Timestamps</li>
+<li><strong>y_proba</strong> (<em>array-like</em><em>, </em><em>shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_bins</em><em>]</em>) – Array to filter, probabilities of bins at each sample.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>self</strong> (<em>object</em>) – Returns self.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.filtering.TransitionInformedBayesian.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mlneuro.filtering.TransitionInformedBayesian.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deep</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>params</strong> (<em>mapping of string to any</em>) – Parameter names mapped to their values.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.filtering.TransitionInformedBayesian.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>T_test=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/filtering/bayesian.html#TransitionInformedBayesian.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.filtering.TransitionInformedBayesian.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter at the given times</p>
+<dl class="docutils">
+<dt>T <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples_new,] (optional=None)</span></dt>
+<dd>Times to sample filter at, if not provided, fit times are used</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>filtered_array</strong> (<em>array-like, shape = [n_samples_new, n_bins]</em>) – The filtered probability transformed by recursive transition matrix product</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlneuro.filtering.TransitionInformedBayesian.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#mlneuro.filtering.TransitionInformedBayesian.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>self</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="clearer"></div></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mlneuro.filtering.BinningFilter.html" class="btn btn-neutral float-right" title="mlneuro.filtering.BinningFilter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mlneuro.filtering.TemporalSmoothedFilter.html" class="btn btn-neutral" title="mlneuro.filtering.TemporalSmoothedFilter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

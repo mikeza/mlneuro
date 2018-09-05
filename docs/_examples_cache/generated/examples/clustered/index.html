@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Clustered spike decoding examples &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Decoding single valued position from firing rates with a dense neural network" href="plot_basic_densenn.html" />
+    <link rel="prev" title="Decoding binned position probabilities from spike features with a dense Keras neural network" href="../clusterless/plot_binned_densenn_clusterless.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../examples_head.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../clusterless/index.html">Clusterless decoding examples</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Clustered spike decoding examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plot_basic_densenn.html">Decoding single valued position from firing rates with a dense neural network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_recurrent_lstm.html">Decoding position from firing rates with a LSTM recurrent neural network from Keras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_sgd_multioutput.html">Decoding position from firing rates with sklearn’s support gradient descent linear model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_custom_firing_rate_bins.html">Decoding position from firing rates where bins are different sizes and non-contiguous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_binned_densenn.html">Decoding binned position probabilities from firing rates with a dense neural network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bayes_poisson.html">Decoding binned probabilties from firing rates with naive bayes inversion of poisson tuning curves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_bayes_poisson_glm.html">Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_regressor_comparison.html">Comparison of multiple regression techniques applied to clustered data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../examples_head.html">Examples</a> &raquo;</li>
+        
+      <li>Clustered spike decoding examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/generated/examples/clustered/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="clustered-spike-decoding-examples">
+<h1>Clustered spike decoding examples<a class="headerlink" href="#clustered-spike-decoding-examples" title="Permalink to this headline">¶</a></h1>
+<p>These examples use spike data with assigned cluster numbers. These cluster numbers indicate that a spike belongs to a particular cell which is assumed
+to react to stimuli in a consistent fashion.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="A dense Keras neural network is used to output a single value from binned neural firing rates."><div class="figure" id="id1">
+<img alt="../../../_images/sphx_glr_plot_basic_densenn_thumb.png" src="../../../_images/sphx_glr_plot_basic_densenn_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_basic_densenn.html#sphx-glr-generated-examples-clustered-plot-basic-densenn-py"><span class="std std-ref">Decoding single valued position from firing rates with a dense neural network</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="A recurrent neural network is used to fit firing rates over a sliding window of time bins (here..."><div class="figure" id="id2">
+<img alt="../../../_images/sphx_glr_plot_recurrent_lstm_thumb.png" src="../../../_images/sphx_glr_plot_recurrent_lstm_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_recurrent_lstm.html#sphx-glr-generated-examples-clustered-plot-recurrent-lstm-py"><span class="std std-ref">Decoding position from firing rates with a LSTM recurrent neural network from Keras</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="A sklearn support gradient descent pipeline is constructed to correlate firing rates with posit..."><div class="figure" id="id3">
+<img alt="../../../_images/sphx_glr_plot_sgd_multioutput_thumb.png" src="../../../_images/sphx_glr_plot_sgd_multioutput_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_sgd_multioutput.html#sphx-glr-generated-examples-clustered-plot-sgd-multioutput-py"><span class="std std-ref">Decoding position from firing rates with sklearn’s support gradient descent linear model</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Non-contiguous firing rate bins are constructed and decoded using support-gradient descent."><div class="figure" id="id4">
+<img alt="../../../_images/sphx_glr_plot_custom_firing_rate_bins_thumb.png" src="../../../_images/sphx_glr_plot_custom_firing_rate_bins_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_custom_firing_rate_bins.html#sphx-glr-generated-examples-clustered-plot-custom-firing-rate-bins-py"><span class="std std-ref">Decoding position from firing rates where bins are different sizes and non-contiguous</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="A dense Keras neural network is used to output probabilities from firing rates of neurons."><div class="figure" id="id5">
+<img alt="../../../_images/sphx_glr_plot_binned_densenn_thumb.png" src="../../../_images/sphx_glr_plot_binned_densenn_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_binned_densenn.html#sphx-glr-generated-examples-clustered-plot-binned-densenn-py"><span class="std std-ref">Decoding binned position probabilities from firing rates with a dense neural network</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Tuning curves are calculated per feature creating an expected firing rate across per neuron acr..."><div class="figure" id="id6">
+<img alt="../../../_images/sphx_glr_plot_bayes_poisson_thumb.png" src="../../../_images/sphx_glr_plot_bayes_poisson_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_bayes_poisson.html#sphx-glr-generated-examples-clustered-plot-bayes-poisson-py"><span class="std std-ref">Decoding binned probabilties from firing rates with naive bayes inversion of poisson tuning curves</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="A statsmodels GLM is used with a Poisson family model to create an expected firing rate across ..."><div class="figure" id="id7">
+<img alt="../../../_images/sphx_glr_plot_bayes_poisson_glm_thumb.png" src="../../../_images/sphx_glr_plot_bayes_poisson_glm_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_bayes_poisson_glm.html#sphx-glr-generated-examples-clustered-plot-bayes-poisson-glm-py"><span class="std std-ref">Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Firing rates are used as an input to a set of single-value regressors to compare their performa..."><div class="figure" id="id8">
+<img alt="../../../_images/sphx_glr_plot_regressor_comparison_thumb.png" src="../../../_images/sphx_glr_plot_regressor_comparison_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_regressor_comparison.html#sphx-glr-generated-examples-clustered-plot-regressor-comparison-py"><span class="std std-ref">Comparison of multiple regression techniques applied to clustered data</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div style='clear:both'></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/clustered_python.zip" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">clustered_python.zip</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../../../_downloads/clustered_jupyter.zip" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Jupyter</span> <span class="pre">notebooks:</span> <span class="pre">clustered_jupyter.zip</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_basic_densenn.html" class="btn btn-neutral float-right" title="Decoding single valued position from firing rates with a dense neural network" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../clusterless/plot_binned_densenn_clusterless.html" class="btn btn-neutral" title="Decoding binned position probabilities from spike features with a dense Keras neural network" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

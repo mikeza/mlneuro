@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlneuro.preprocessing.stimulus.stimulus_at_times &mdash; mlneuro 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mlneuro.preprocessing.stimulus.stimulus_at_times_binned_mean" href="mlneuro.preprocessing.stimulus.stimulus_at_times_binned_mean.html" />
+    <link rel="prev" title="mlneuro.preprocessing.signals.firing_rates_with_history" href="mlneuro.preprocessing.signals.firing_rates_with_history.html" />
+    <link href="../_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mlneuro
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.common"><code class="docutils literal notranslate"><span class="pre">mlneuro.common</span></code>: Common math, pdf, and discretizing functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.filtering"><code class="docutils literal notranslate"><span class="pre">mlneuro.filtering</span></code>: Estimators that filter noisy predictions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.multisignal"><code class="docutils literal notranslate"><span class="pre">mlneuro.multisignal</span></code>: Metaclasses and functions for multisignal estimation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-mlneuro.preprocessing"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing</span></code>: Functions for preprocessing data</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../api.html#signal-functions">Signal Functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#stimulus-functions">Stimulus Functions</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_at_times</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.stimulus.stimulus_at_times_binned_mean.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_at_times_binned_mean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.stimulus.stimulus_at_times_binned_proba.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_at_times_binned_proba</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.stimulus.stimulus_gradient.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_gradient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.stimulus.stimulus_gradient_mask.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_gradient_mask</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.stimulus.correct_stimulus_outliers.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.correct_stimulus_outliers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlneuro.preprocessing.stimulus.smooth_stimulus.html"><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.smooth_stimulus</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.regression"><code class="docutils literal notranslate"><span class="pre">mlneuro.regression</span></code>: Classes for regression estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.crossvalidation"><code class="docutils literal notranslate"><span class="pre">mlneuro.crossvalidation</span></code>: Classes and functions for crossvalidation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#mlneuro-metrics-performance-measurement"><code class="docutils literal notranslate"><span class="pre">mlneuro.metrics</span></code>: Performance measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-mlneuro.utils"><code class="docutils literal notranslate"><span class="pre">mlneuro.utils</span></code>: Programming utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples_head.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlneuro</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li><code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_at_times</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/mlneuro.preprocessing.stimulus.stimulus_at_times.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mlneuro-preprocessing-stimulus-stimulus-at-times">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus</span></code>.stimulus_at_times<a class="headerlink" href="#mlneuro-preprocessing-stimulus-stimulus-at-times" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mlneuro.preprocessing.stimulus.stimulus_at_times">
+<code class="descclassname">mlneuro.preprocessing.stimulus.</code><code class="descname">stimulus_at_times</code><span class="sig-paren">(</span><em>stimulus_times</em>, <em>stimulus_data</em>, <em>select_times</em>, <em>stack_times=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlneuro/preprocessing/stimulus.html#stimulus_at_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlneuro.preprocessing.stimulus.stimulus_at_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of timestamped data at the given times using linear interpolation
+over each dimension</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stimulus_times</strong> (<em>array-like shape =</em><em> [</em><em>n_samples</em><em>,</em><em>]</em>) – The timestamps of stimulus data</li>
+<li><strong>stimulus_data</strong> (<em>array-like shape =</em><em> [</em><em>n_samples</em><em>, </em><em>n_dims</em><em>]</em>) – The data at each sample</li>
+<li><strong>select_times</strong> (<em>array-like shape =</em><em> [</em><em>n_select_samples</em><em>,</em><em>]</em>) – The times to sample the stimulus at</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>stimulus_data</strong> (<em>shape = [n_select_samples, n_dims]</em>) – The interpolated stimulus at the target times (over each dimension)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="examples-using-mlneuro-preprocessing-stimulus-stimulus-at-times">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">mlneuro.preprocessing.stimulus.stimulus_at_times</span></code><a class="headerlink" href="#examples-using-mlneuro-preprocessing-stimulus-stimulus-at-times" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="A dense Keras neural network is used to output a single value from binned neural firing rates."><div class="figure" id="id1">
+<img alt="../_images/sphx_glr_plot_basic_densenn_thumb.png" src="../_images/sphx_glr_plot_basic_densenn_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_basic_densenn.html#sphx-glr-generated-examples-clustered-plot-basic-densenn-py"><span class="std std-ref">Decoding single valued position from firing rates with a dense neural network</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A recurrent neural network is used to fit firing rates over a sliding window of time bins (here..."><div class="figure" id="id2">
+<img alt="../_images/sphx_glr_plot_recurrent_lstm_thumb.png" src="../_images/sphx_glr_plot_recurrent_lstm_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_recurrent_lstm.html#sphx-glr-generated-examples-clustered-plot-recurrent-lstm-py"><span class="std std-ref">Decoding position from firing rates with a LSTM recurrent neural network from Keras</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A sklearn support gradient descent pipeline is constructed to correlate firing rates with posit..."><div class="figure" id="id3">
+<img alt="../_images/sphx_glr_plot_sgd_multioutput_thumb.png" src="../_images/sphx_glr_plot_sgd_multioutput_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_sgd_multioutput.html#sphx-glr-generated-examples-clustered-plot-sgd-multioutput-py"><span class="std std-ref">Decoding position from firing rates with sklearn’s support gradient descent linear model</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Non-contiguous firing rate bins are constructed and decoded using support-gradient descent."><div class="figure" id="id4">
+<img alt="../_images/sphx_glr_plot_custom_firing_rate_bins_thumb.png" src="../_images/sphx_glr_plot_custom_firing_rate_bins_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_custom_firing_rate_bins.html#sphx-glr-generated-examples-clustered-plot-custom-firing-rate-bins-py"><span class="std std-ref">Decoding position from firing rates where bins are different sizes and non-contiguous</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A dense Keras neural network is used to output probabilities from firing rates of neurons."><div class="figure" id="id5">
+<img alt="../_images/sphx_glr_plot_binned_densenn_thumb.png" src="../_images/sphx_glr_plot_binned_densenn_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_binned_densenn.html#sphx-glr-generated-examples-clustered-plot-binned-densenn-py"><span class="std std-ref">Decoding binned position probabilities from firing rates with a dense neural network</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Tuning curves are calculated per feature creating an expected firing rate across per neuron acr..."><div class="figure" id="id6">
+<img alt="../_images/sphx_glr_plot_bayes_poisson_thumb.png" src="../_images/sphx_glr_plot_bayes_poisson_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_bayes_poisson.html#sphx-glr-generated-examples-clustered-plot-bayes-poisson-py"><span class="std std-ref">Decoding binned probabilties from firing rates with naive bayes inversion of poisson tuning curves</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A statsmodels GLM is used with a Poisson family model to create an expected firing rate across ..."><div class="figure" id="id7">
+<img alt="../_images/sphx_glr_plot_bayes_poisson_glm_thumb.png" src="../_images/sphx_glr_plot_bayes_poisson_glm_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_bayes_poisson_glm.html#sphx-glr-generated-examples-clustered-plot-bayes-poisson-glm-py"><span class="std std-ref">Decoding binned position probabilties from firing rates with naive bayes inversion of a poisson GLM</span></a></span></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Firing rates are used as an input to a set of single-value regressors to compare their performa..."><div class="figure" id="id8">
+<img alt="../_images/sphx_glr_plot_regressor_comparison_thumb.png" src="../_images/sphx_glr_plot_regressor_comparison_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="examples/clustered/plot_regressor_comparison.html#sphx-glr-generated-examples-clustered-plot-regressor-comparison-py"><span class="std std-ref">Comparison of multiple regression techniques applied to clustered data</span></a></span></p>
+</div>
+</div><div class="clearer"></div></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mlneuro.preprocessing.stimulus.stimulus_at_times_binned_mean.html" class="btn btn-neutral float-right" title="mlneuro.preprocessing.stimulus.stimulus_at_times_binned_mean" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mlneuro.preprocessing.signals.firing_rates_with_history.html" class="btn btn-neutral" title="mlneuro.preprocessing.signals.firing_rates_with_history" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Michael Adkins.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

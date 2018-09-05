@@ -16,9 +16,12 @@ help:
 
 html-noplot:
 	@$(SPHINXBUILD) -D plot_gallery=0 -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	cp _examples_cache/* _build -r
 
 html:
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	cp _build/_images/sphx_glr_plot* _examples_cache/_images/
+	cp _build/generated/examples/* _examples_cache/generated/examples
 
 
 # Catch-all target: route all unknown targets to Sphinx using the new
