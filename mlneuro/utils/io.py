@@ -29,7 +29,7 @@ def save_array_dict(filename, dict_of_arrs, save_type='h5'):
 
     elif save_type == 'mat':
         max_size = 2 ** 31
-        big_keys = [(k, getsizeof(v)) for k,v in dict_of_arrs.items() if getsizeof(v) > max_size]
+        big_keys = [(k, getsizeof(v)) for k, v in dict_of_arrs.items() if getsizeof(v) > max_size]
         for k, size in big_keys:
             print('Array `{}` too large for mat 7.2 file format. It will be split in the mat file.'.format(k))
             arrs = np.array_split(dict_of_arrs.pop(k), size // max_size)
@@ -54,7 +54,7 @@ def save_array_dict(filename, dict_of_arrs, save_type='h5'):
 
 
 def load_array_dict(filename, read_type=None):
-    """Load a dictionary of arrays from disk in multiple formats inferred from the 
+    """Load a dictionary of arrays from disk in multiple formats inferred from the
     file extension.
     """
     if read_type is None:
@@ -92,7 +92,8 @@ def save_dict_hdf5(file_name, dict, mode='w'):
     """
     with h5py.File(file_name, mode) as f:
         for k, v in dict.items():
-            if k.startswith('_'):   continue
+            if k.startswith('_'):
+                continue
             f.create_dataset(k, data=v)
 
 
@@ -103,7 +104,7 @@ def subdirectories(d):
     -----
     https://stackoverflow.com/questions/800197/how-to-get-all-of-the-immediate-subdirectories-in-python
     """
-    return list(map(os.path.abspath, filter(os.path.isdir, [os.path.join(d,f) for f in os.listdir(d)])))
+    return list(map(os.path.abspath, filter(os.path.isdir, [os.path.join(d, f) for f in os.listdir(d)])))
 
 
 def recursive_subdirectories(head_dir, leaves_only=False, return_head=False):

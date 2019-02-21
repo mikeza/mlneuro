@@ -98,7 +98,7 @@ def bin_edges_from_data(data, bin_count):
 
     mins = data.min(axis=0)
     maxs = data.max(axis=0)
-    bin_edges = [np.linspace(mins[i], maxs[i], bin_count[i] + 1) 
+    bin_edges = [np.linspace(mins[i], maxs[i], bin_count[i] + 1)
                             for i in range(data.shape[1])]
 
     return bin_edges, bin_count
@@ -130,7 +130,7 @@ def bin_edges_from_data_bysize(data, bin_size):
     ranges = maxs - mins
     bin_count = np.ceil(ranges / bin_size) + 1
 
-    bin_edges = [mins[i] + np.arange(bin_count[i]) * bin_size  
+    bin_edges = [mins[i] + np.arange(bin_count[i]) * bin_size
                             for i in range(data.shape[1])]
 
     return bin_edges, bin_count - 1
@@ -291,7 +291,7 @@ def binned_data_gaussian(data, bin_edges, spatial_sigma=None,
 
         if not flat:
             result = reshape_binned(result, n_bins_dim)
-        
+
     return result
 
 
@@ -318,7 +318,7 @@ def binned_data_onehot(data, bin_edges, flat=True):
 def binned_data(data, bin_edges, flat=True):
     """Find the observed bin of the data over time, return the observed bins
     in n-dimensions shape of (n_times, n_dims) or the flattened bin index
-    of shape (n_times,) 
+    of shape (n_times,)
 
     Note: np.digitize may be useful.
     """
@@ -371,7 +371,8 @@ def occupancy(data, bin_edges, smooth=True, spatial_sigma=None, normalize=True,
 
     # If the threshold for unvisted is < 1, it is a percentage and we
     #   want a normalized histogram to threshold at
-    H, _ = np.histogramdd(data, bin_edges, normed=(unvisited_threshold is not None and unvisited_threshold < 1))
+    H, _ = np.histogramdd(data, bin_edges,
+        normed=(unvisited_threshold is not None and unvisited_threshold < 1))
 
     # Transpose a 2D histogram since numpy rotates the array, why?
     if H.ndim == 2: H = np.array(H).T
@@ -390,12 +391,11 @@ def occupancy(data, bin_edges, smooth=True, spatial_sigma=None, normalize=True,
 
         if unvisited_mode == 'uniform':
             occ[H < unvisited_threshold] = np.nan
-            occ[H < unvisited_threshold] = np.nanmean(occ) * 2 
+            occ[H < unvisited_threshold] = np.nanmean(occ) * 2
             # Multiplying the mean by a factor helps elimainate 'hotspot'
             # issues in occupancy normalized estimates
         else:
             occ[H < unvisited_threshold] = np.nan
-
 
     if normalize:
         occ /= np.nansum(occ)
@@ -434,14 +434,13 @@ def idxs_in_bins(items_arr, paired_bin_edges, reduced=False, as_mask=False):
     Example
     ------
 
-    # Retreiving decoding values during bins of interest
-
-    n_times = 1000
-    decoding_resolution = 48
-    decoding_array = np.ones(n_times, decoding_resolution)
-    times_array = np.arange(n_times, 1)             # A list of timestamps
-    times_of_interest = [(0,5), (10,15), (20,25)]   # Paired times list
-    decoding_of_interest = decoding_array [ idxs_in_bins ( times_array, times_of_interest ) ]
+    Retreiving decoding values during bins of interest
+    >>> n_times = 1000
+    >>> decoding_resolution = 48
+    >>> decoding_array = np.ones(n_times, decoding_resolution)
+    >>> times_array = np.arange(n_times, 1)             # A list of timestamps
+    >>> times_of_interest = [(0,5), (10,15), (20,25)]   # Paired times list
+    >>> decoding_of_interest = decoding_array [ idxs_in_bins ( times_array, times_of_interest ) ]
 
     """
     bin_item_idxs = []
@@ -450,4 +449,5 @@ def idxs_in_bins(items_arr, paired_bin_edges, reduced=False, as_mask=False):
         idx_e = np.searchsorted(items_arr, bin_e, 'right')
         bin_item_idxs.append(np.arange(idx_s, idx_e))
     idxs = bin_item_idxs if not reduced else np.concatenate(bin_item_idxs)
+
     return idxs if not as_mask else binned_indices_to_masks(items_arr, idxs)

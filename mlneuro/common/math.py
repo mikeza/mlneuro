@@ -6,7 +6,7 @@ from numba import jit
 
 __all__ = ['tiny_epsilon', 'scale_to_range', 'logdotexp', 'gaussian_pdf', 'gaussian_log_pdf', 'gaussian_log_pdf_norm']
 
-gaussian_pdf_C = np.sqrt(2.0 * np.pi) 
+gaussian_pdf_C = np.sqrt(2.0 * np.pi)
 
 
 def tiny_epsilon(dtype):
@@ -60,7 +60,7 @@ def gaussian_pdf(x, mean=0, std_deviation=1):
         The normal probability function will be evaluated
     mean : float or array_like, optional
     std_deviation : float or array_like
-    
+
     Returns
     -------
     probability_density
@@ -73,8 +73,8 @@ def gaussian_pdf(x, mean=0, std_deviation=1):
 @jit(nopython=True)
 def gaussian_log_pdf(x, mean=0, std_deviation=1):
     """Same as :func:`gaussian_pdf` but returns the unnormalized log probabilty
-    to reduce rounding error. The normalizing factor must be retrieved
-    from :func:`gaussian_log_pdf_norm`, it has been moved out to increase the 
+    to reduce rounding error. The normalizing factor must be retrieved from
+    :func:`gaussian_log_pdf_norm`, it has been moved out to increase the
     speed of this function.
     """
     z = (x - mean) / std_deviation
@@ -83,7 +83,7 @@ def gaussian_log_pdf(x, mean=0, std_deviation=1):
 
 @jit(nopython=True)
 def gaussian_log_pdf_norm(n_dims=1, std_deviation=1):
-    """Generate a log normalizing factor for a n-dimensional gaussian with 
+    """Generate a log normalizing factor for a n-dimensional gaussian with
     a given standard deviation. Since it is negative, it should be added to
     the log pdf.
     """

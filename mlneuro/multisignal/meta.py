@@ -25,7 +25,7 @@ class MultisignalScorer(MultisignalMixin):
     aggr_method : callable, array-func (optional=np.mean)
         The method to reduce data between signals. If 'raw', the scores will be returned per-signal
         mean, median and std can also be as strings and are stored in the class.
-        Otherwise, if callable, the function will be called to reduce the signal scores 
+        Otherwise, if callable, the function will be called to reduce the signal scores
     additional arguments :
         both additional arguments and keyword arguments will be collected
         and passed to the base_cv object
@@ -48,11 +48,11 @@ class MultisignalScorer(MultisignalMixin):
         self.std = np.std(scores)
         self.median = np.median(scores)
         self.mean = np.mean(scores)
-       
+
         if isinstance(self.aggr_method, str) and hasattr(self, self.aggr_method):
             return getattr(self, self.aggr_method)
         elif callable(self.aggr_method):
-           return self.aggr_method(scores)
+            return self.aggr_method(scores)
         else:
             raise TypeError('Parameter aggr_method should be callable')
 
@@ -156,7 +156,7 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
         The collection of fitted base estimators.
     """
 
-    def __init__(self, base_estimator, reduce_predictions=True, filt=None, estimator_params=tuple(), 
+    def __init__(self, base_estimator, reduce_predictions=True, filt=None, estimator_params=tuple(),
                         pickle_estimators=False, pickle_results=False, pickler_kwargs={}):
         self.base_estimator = base_estimator
         self.estimator_params = estimator_params
@@ -361,5 +361,5 @@ class MultisignalEstimator(BaseEstimator, MultisignalMixin, MetaEstimatorMixin):
 
     def __iter__(self):
         """Returns iterator over estimators in the multisignal estimator."""
-        return (iter(self.estimators_) if not self.pickle_estimators 
+        return (iter(self.estimators_) if not self.pickle_estimators
             else map(self.pickler_.unpickle_data, self.estimators_))

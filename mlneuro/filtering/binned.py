@@ -24,7 +24,7 @@ class BinningFilter(BaseEstimator):
         A function pointer for the kernel to use, or a string specifying a built in kernel shape
 
     """
-        
+
     def __init__(self, n_jobs=1):
         self.n_jobs = n_jobs
 
@@ -54,7 +54,8 @@ class BinningFilter(BaseEstimator):
     def _interp_time_bins(self, T):
         T = atleast_2d(T)
         if T.shape[1] == 1:     # Interpret as bin edges
-            return paired_bin_edges(T.transpose())[0] # A bit of flipping for one-dimensional data
+            # A bit of flipping required for one-dimensional data
+            return paired_bin_edges(T.transpose())[0]
         elif T.shape[1] == 2:   # Interpret as paired bin edges
             return T
 
@@ -84,7 +85,7 @@ class BinningFilter(BaseEstimator):
         filtered_arrays : array-like, shape = [n_samples_new, n_dims] or list of such
             The filtered data_arrays passed during fit, a list if not a single array
         """
-        results = [self._predict(T, data_array, m) for data_array, m 
+        results = [self._predict(T, data_array, m) for data_array, m
                     in zip(self.data_arrays, self._interp_method(method, len(self.data_arrays)))]
         return results[0] if len(results) == 1 else results
 
@@ -102,7 +103,7 @@ class BinningFilter(BaseEstimator):
         filtered_arrays : array-like, shape = [n_samples_new, n_dims] or list of such
             The row-normalized filtered data_arrays passed during fit, a list if not a single array
         """
-        results = [self._predict(T, data_array, m) for data_array, m 
+        results = [self._predict(T, data_array, m) for data_array, m
                     in zip(self.data_arrays, self._interp_method(method, len(self.data_arrays)))]
         # Normalize
         results = [r / np.sum(r, axis=1)[:, np.newaxis] for r in results]
@@ -149,5 +150,5 @@ class BinningFilter(BaseEstimator):
             else:
                 y_ = y[idxs_per_bin[i], :]
                 Ty[i, :] = method(y_, axis=0)
-                
+
         return Ty

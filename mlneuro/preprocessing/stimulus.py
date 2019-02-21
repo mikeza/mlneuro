@@ -1,4 +1,4 @@
-"""Functions for processing stimulus data which includes stimuli presented to 
+"""Functions for processing stimulus data which includes stimuli presented to
 subjects and subject behavior
 """
 import numpy as np
@@ -6,8 +6,8 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 
 from ..common.bins import paired_bin_edges, idxs_in_bins, bin_edges_from_data_bysize, \
-     occupancy, bin_counts, bin_edges_from_data, bin_edges_from_data, bin_centers_from_edges, \
-     bin_edges_from_centers, reshape_flat
+    occupancy, bin_counts, bin_edges_from_data, bin_edges_from_data, bin_centers_from_edges, \
+    bin_edges_from_centers, reshape_flat
 
 __all__ = ['stimulus_at_times', 'stimulus_at_times_binned_mean', 'stimulus_at_times_binned_proba', 'stimulus_gradient',
            'stimulus_gradient_mask', 'correct_stimulus_outliers', 'smooth_stimulus']
@@ -25,7 +25,7 @@ def stimulus_at_times(stimulus_times, stimulus_data, select_times, stack_times=F
         The data at each sample
     select_times : array-like shape = [n_select_samples,]
         The times to sample the stimulus at
-    
+
     Returns
     -------
     stimulus_data : shape = [n_select_samples, n_dims]
@@ -33,7 +33,7 @@ def stimulus_at_times(stimulus_times, stimulus_data, select_times, stack_times=F
     """
     n_stimulus_dims = stimulus_data.shape[1]
     ret_stimulus = np.full((select_times.shape[0], n_stimulus_dims), np.nan)
-    
+
     # Interpolate over each dimension
     xp = np.squeeze(stimulus_times)
     x = np.squeeze(select_times)
@@ -60,7 +60,7 @@ def stimulus_at_times_binned_mean(stimulus_times, stimulus_data, temporal_bin_ce
         The data at each sample
     temporal_bin_centers : array-like shape = [n_temporal_bins,]
         The center of each temporal bin to sample the stimulus at
-    
+
     Returns
     -------
     stimulus_data : shape = [n_temporal_bins, n_dims]
@@ -133,7 +133,7 @@ def stimulus_gradient(stimulus_times, stimulus_data, reduced=True):
     stimulus_data : array-like shape = [n_samples, n_dims]
         The data at each sample
     reduced : boolean (optional=True)
-        If true, the absolute value of the gradient per dimension is 
+        If true, the absolute value of the gradient per dimension is
         summed to yield an all-dimension gradient magnitude. Otherwise,
         the gradient will be returned signed and per dimension.
 
@@ -148,7 +148,7 @@ def stimulus_gradient(stimulus_times, stimulus_data, reduced=True):
 
 
 def stimulus_gradient_mask(stimulus_times, stimulus_data, min_g=0, max_g=np.inf, as_stds=False, invert=False):
-    """Create a mask of stimulus data based on the velocity of the stimulus. 
+    """Create a mask of stimulus data based on the velocity of the stimulus.
 
     Parameters
     ---------
@@ -245,7 +245,7 @@ def smooth_stimulus(stimulus_times, stimulus_data, temporal_sigma=0.5, **kwargs)
     stimulus_data : shape = [n_samples, n_dims]
         Smoothed stimulus data
     """
-    
+
     # Convert to number of indicies sigma
     temporal_distance = np.diff(stimulus_times).mean()
     temporal_sigma = temporal_sigma / temporal_distance
@@ -253,6 +253,6 @@ def smooth_stimulus(stimulus_times, stimulus_data, temporal_sigma=0.5, **kwargs)
     # Default mode should be constant
     mode = kwargs.pop('mode', 'constant')
 
-    # Spatial sigma should be 0 because we don't want to blend across 
+    # Spatial sigma should be 0 because we don't want to blend across
     #   stimulus dimensions e.g. X and Y space
     return gaussian_filter(stimulus_data, sigma=[temporal_sigma, 0], mode=mode, **kwargs)

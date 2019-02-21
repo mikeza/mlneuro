@@ -82,7 +82,7 @@ def spike_stimulus(signal_times, stimulus_times, stimulus_data):
     return [stimulus_at_times(stimulus_times, stimulus_data, times) for times in _enforce_multisignal_iterable(signal_times)]
 
 
-def process_clustered_signal_data(signal_times, signal_cellids, temporal_bin_size=0.25, normalize_by_max_rate=True, 
+def process_clustered_signal_data(signal_times, signal_cellids, temporal_bin_size=0.25, normalize_by_max_rate=True,
                                     normalize_by_bin_size=True, center_firing=False, **firing_rates_with_history_kwargs):
     """Generate temporal bin edges and firing rates with history from labeled signal data
     """
@@ -96,18 +96,18 @@ def process_clustered_signal_data(signal_times, signal_cellids, temporal_bin_siz
         temporal_bin_centers = bin_centers_from_edges(bin_edges)
     else:
         temporal_bin_edges = atleast_2d(temporal_bin_size)
-        if temporal_bin_edges.shape[1] == 2: # Given paired bin edges
+        if temporal_bin_edges.shape[1] == 2:    # Given paired bin edges
             temporal_paired_bin_edges = temporal_bin_edges
             # Find the centers
             temporal_bin_centers = np.sum(temporal_bin_edges, axis=1) / 2
-        elif temporal_bin_edges.shape[1] == 1: # Given normal edges
+        elif temporal_bin_edges.shape[1] == 1:  # Given normal edges
             temporal_paired_bin_edges = paired_bin_edges(temporal_bin_edges.T)
             temporal_bin_centers = bin_centers_from_edges(temporal_bin_edges.T)[0]
         else:
             raise ValueError('Unknown shape {} for `temporal_bin_size'.format(temporal_bin_size.shape))
         if not normalize_by_bin_size:
             logger.critical('If defining custom bin edges that are not a consistent size, `normalize_by_bin_size` should be True and is currently False')
-    
+
     cell_firing_rates = firing_rates(spike_times, spike_cellids, temporal_paired_bin_edges, normalize_by_max=normalize_by_max_rate,
                                      normalize_by_time=normalize_by_bin_size, center=center_firing)
     cell_firing_rates_history = firing_rates_with_history(cell_firing_rates, **firing_rates_with_history_kwargs)
@@ -259,4 +259,3 @@ def firing_rates_with_history(firing_rates, bins_before=2, bins_after=2, include
     firing_rates_history = firing_rates[indexer, :].squeeze()
 
     return firing_rates_history if not flatten_history else firing_rates_history.reshape(n_bins, n_bins_history * n_cells)
-

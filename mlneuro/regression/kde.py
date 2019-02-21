@@ -29,7 +29,7 @@ except ImportError:
 
 class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
     """Estimates the conditional probability of y given X by kernel density estimation
-    using the k-nearest neighbors for efficiency. Please note, bandwidth selection can 
+    using the k-nearest neighbors for efficiency. Please note, bandwidth selection can
     have large effects on performance.
 
     Parameters
@@ -67,7 +67,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         * 'ball': Uses the BallTree from sklearn (good for high dimensionality data)
         * 'kd':   Uses the KDTree from sklearn
         * 'scipykd': Uses the scipy cKDTree which supports multiple jobs
-        * 'gpu':  Uses the GPU enabled BufferKDTree 
+        * 'gpu':  Uses the GPU enabled BufferKDTree
         * 'auto': Selects the best option based on data dimensionality and size
 
         Suggested tree objects:
@@ -116,9 +116,9 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         self.set_logger_level(logger_level)
 
     def _init_ybins_from_param(self, y, bin_param):
-        if np.isscalar(bin_param): # bin count
+        if np.isscalar(bin_param):  # Given bin count
             self._init_ybins(y_data=y, ybin_count=bin_param)
-        else:                  # bin edges
+        else:                       # Given bin edges
             if len(bin_param) != y.shape[1]:
                 raise ValueError('If KDCE.bin_param is not a scalar, the number of rows must'
                                  'be equal to the number y dimensions')
@@ -143,7 +143,8 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
 
             @jit(nopython=True, nogil=True)
             def _inner_worker(ybin_grid, y, y_log_densities, bandwidth_y, i_start, i_end):
-                y_log_densities[:, i_start:i_end] = gaussian_log_pdf(ybin_grid.reshape(ybin_grid.shape[0], 1, -1), mean=y[i_start:i_end, :],std_deviation=bandwidth_y).sum(axis=-1)
+                y_log_densities[:, i_start:i_end] = gaussian_log_pdf(ybin_grid.reshape(ybin_grid.shape[0], 1, -1), mean=y[i_start:i_end, :],
+                                                                     std_deviation=bandwidth_y).sum(axis=-1)
 
             # Launch n_jobs parallel workers, unless limting memory use then do sequential workers each with a chunk
             n_splits = y.shape[0] // 50000 + 1 if self.limit_memory_use else self.n_jobs
@@ -192,7 +193,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         self.logger.debug('Selected tree backend {}'.format(self.tree_backend))
 
     def fit(self, X, y):
-        """Fit the kernel density estimator by calculating y-space density 
+        """Fit the kernel density estimator by calculating y-space density
         for each X point and constructing the nearest-neighbor tree
 
         Parameters
@@ -268,7 +269,7 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
         Xy_densities : array of shape = [n_samples, n_bins]
             The conditional log-probability for each y bin given a sample X
 
-            See BinnedRegressionMixin.ybin_centers and ybin_grid for 
+            See BinnedRegressionMixin.ybin_centers and ybin_grid for
             the relationship of the binned output to the original input
         """
 
@@ -287,9 +288,8 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
             neighbor_dists, neighbor_idxs = self.X_train_tree.query(X, k=k, dualtree=use_dual)
 
         # Allocate a result array (reduce type if)
-        Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_), 
+        Xy_densities = np.zeros((X.shape[0], self.ybin_counts_flat_),
             dtype=X.dtype if not self.limit_memory_use else np.float32)
-
 
         # Define compiled functions
         # for fast and multithread capable internal computation of density
@@ -322,7 +322,6 @@ class BivariateKernelDensity(BaseEstimator, BinnedRegressorMixin, LoggingMixin):
                                 std_deviation=bandwidth_X) + pdf_norm, axis=1)
                 Xy_density = logdotexp(y_log_densities, X_density)
                 Xy_densities[i, :] = Xy_density - y_train_log_occupancy
-
 
         # Launch the specified number of threads with the worker thread for k-nearest
         #   or all points estimation

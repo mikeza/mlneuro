@@ -46,7 +46,7 @@ class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
         If an array, expected to be a (n_bins + 1, n_dims) description of bin edges
     encoding_model : string, optional (default = 'quadratic')
-        'linear' or 'quadratic' specifying if the y values should be expanded to allow the glm to fit y^2 
+        'linear' or 'quadratic' specifying if the y values should be expanded to allow the glm to fit y^2
     model_type : string, optional (default = 'glm')
         'glm', 'zeroinflated', or 'generalized' specifying the underlying statsmodel Poisson model to be used.
         The results with anything but 'glm' are thusfar poor and not recommended.
@@ -66,9 +66,9 @@ class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
         self.nan_unvisited = nan_unvisited
 
     def _init_ybins_from_param(self, y, bin_param):
-        if np.isscalar(bin_param): # bin count
+        if np.isscalar(bin_param):  # Given bin count
             self._init_ybins(y_data=y, ybin_count=bin_param)
-        else:                  # bin edges
+        else:                       # Given bin edges
             if len(bin_param) != y.shape[1]:
                 raise ValueError('If NaiveBayes.bin_param is not a scalar, the number of rows must'
                                  'be equal to the number y dimensions')
@@ -110,7 +110,6 @@ class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
         self.tuning_curves *= np.nanmean(self.occ)
 
         return self
-
 
     def predict(self, X):
         """ Predict values of y given X
@@ -160,7 +159,7 @@ class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
         """
         y_predicted = np.ones((X.shape[0], self.ybin_grid.shape[0]))
 
-        @jit(nogil=True) # Can't use nopython because gammaln is not supported by numba
+        @jit(nogil=True)  # Can't use nopython because gammaln is not supported by numba
         def _compiled_worker(y_predicted, X, tuning_curves, occ, i_start, i_end):
 
             for i in range(i_start, i_end):
@@ -177,13 +176,13 @@ class PoissonBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
                 # Update py assuming neurons are independent
                 y_predicted[i, :] += np.nansum(p, axis=0)
-                
+
                 # Use occupancy as a prior
                 if occ is not None:
                     y_predicted[i, :] += occ
 
         spawn_threads(self.n_jobs, X, _compiled_worker,
-                args=(y_predicted, X, self.tuning_curves, self.occ if self.use_prior else None))  
+                args=(y_predicted, X, self.tuning_curves, self.occ if self.use_prior else None))
 
         return y_predicted
 
@@ -204,7 +203,7 @@ class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
         If an array, expected to be a (n_bins + 1, n_dims) description of bin edges
     encoding_model : string, optional (default = 'quadratic')
-        'linear' or 'quadratic' specifying if the y values should be expanded to allow the glm to fit y^2 
+        'linear' or 'quadratic' specifying if the y values should be expanded to allow the glm to fit y^2
     model_type : string, optional (default = 'glm')
         'glm', 'zeroinflated', or 'generalized' specifying the underlying statsmodel Poisson model to be used.
         The results with anything but 'glm' are thusfar poor and not recommended.
@@ -226,9 +225,9 @@ class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
         self.nan_unvisited = nan_unvisited
 
     def _init_ybins_from_param(self, y, bin_param):
-        if np.isscalar(bin_param): # bin count
+        if np.isscalar(bin_param):  # Given bin count
             self._init_ybins(y_data=y, ybin_count=bin_param)
-        else:                  # bin edges
+        else:                       # Given bin edges
             if len(bin_param) != y.shape[1]:
                 raise ValueError('If NaiveBayes.bin_param is not a scalar, the number of rows must'
                                  'be equal to the number y dimensions')
@@ -299,20 +298,20 @@ class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
         # Generate tuning curves for each neuron
         # Prediciting firing rate (X) given stimulus (y) for each neuron
-        self.models, self.tuning_curves = zip(*[self._fit_predict_model(X[:,i], y_fit, y_sample, i, **glm_fit_kwargs) for i in range(X.shape[1])])
+        self.models, self.tuning_curves = zip(*[self._fit_predict_model(X[:, i], y_fit, y_sample, i, **glm_fit_kwargs) for i in range(X.shape[1])])
         self.tuning_curves = np.array(self.tuning_curves)
 
         # Calculate occupancy
         self.occ = np.log(occupancy(y, self.ybin_edges, unvisited_mode='nan' if self.nan_unvisited else 'uniform').flatten()) if self.use_prior else None
 
-        # Get the standard deviation of the change in y 
+        # Get the standard deviation of the change in y
         n_samples = y.shape[0]
-        dy =  np.sqrt(np.sum((y[1:n_samples, :] - y[:n_samples - 1, :]) ** 2, axis=1))
+        dy = np.sqrt(np.sum((y[1:n_samples, :] - y[:n_samples - 1, :]) ** 2, axis=1))
         self.dy_std = np.std(dy)
 
     def _fit_predict_model(self, X, y_fit, y_predict, n, **fit_kwargs):
 
-        model = self._make_model(X,sm.add_constant(y_fit), n)
+        model = self._make_model(X, sm.add_constant(y_fit), n)
         try:
             fit_model = model.fit(**fit_kwargs)
             X_pred = fit_model.predict(sm.add_constant(y_predict))
@@ -325,7 +324,7 @@ class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
     def _make_model(self, X, y, n):
         if self.model_type == 'auto':
-            per_zero = (X == 0).sum() / X.shape[0] 
+            per_zero = (X == 0).sum() / X.shape[0]
             if per_zero > 0.9:
                 model_type = 'zeroinflated'
             else:
@@ -389,7 +388,7 @@ class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
         """
         y_predicted = np.ones((X.shape[0], self.ybin_grid.shape[0]))
 
-        @jit(nogil=True) # Can't use nopython because gammaln is not supported by numba
+        @jit(nogil=True)  # Can't use nopython because gammaln is not supported by numba
         def _compiled_worker(y_predicted, X, tuning_curves, occ, i_start, i_end):
 
             for i in range(i_start, i_end):
@@ -406,11 +405,11 @@ class PoissonGLMBayesianRegressor(BaseEstimator, BinnedRegressorMixin):
 
                 # Update py assuming neurons are independent
                 y_predicted[i, :] += p.sum(axis=0)
-                
+
                 if occ is not None:
                     y_predicted[i, :] += occ
 
         spawn_threads(self.n_jobs, X, _compiled_worker,
-                args=(y_predicted, X, self.tuning_curves, self.occ))        
+                args=(y_predicted, X, self.tuning_curves, self.occ))
 
-        return y_predicted 
+        return y_predicted

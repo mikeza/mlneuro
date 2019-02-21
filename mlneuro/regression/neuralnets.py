@@ -136,7 +136,7 @@ class DenseNNRegressor(BaseEstimator, RegressorMixin):
         Parameters
         ----------
         X : array-like, shape = [n_samples, n_features]
-            The training input samples. 
+            The training input samples.
         y : array-like, shape = [n_samples, n_dims]
             The target values.
         **fit_params
@@ -154,7 +154,6 @@ class DenseNNRegressor(BaseEstimator, RegressorMixin):
 
         model = Sequential()
 
-   
         # Input layer
         model.add(Dense(self.units_[0], input_dim=X.shape[1], activation=self.activation))
 
@@ -215,7 +214,7 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         The Keras activation type for the dense layers
     loss : strnig or function (optional=None)
         The Keras string defined loss function (e.g. 'kullback_leibler_divergence') for a function that takes
-        y_true, y_pred and produces a float value for loss (must use tensor math). 
+        y_true, y_pred and produces a float value for loss (must use tensor math).
         By default, uses distance weighted KL-divergence
     weighted_kl_constant : float
         The constant added to the distances for weighted KL-divergence loss function. Larger values will allow the estimator
@@ -224,8 +223,8 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         Whether to show progress of the fit after each epoch
     """
 
-    def __init__(self, units=[100, 200, 300, 100, 50], dropout=0.3, num_epochs=20, ybins=32, optimizer='adam', activation='relu', 
-                 verbose=0, loss=None, weighted_kl_constant=0.1):
+    def __init__(self, units=[100, 200, 300, 100, 50], dropout=0.3, num_epochs=20, ybins=32, optimizer='adam',
+                 activation='relu', verbose=0, loss=None, weighted_kl_constant=0.1):
         self.dropout = dropout
         self.num_epochs = num_epochs
         self.verbose = verbose
@@ -267,7 +266,7 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         Parameters
         ----------
         X : array-like, shape = [n_samples, n_features]
-            The training input samples. 
+            The training input samples.
         y : array-like, shape = [n_samples, n_dims]
             The target values.
         **fit_params
@@ -345,9 +344,9 @@ class DenseNNBinnedRegressor(BaseEstimator, BinnedRegressorMixin):
         return y_test_predicted
 
     def _init_ybins_from_param(self, y, bin_param):
-        if np.isscalar(bin_param): # bin count
+        if np.isscalar(bin_param):  # Given bin count
             self._init_ybins(y_data=y, ybin_count=bin_param)
-        else:                  # bin edges
+        else:                       # Given bin edges
             if len(bin_param) != y.shape[1]:
                 raise ValueError('If bin_param is not a scalar, the number of rows must'
                                  'be equal to the number y dimensions')

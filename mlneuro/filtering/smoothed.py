@@ -22,7 +22,7 @@ class TemporalSmoothedFilter(BaseEstimator):
         A function pointer for the kernel to use, or a string specifying a built in kernel shape
 
     """
-        
+
     def __init__(self, bandwidth_T=0.10, std_deviation=2.5, kernel='gaussian', n_jobs=1):
         self.bandwidth_T = bandwidth_T
         self.std_deviation = std_deviation

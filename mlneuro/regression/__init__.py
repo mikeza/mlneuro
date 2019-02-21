@@ -7,4 +7,5 @@ from .neuralnets import LSTMRegressor, DenseNNRegressor, DenseNNBinnedRegressor
 from .bayes import PoissonGLMBayesianRegressor, PoissonBayesianRegressor
 
 
-__all__ = ['BivariateKernelDensity', 'LSTMRegressor', 'DenseNNRegressor', 'DenseNNBinnedRegressor', 'PoissonGLMBayesianRegressor', 'PoissonBayesianRegressor']
+__all__ = ['BivariateKernelDensity', 'LSTMRegressor', 'DenseNNRegressor', 'DenseNNBinnedRegressor',
+           'PoissonGLMBayesianRegressor', 'PoissonBayesianRegressor']

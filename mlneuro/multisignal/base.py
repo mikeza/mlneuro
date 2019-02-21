@@ -19,7 +19,6 @@ def make_multisignal_fn(fn, reshape_default=False):
 
     def multisignal_fn(*args, reshape_result=reshape_default, **kwargs):
 
-
         constant_args = []
         signal_lists = []
         at_front = True
@@ -28,7 +27,7 @@ def make_multisignal_fn(fn, reshape_default=False):
                 signal_lists.append(arg)
                 at_front = False
             else:
-                if at_front: 
+                if at_front:
                     constant_args.append(arg)
                 else:
                     raise ValueError('Unsupported function passed to make_multisignal_fn, cannot handle mixed arguments')
@@ -50,7 +49,7 @@ def _enforce_multisignal_iterable(*arrs):
     return ret if len(ret) > 1 else ret[0]
 
 
-def multi_to_single_signal(signal_times, *signal_data_lists): 
+def multi_to_single_signal(signal_times, *signal_data_lists):
     times_all = np.concatenate(signal_times)
     sort_idxs = np.argsort(times_all)
     np.take(times_all, sort_idxs, out=times_all)

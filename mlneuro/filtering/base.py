@@ -1,20 +1,21 @@
 import numpy as np
+import warnings
 
 
 def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict', **kwargs):
     """A shortcut for filter fit and predict with additional parsing for sample times
-    
+
     Equivalent to:
     ```
     filt.fit(fit_times, *filter_arrs)
     filt.predict(predict_times)
     ```
-    
+
     Parameters
     ----------
     filt : object
         an initialized filter
-    predict_times : array-like 
+    predict_times : array-like
         The times to filter at.
         - If a scalar, taken as resolution and generated over the fit times range
         - If a length 3 vector, taken as (start, end range, resolution)
@@ -25,7 +26,7 @@ def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict', **
         Additional arguments are arrays to filter. Must be aligned to the given timestamps
     method : string
         The filt method to call  for predictions
-    kwargs : 
+    kwargs :
         Additional keyword args are passed to the fit function
 
     Returns
@@ -38,7 +39,6 @@ def filter_at(filt, predict_times, fit_times, *filter_arrs, method='predict', **
     filt.fit(fit_times, *filter_arrs, **kwargs)
     func = getattr(filt, method)
     return predict_times, func(predict_times)
-
 
 
 def _parse_sample_time(all_times, sample_times):
@@ -64,7 +64,7 @@ def _parse_sample_time(all_times, sample_times):
     if sample_times_min > all_times_max or sample_times_max < all_times_min:
         raise ValueError('Specified sample times {} -> {} are not in bounds of spike times {} -> {}. All results would be empty.'.format(sample_times_min, sample_times_max, all_times_min, all_times_max))
     if sample_times_min < all_times_min or sample_times_max > all_times_max:
-        # logger.warning('Specified sample times {} -> {} exceed bounds of spike times {} -> {}. Some results will be empty.'.format(sample_times_min, sample_times_max, all_times_min, all_times_max))
+        warnings.warn('Specified sample times {} -> {} exceed bounds of spike times {} -> {}. Some results will be empty.'.format(sample_times_min, sample_times_max, all_times_min, all_times_max))
         pass
 
     return sample_times_

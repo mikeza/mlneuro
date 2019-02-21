@@ -37,10 +37,9 @@ class TransitionInformedBayesian(BaseEstimator):
     -----
     Not thoroughly tested yet. Do not use for sensitive data without additional verification.
     """
-    def __init__(self, transition_obs, bin_edges, recursive_update_prop=0, 
-        transition_model='indiscriminate', propogation_factor=1, n_jobs=-1, transition_model_func=None, 
-        **transition_model_kwargs):
-
+    def __init__(self, transition_obs, bin_edges, recursive_update_prop=0,
+            transition_model='indiscriminate', propogation_factor=1, n_jobs=-1, transition_model_func=None,
+            **transition_model_kwargs):
 
         TRANSITION_MODELS = {'indiscriminate': self._indiscriminate_kernel_transition_matrix,
                              'directional':    self._directional_transition_matrix,
@@ -53,7 +52,7 @@ class TransitionInformedBayesian(BaseEstimator):
             self.transition_matrix = transition_model_func
 
         else:
-            if not transition_model in TRANSITION_MODELS:
+            if transition_model not in TRANSITION_MODELS:
                 raise ValueError(
                     'The transition model {} is not a valid preset.'.format(transition_model))
             self.transition_matrix = TRANSITION_MODELS[transition_model]
@@ -71,7 +70,7 @@ class TransitionInformedBayesian(BaseEstimator):
         self.n_jobs = n_jobs
 
     def fit(self, T, y_proba):
-        """Fit the filter by storing the time-stamped probability array 
+        """Fit the filter by storing the time-stamped probability array
         and generating a transition-matrix
 
         Parameters
@@ -80,7 +79,7 @@ class TransitionInformedBayesian(BaseEstimator):
             Timestamps
         y_proba : array-like, shape = [n_samples, n_bins]
             Array to filter, probabilities of bins at each sample.
-            
+
         Returns
         -------
         self : object
@@ -132,8 +131,7 @@ class TransitionInformedBayesian(BaseEstimator):
                 elif recursive_update_prop == 0:
                     prevEstimate = estimates[i - 1, :]
                 else:
-                    prevEstimate = (posterior[i - 1, :] * recursive_update_prop +
-                        estimates[i - 1, :] * (1 - recursive_update_prop))
+                    prevEstimate = (posterior[i - 1, :] * recursive_update_prop + estimates[i - 1, :] * (1 - recursive_update_prop))
                     prevEstimate /= np.nansum(prevEstimate)
 
                 # Apply a transformation
@@ -156,7 +154,7 @@ class TransitionInformedBayesian(BaseEstimator):
             insert_idx = insert_indices[i]
             if insert_idx >= aligned_y.shape[0]:
                 continue  # Skip indices beyond the end of the new array
-            
+
             # Note: We are multiplying rather than assigning so that spikes that share a position will combine information
             # and positions without spikes will be uniform since aligned_y was initialized with ones
             aligned_y[insert_idx] *= y_proba[i]
@@ -169,8 +167,7 @@ class TransitionInformedBayesian(BaseEstimator):
     def _init_transition_matrix(self):
         bin_edges = self.bin_edges() if callable(self.bin_edges) else self.bin_edges
 
-        M = self.transition_matrix(
-           self.transition_obs, bin_edges, **self.transition_model_kwargs)
+        M = self.transition_matrix(self.transition_obs, bin_edges, **self.transition_model_kwargs)
 
         # Normalize before exponentiaion **investigate
         #   appears to cause a bug if you don't where the
@@ -192,7 +189,7 @@ class TransitionInformedBayesian(BaseEstimator):
         bin_grid = linearized_bin_grid(bin_centers_from_edges(bin_edges))
 
         # Get the mean velocity of the y_proba
-        v = np.gradient(observations[:,1:], observations[:,0], axis=0)
+        v = np.gradient(observations[:, 1:], observations[:, 0], axis=0)
         v = np.mean(v) + std_f * np.std(v)
         self._transition_matrix_velocity = v
 
@@ -203,7 +200,7 @@ class TransitionInformedBayesian(BaseEstimator):
         return gaussian_pdf(dists, std_deviation=v)
 
     def _directional_transition_matrix(self, observations, bin_edges):
-        binned_obs = binned_data(observations[:,1:], bin_edges, flat=True)
+        binned_obs = binned_data(observations[:, 1:], bin_edges, flat=True)
         n_bins = np.prod(np.array([len(e) for e in bin_edges]) - 1)
 
         # Calculate the transition matrix, a count of bin transition
