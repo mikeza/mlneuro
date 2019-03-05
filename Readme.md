@@ -20,13 +20,19 @@ cd mlneuro
 pip install -e .
 ```
 
-On Windows, if MiniConda/Anaconda is installed, an environment file is included
+On Windows, if MiniConda/Anaconda is installed, an environment file is included to install dependencies
 ```
 git clone https://github.umn.edu/RedishLab/mlneuro.git
 cd mlneuro
 conda env create -n mlneuro -f environment.yml
 ```
 The mlneuro environment may then be launched with ``activate mlneuro``. If all optional dependencies are desired, specify the ``environment_full.yml`` file instead
+
+To install mlneuro within the conda environment, activate the environment and use pip from the mlneuro root directory
+```
+activate mlneuro
+pip install -e .
+```
 
 ## Dependencies
 
