@@ -1,10 +1,14 @@
+# Notice
+
+This project is mirrored to this personal github for demonstration purposes only and should not be used for research outside of the Redish lab. Please contact me at adkin099@umn.edu for more information or if you want to use the project.
+
 # mlneuro
 
 Machine learning for neuroscience
 
 An extension of scikit-learn with a focus on:
 - **verbosity**: clear and extensive logging
-- **multisignal analysis**: combine data from multiple sensors leveraging the 
+- **multisignal analysis**: combine data from multiple sensors leveraging the
 - **noise handling**: filter noisy data and predictions from neural signals, remove bad data from the training set
 - **cross validation**: decoding should be cross-validated to ensure separation of training and test sets
 - **timestamped data**: neural data is a temporal process (support could be better thusfar)
@@ -61,7 +65,7 @@ See the documentatino for the package if more details on installation are needed
 
 ## Downloading example datasets
 
-Example datasets require git large file support which is not enabled on the UofM github instance yet. The data folder will be available in the Redish lab team drive and 
+Example datasets require git large file support which is not enabled on the UofM github instance yet. The data folder will be available in the Redish lab team drive and
 must be placed in ``mlneuro/mlneuro/datasets/`` for example loading to work.
 
 # Building documentation
